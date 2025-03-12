@@ -1,10 +1,63 @@
+'use client';
 import Image from "next/image";
 import styles from "./page.module.css";
-
+import { useUser } from '@/contexts/UserContext';
+import { useEffect, useState } from 'react';
+import { supabase } from 'superbase';
+import { Auth } from '@supabase/auth-ui-react';
+import Navbar from '@/components/navbar';
 export default function Home() {
+  const { user, setUser } = useUser();
+  const [applicant_profile, setApplicant_profile] = useState({});
+  useEffect(() => {
+    const { data: listener } = supabase.auth.onAuthStateChange((event, session) => {
+        setUser(session?.user ?? null);
+    });
+
+    return () => {
+        listener?.unsubscribe();
+    };
+}, [setUser]);
+
+  useEffect(() => {
+    if (user) {
+      const fetchProfile = async () => {
+        const { data, error } = await supabase
+          .from('applicant_profiles')
+          .select('*')
+          .eq('user_id', user.id);
+
+        if (error) {
+          console.error('Error fetching data:', error);
+        } else {
+          setApplicant_profile(data);
+        }
+      };
+
+      fetchProfile();
+    }
+    console.log(user, 'user')
+  }, [user]);
+  async function handleSignOut () {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      console.error('Error signing out:', error);
+    } else {
+      //  router.push('/');
+    }
+  };
   return (
     <div className={styles.page}>
+      <Navbar />
+        <Auth
+            supabaseClient={supabase}
+            providers={['google', 'github']} // Add desired providers
+            socialLayout="horizontal"
+            socialButtonSize="xlarge"
+        />
+        
       <main className={styles.main}>
+      {user?.id && <button onClick={handleSignOut}>Sign Out</button>}
         <Image
           className={styles.logo}
           src="/next.svg"
