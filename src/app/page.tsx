@@ -5,7 +5,7 @@ import { useUser } from '@/contexts/UserContext';
 import { useEffect, useState } from 'react';
 import { supabase } from 'superbase';
 import { Auth } from '@supabase/auth-ui-react';
-import Navbar from '@/components/navbar';
+
 export default function Home() {
   const { user, setUser } = useUser();
   const [applicant_profile, setApplicant_profile] = useState({});
@@ -48,7 +48,6 @@ export default function Home() {
   };
   return (
     <div className={styles.page}>
-      <Navbar />
         <Auth
             supabaseClient={supabase}
             providers={['google', 'github']} // Add desired providers
