@@ -10,14 +10,16 @@ export default function Home() {
   const { user, setUser } = useUser();
   const [applicant_profile, setApplicant_profile] = useState({});
   useEffect(() => {
-    const { data: listener } = supabase.auth.onAuthStateChange((event, session) => {
-        setUser(session?.user ?? null);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setUser(session?.user ?? null);
     });
-
+  
+    // Now we call unsubscribe on the `subscription` field directly
     return () => {
-        listener?.unsubscribe();
+      subscription?.unsubscribe();
     };
-}, [setUser]);
+  }, [setUser]);
+  
 
   useEffect(() => {
     if (user) {
