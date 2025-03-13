@@ -5,7 +5,7 @@ import { supabase } from "superbase";
 import { NewVacancy as NewVacancyType, JobType } from "@/types/vacancies";
 import {User as UserType} from "@/types/users";
 import {Location as LocationType} from "@/types/location";
-
+import { useUser } from '@/contexts/UserContext';
 export default function NewVacancy() {
     const router = useRouter();
     const { user } = useUser();

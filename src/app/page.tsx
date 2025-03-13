@@ -2,7 +2,7 @@
 import Image from "next/image";
 import styles from "./page.module.css";
 import { useUser } from '@/contexts/UserContext';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { supabase } from 'superbase';
 import { Auth } from '@supabase/auth-ui-react';
 import {fetchProfile} from '@/utils/user';
