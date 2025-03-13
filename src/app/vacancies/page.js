@@ -1,3 +1,4 @@
+'use client';
 import { useEffect, useState } from "react";
 import { supabase } from "superbase";
 import Link from "next/link";

@@ -2,21 +2,40 @@
 
 import { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from 'superbase';
-
+import { fetchProfile } from '@/utils/user';
 const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
     const [user, setUser] = useState(null);
 
     useEffect(() => {
-        // Check active session and set user
-        const session = supabase.auth.getSession();
-        setUser(session?.user ?? null);
+        // Function to fetch user session
+        const fetchUserSession = async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session?.user) {
+                fetchProfile(session.user, setUser)
+                localStorage.setItem('user', JSON.stringify(session.user));
+            } else {
+                const storedUser = localStorage.getItem('user');
+                if (storedUser) {
+                    setUser(JSON.parse(storedUser));
+                }
+            }
+        };
+
+        // Ensure this runs only on the client side
+        if (typeof window !== 'undefined') {
+            fetchUserSession();
+        }
 
         // Listen for changes in auth state
         const { data: listener } = supabase.auth.onAuthStateChange(
             (event, session) => {
-                setUser(session?.user ?? null);
+                if (session?.user) {
+                    fetchProfile(session.user, setUser)
+                } else {
+                    localStorage.removeItem('user');
+                }
             }
         );
 

@@ -5,41 +5,23 @@ import { useUser } from '@/contexts/UserContext';
 import { useEffect, useState } from 'react';
 import { supabase } from 'superbase';
 import { Auth } from '@supabase/auth-ui-react';
-
+import {fetchProfile} from '@/utils/user';
+import {checkFirstLogin} from '@/utils/utils';
 export default function Home() {
   const { user, setUser } = useUser();
-  const [applicant_profile, setApplicant_profile] = useState({});
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      setUser(session?.user ?? null);
+      if(session?.user) {
+        checkFirstLogin(session?.user)
+        fetchProfile(session?.user, setUser);
+      }
     });
-  
-    // Now we call unsubscribe on the `subscription` field directly
     return () => {
       subscription?.unsubscribe();
     };
-  }, [setUser]);
+  }, []);
   
 
-  useEffect(() => {
-    if (user) {
-      const fetchProfile = async () => {
-        const { data, error } = await supabase
-          .from('applicant_profiles')
-          .select('*')
-          .eq('user_id', user.id);
-
-        if (error) {
-          console.error('Error fetching data:', error);
-        } else {
-          setApplicant_profile(data);
-        }
-      };
-
-      fetchProfile();
-    }
-    console.log(user, 'user')
-  }, [user]);
   async function handleSignOut () {
     const { error } = await supabase.auth.signOut();
     if (error) {

@@ -1,3 +1,4 @@
+'use client';
 // /pages/interviews.js
 
 import { useState, useEffect } from 'react';

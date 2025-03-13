@@ -1,7 +1,8 @@
+'use client';
 import { useState, useEffect } from "react";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { supabase } from "superbase";
-import ProtectedRoute from '../components/ProtectedRoute';
+import ProtectedRoute from '@/contexts/ProtectedRoute.js';
 export default function AdminDashboard() {
     const router = useRouter();
     const [tab, setTab] = useState("vacancies");
@@ -15,7 +16,7 @@ export default function AdminDashboard() {
         let table;
         switch (tab) {
             case "applicants":
-                table = "applicants";
+                table = "applicant_profiles";
                 break;
             case "managers":
                 table = "manager_profiles";

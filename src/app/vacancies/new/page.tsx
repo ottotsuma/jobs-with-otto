@@ -1,61 +1,82 @@
+'use client';
 import { useState, useEffect } from "react";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { supabase } from "superbase";
+import { NewVacancy as NewVacancyType, JobType } from "@/types/vacancies";
+import {User as UserType} from "@/types/users";
+import {Location as LocationType} from "@/types/location";
 
 export default function NewVacancy() {
     const router = useRouter();
-    const [user, setUser] = useState(null);
-    const [title, setTitle] = useState("");
-    const [description, setDescription] = useState("");
-    const [salary, setSalary] = useState("");
-    const [companyId, setCompanyId] = useState(null);
-    const [jobTypes, setJobTypes] = useState([]);
-    const [locations, setLocations] = useState([]);
-    const [typeId, setTypeId] = useState(""); // No initial type set
-    const [locationId, setLocationId] = useState(""); // No initial location set
+    const { user } = useUser();
+    const [title, setTitle] = useState<string>("");
+    const [description, setDescription] = useState<string>("");
+    const [salary, setSalary] = useState<string>("");
+    const [companyId, setCompanyId] = useState<string | null>(null);
+    const [jobTypes, setJobTypes] = useState<JobType[]>([]); // Replace with actual type if possible
+    const [locations, setLocations] = useState<LocationType[]>([]); // Replace with actual type if possible
+    const [typeId, setTypeId] = useState<number>(NaN); // String for type id
+    const [locationId, setLocationId] = useState<number>(NaN); // String for location id
 
     useEffect(() => {
         async function fetchData() {
-            const { data: userData, error } = await supabase.auth.getUser();
-            if (error) return;
-            setUser(userData);
+            const { data: { user }, error } = await supabase.auth.getUser();
+            if (error || !user) return;
 
             // Fetch job types
-            const { data: jobTypes } = await supabase.from("job_types").select("*");
+            const { data: jobTypes, error: jobTypeError } = await supabase.from("job_types").select("*");
+            if (jobTypeError) {
+                console.error(jobTypeError);
+            }
             setJobTypes(jobTypes || []);
 
             // Fetch locations
-            const { data: locations } = await supabase.from("locations").select("*");
+            const { data: locations, error: locationError } = await supabase.from("locations").select("*");
+            if (locationError) {
+                console.error(locationError);
+            }
             setLocations(locations || []);
 
             // Get manager's company
-            const { data: managerProfile } = await supabase
+            const { data: managerProfile, error: profileError } = await supabase
                 .from("manager_profiles")
                 .select("company_id")
-                .eq("user_id", userData?.id)
+                .eq("user_id", user?.id)
                 .single();
 
+            if (profileError) {
+                console.error(profileError);
+            }
             if (managerProfile) setCompanyId(managerProfile.company_id);
         }
 
         fetchData();
     }, []);
 
-    async function handleSubmit(e) {
+    async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
         if (!user || !companyId) {
             alert("Unauthorized");
             return;
         }
 
-        const vacancyData = {
+        const vacancyData: NewVacancyType = {
             job_title: title,
             description,
             company_id: companyId,
-            type_id: typeId || null, // Use null if no type selected
-            location_id: locationId || null, // Use null if no location selected
-            hourly_rate: salary || null, // Use null if salary not provided
+            type_id: typeId || NaN, // Use null if no type selected
+            location_id: locationId || NaN, // Use null if no location selected
+            hourly_rate: salary ? parseFloat(salary) : NaN, // Use null if salary not provided
+            day_salary: NaN, // You can add this field if needed
+            month_salary: NaN, // You can add this field if needed
+            yearly_salary: NaN, // You can add this field if needed
+            special_instructions: "", // Add logic for special instructions if needed
             created_by: user.id,
+            updated_by: user.id, // Assuming it's the same as created_by
+            status: "active", // Set the default status or let the user provide it
+            approved_datetime: null,
+            approved_by: null,
+            job_level: 1, // Add job level logic if needed
         };
 
         const { data, error } = await supabase.from("vacancies").insert([vacancyData]);

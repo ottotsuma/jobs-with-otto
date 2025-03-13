@@ -1,39 +1,48 @@
 // pages/api/vacancies/index.js
 import supabase from '@/lib/supabase';
 
-export default async function handler(req, res) {
+export default async function vacancies_handler(req, res) {
     if (req.method === 'GET') {
-        const { data, error } = await supabase.from('vacancies').select('*');
+        // If there is an ID in the query, get the specific vacancy
+        if (req.query.id) {
+            const { id } = req.query;
+            const { data, error } = await supabase.from('vacancies').select('*').eq('id', id).single();
+            if (error) return res.status(404).json({ error: error.message });
+            return res.status(200).json(data);
+        } else {
+            // If no ID, return all vacancies
+            const { data, error } = await supabase.from('vacancies').select('*');
+            if (error) return res.status(500).json({ error: error.message });
+            return res.status(200).json(data);
+        }
+    } else if (req.method === 'POST') {
+        // Create a new vacancy
+        const { error, data } = await supabase.from('vacancies').insert([req.body]);
+
         if (error) return res.status(500).json({ error: error.message });
-        res.status(200).json(data);
+        return res.status(201).json(data);
+    } else if (req.method === 'PATCH') {
+        // Update an existing vacancy partially (only fields provided)
+        const { id } = req.query;
+
+        const { data, error } = await supabase
+            .from('vacancies')
+            .update(req.body) // Directly pass the whole req.body
+            .eq('id', id)
+            .select();
+
+        if (error) return res.status(500).json({ error: error.message });
+        return res.status(200).json(data);
+    } else if (req.method === 'DELETE') {
+        // Delete a vacancy
+        const { id } = req.query;
+
+        const { data, error } = await supabase.from('vacancies').delete().eq('id', id);
+
+        if (error) return res.status(500).json({ error: error.message });
+        return res.status(200).json({ message: 'Vacancy deleted successfully', data });
     } else {
-        res.status(405).json({ message: 'Method Not Allowed' });
-    }
-}
-
-// pages/api/vacancies/index.js (Add to existing file)
-if (req.method === 'POST') {
-    const { job_title, type_id, location_id, description, hourly_rate, company_id } = req.body;
-
-    const { data, error } = await supabase.from('vacancies').insert([
-        { job_title, type_id, location_id, description, hourly_rate, company_id }
-    ]);
-
-    if (error) return res.status(500).json({ error: error.message });
-    res.status(201).json(data);
-}
-
-// pages/api/vacancies/[id].js
-import supabase from '@/lib/supabase';
-
-export default async function handler(req, res) {
-    const { id } = req.query;
-
-    if (req.method === 'GET') {
-        const { data, error } = await supabase.from('vacancies').select('*').eq('id', id).single();
-        if (error) return res.status(404).json({ error: error.message });
-        res.status(200).json(data);
-    } else {
+        // Method not allowed
         res.status(405).json({ message: 'Method Not Allowed' });
     }
 }

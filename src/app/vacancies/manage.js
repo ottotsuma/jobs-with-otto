@@ -1,10 +1,10 @@
+'use client';
 import { useState, useEffect } from "react";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { supabase } from "superbase";
 
 export default function ManageVacancies() {
     const router = useRouter();
-    const [user, setUser] = useState(null);
     const [companyId, setCompanyId] = useState(null);
     const [vacancies, setVacancies] = useState([]);
     const [locations, setLocations] = useState([]);
@@ -14,7 +14,6 @@ export default function ManageVacancies() {
         async function fetchManagerData() {
             const { data: userData, error } = await supabase.auth.getUser();
             if (error) return;
-            setUser(userData);
 
             // Fetch manager's company
             const { data: managerProfile } = await supabase

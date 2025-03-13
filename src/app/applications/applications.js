@@ -1,3 +1,4 @@
+'use client';
 // /pages/applications.js
 
 import { useState, useEffect } from 'react';

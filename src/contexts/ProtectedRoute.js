@@ -1,7 +1,7 @@
 // /components/ProtectedRoute.js
 
-import { useUser } from '../context/UserContext';
-import { useRouter } from 'next/router';
+import { useUser } from './UserContext';
+import { useRouter } from 'next/navigation';
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
     const { user } = useUser();
@@ -10,8 +10,7 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
     if (!user) {
         return <div>Loading...</div>; // Or redirect to login
     }
-
-    if (!allowedRoles.includes(user.role)) {
+    if (!allowedRoles.includes(user.role_name)) {
         router.push('/unauthorized'); // Redirect to unauthorized page
         return null;
     }

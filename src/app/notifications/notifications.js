@@ -1,3 +1,4 @@
+'use client';
 // /pages/notifications.js
 
 import { useState, useEffect } from 'react';

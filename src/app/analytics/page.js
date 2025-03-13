@@ -1,22 +1,45 @@
+'use client';
 // /pages/analytics.js
-
+import { supabase } from "superbase";
 import { useState, useEffect } from 'react';
 // import { getJobStats, getApplicantStats, getCompanyStats } from '@/API/analytics';
 
 export default function Analytics() {
-    const [jobStats, setJobStats] = useState({});
+    const [vacanciesStats, setvacanciesStats] = useState({});
     const [applicantStats, setApplicantStats] = useState({});
     const [companyStats, setCompanyStats] = useState({});
 
     useEffect(() => {
         async function fetchData() {
-            // const jobRes = await getJobStats(); // Assume API to get job stats
-            // const applicantRes = await getApplicantStats(); // Assume API for applicant stats
-            // const companyRes = await getCompanyStats(); // Assume API for company stats
+            // Fetch data for vacanciesStats
+            const { data: vacanciesData, error: vacanciesError } = await supabase
+                .from('vacancies')
+                .select('*');
+            if (vacanciesError) {
+                console.error('Error fetching vacancies data:', vacanciesError);
+            } else {
+                setvacanciesStats(vacanciesData);
+            }
 
-            setJobStats(jobRes.data);
-            setApplicantStats(applicantRes.data);
-            setCompanyStats(companyRes.data);
+            // Fetch data for applicantStats
+            const { data: applicantsData, error: applicantsError } = await supabase
+                .from('applicant_profiles')
+                .select('*');
+            if (applicantsError) {
+                console.error('Error fetching applicants data:', applicantsError);
+            } else {
+                setApplicantStats(applicantsData);
+            }
+
+            // Fetch data for companyStats
+            const { data: companiesData, error: companiesError } = await supabase
+                .from('companies')
+                .select('*');
+            if (companiesError) {
+                console.error('Error fetching companies data:', companiesError);
+            } else {
+                setCompanyStats(companiesData);
+            }
         }
         fetchData();
     }, []);
@@ -27,9 +50,9 @@ export default function Analytics() {
 
             <div>
                 <h2>Job Postings</h2>
-                <p>Total Posts: {jobStats.total}</p>
-                <p>Open Jobs: {jobStats.open}</p>
-                <p>Closed Jobs: {jobStats.closed}</p>
+                <p>Total Posts: {vacanciesStats.total}</p>
+                <p>Open Jobs: {vacanciesStats.open}</p>
+                <p>Closed Jobs: {vacanciesStats.closed}</p>
             </div>
 
             <div>
