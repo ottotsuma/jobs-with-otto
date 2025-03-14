@@ -20,6 +20,7 @@ export default function Applications() {
         setApplications(applications.filter(app => app.id !== id)); // Remove the withdrawn application
     };
 
+
     return (
         <div>
             <h1>Your Job Applications</h1>

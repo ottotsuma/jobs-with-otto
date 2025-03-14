@@ -24,7 +24,6 @@ export async function fetchProfile(user: User, setUser: Dispatch<SetStateAction<
         return;
     }
 
-
     // Step 2: Based on the role, fetch the corresponding profile data
     let profileData;
     if (roleData.role_name === 'applicant') {
@@ -58,6 +57,8 @@ export async function fetchProfile(user: User, setUser: Dispatch<SetStateAction<
 
     // Step 3: Set the profile data to your state
     const mergedProfile = { ...user, ...profileData, ...roleData };
+    mergedProfile.profileData = profileData;
+    mergedProfile.roleData = roleData;
     setUser(mergedProfile); // Adjust this based on your state management
     localStorage.setItem('user', JSON.stringify(mergedProfile ?? null));
 };

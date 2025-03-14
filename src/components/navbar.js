@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useRouter } from "next/navigation";
 import { useUser } from '@/contexts/UserContext';
 import { supabase } from 'superbase';
-
+import ThemeToggle from "@/components/ThemeToggle";
 const Navbar = () => {
     const { user, setUser } = useUser();
     const router = useRouter();
@@ -13,6 +13,8 @@ const Navbar = () => {
         const { error } = await supabase.auth.signOut();
         if (error) {
             console.error('Error signing out:', error);
+            setUser(null); // Clear user state
+            router.push('/'); // Redirect to home after successful sign-out
         } else {
             localStorage.setItem('user', JSON.stringify(null));
             setUser(null); // Clear user state
@@ -32,7 +34,7 @@ const Navbar = () => {
                 <li>
                     <Link href="/contact">Contact</Link>
                 </li>
-
+                <li> <ThemeToggle /></li>
                 <li>
                     <Link href="/vacancies">View All Vacancies</Link>
                 </li>

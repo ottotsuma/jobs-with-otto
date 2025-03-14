@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { UserProvider } from '@/contexts/UserContext';
 import Navbar from '@/components/navbar';
+import ThemeProvider from '@/components/ThemeProvider';
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -35,7 +36,7 @@ export const metadata: Metadata = {
     siteName: "Jobs With Otto",
     images: [
       {
-        url: "https://jobswithotto.netlify.app//og-image.jpg", // Replace with your actual image
+        url: "https://jobswithotto.netlify.app//og-image.jpg",
         width: 1200,
         height: 630,
       },
@@ -64,9 +65,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-      <UserProvider>
+        <UserProvider>
+          <ThemeProvider>
         <Navbar />
         {children}
+        </ThemeProvider>
         </UserProvider>
       </body>
     </html>
