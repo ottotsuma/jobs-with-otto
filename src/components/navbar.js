@@ -82,7 +82,7 @@ const Navbar = () => {
                 {user ? (
                     <>
                         <ListItem>
-                            <StyledLink href="/profile">Create Company</StyledLink>
+                            <StyledLink href="/companies/create">Create Company</StyledLink>
                         </ListItem>
                         <ListItem>
                             <StyledLink href="/profile">My Profile</StyledLink>
@@ -92,10 +92,10 @@ const Navbar = () => {
                         </ListItem>
                     </>
                 ) : user?.role_name === "manager" ? (<>                   <ListItem>
-                    <StyledLink href="/profile">Manage Company</StyledLink>
+                    <StyledLink href="/companies/manage">Manage Company</StyledLink>
                 </ListItem>
                     <ListItem>
-                        <StyledLink href="/profile">Manage Locations</StyledLink>
+                        <StyledLink href="/locations/manage">Manage Locations</StyledLink>
                     </ListItem>
                     <ListItem>
                         <StyledLink href="/vacancies/new">Manage Jobs</StyledLink>

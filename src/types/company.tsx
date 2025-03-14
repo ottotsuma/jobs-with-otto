@@ -27,3 +27,6 @@ export type Company = {
     company_culture: string;
     average_rating: number; // Average rating value
 };
+
+export type newCompany = Omit<Company, "id" | "average_rating" | "updated_by" | "created_by" | "status"> & {
+};
