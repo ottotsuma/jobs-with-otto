@@ -1,8 +1,10 @@
+// src/app/vacancies/[id]/page.tsx
 'use client';
+
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { supabase } from "superbase";
-
+import Script from "next/script";
 export default function VacancyPage() {
     const router = useRouter();
     const { id } = router.query;
@@ -42,6 +44,35 @@ export default function VacancyPage() {
                     <p className="text-gray-600">{company.description}</p>
                 </div>
             )}
+             {/* JSON-LD Structured Data for SEO */}
+             <Script
+                id="job-posting-structured-data"
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{
+                    __html: JSON.stringify({
+                        "@context": "https://schema.org",
+                        "@type": "JobPosting",
+                        title: vacancy.title,
+                        description: vacancy.description,
+                        hiringOrganization: {
+                            "@type": "Organization",
+                            name: company?.name || "Unknown Company",
+                            url: "https://companydomain.com",
+                        },
+                        datePosted: vacancy.created_at,
+                        employmentType: vacancy.job_type || "Full-time",
+                        jobLocation: {
+                            "@type": "Place",
+                            address: {
+                                "@type": "PostalAddress",
+                                addressLocality: vacancy.location || "Remote",
+                                addressRegion: "Region Name",
+                                addressCountry: "Country",
+                            },
+                        },
+                    }),
+                }}
+            />
         </div>
     );
 }
