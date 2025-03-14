@@ -5,11 +5,8 @@ export type User = {
     contact_number?: string;
     created_at: string; // Timestamp ISO string
     updated_at: string; // Timestamp ISO string
-};
-export type ManagerProfile = Omit<User, ""> & {
-    company_id: string; // UUID as string
-    job_position: string;
-    location_ids: number[]; // Array of location IDs
+
+    profileData?: ManagerProfile | ApplicantProfile | AdminProfile;
 };
 export type ApplicantProfile = Omit<User, ""> & {
     bio: string;
@@ -17,10 +14,17 @@ export type ApplicantProfile = Omit<User, ""> & {
     skills: string[]; // Array of skill names
     experience: Record<string, unknown>; // Experience details as JSON
 };
-export type AdminProfile = Omit<User, 'contact_number'> & {
-    role: string; // Role of the admin (e.g., Super Admin, Admin)
+export type ManagerProfile = Omit<ApplicantProfile, ""> & {
+    company_id: string;
+    job_position: string;
+    location_ids: number[];
 };
+export type AdminProfile = Omit<
+  ManagerProfile,
+  'contact_number' | 'company_id' | 'job_posistion' | 'locatin_ids'
+> & {};
 export type UserRole = {
-    user_id: string; // UUID as string
-    role_id: number; // Role ID
+    user_id: string; 
+    role_id: number; 
 };
+export type Role = "manager" | "applicant" | "admin" | "authenticated" |"anon";

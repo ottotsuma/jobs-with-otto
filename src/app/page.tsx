@@ -7,6 +7,8 @@ import { Auth } from '@supabase/auth-ui-react';
 import { useRouter } from "next/navigation";
 import {fetchProfile} from '@/utils/user';
 import {checkFirstLogin} from '@/utils/utils';
+import {Button} from '@/styles/basic';
+
 export default function Home() {
   const router = useRouter();
   const { user, setUser } = useUser();
@@ -29,19 +31,22 @@ export default function Home() {
   }, [user]);
   
   return (
-    <div className={styles.page}>
-        <Auth
+    <div className={styles.page}>        
+      <main className={styles.main}>
+      <Auth
             supabaseClient={supabase}
             providers={[]} 
             socialLayout="horizontal"
             socialButtonSize="xlarge"
         />
-        
-      <main className={styles.main}>
-      
       </main>
       <footer className={styles.footer}>
-        
+                <Button onClick={() => router.push('/about')} color="blue">
+                    about
+                </Button>
+                <Button onClick={() => router.push('/contact')} color="blue">
+                contact
+                </Button>
       </footer>
     </div>
   );

@@ -50,8 +50,9 @@ export async function fetchProfile(user: User, setUser: Dispatch<SetStateAction<
         profileData = data;
     } else if (roleData.role_name === 'admin') {
         // Admins don't have a profile
+        console.log('admin role')
     } else {
-        console.error('Unknown role:', roleData.role_name);
+        console.log('anon role:', roleData.role_name);
         return;
     }
 

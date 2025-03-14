@@ -15,6 +15,10 @@ export async function checkFirstLogin(user) {
         }
 
         console.log("Welcome! This is your first login.");
+        const { error: insertError } = await supabase
+            .from('applicant_profiles')
+            .insert([{ user_id: user.id, created_at: new Date().toISOString() }]);
+        if (insertError) throw insertError;
     } else {
         console.log(`Welcome back ${user.id}`);
     }
