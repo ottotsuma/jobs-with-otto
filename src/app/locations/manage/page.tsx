@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 // import { ApplicantProfile, ManagerProfile, AdminProfile } from '@/types/users';
 import { useUser } from '@/contexts/UserContext';
 import { useRouter } from "next/navigation";
-// import { Company } from '@/types/company';
+import { Company } from '@/types/company';
 import { Location } from '@/types/location';
 import { Button, Container, Title, Form, Input, ZoneGreen, ZoneRed, ZoneYellow, Label, Select } from '@/styles/basic';
 import ProtectedRoute from '@/contexts/ProtectedRoute.js';
@@ -81,7 +81,7 @@ export default function ProfilePage() {
 
                     {/* Yellow Zone - Change Password & Role Update Forms */}
                     <ZoneYellow>
-                        Permissions
+                        Settings
                     </ZoneYellow>
 
                     {/* Red Zone - Delete Profile */}
