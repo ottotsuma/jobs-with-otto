@@ -32,7 +32,15 @@ export default function ProfilePage() {
         <ProtectedRoute allowedRoles={['admin', 'manager', 'applicant']}>
             <Container>
                 <Title>{company.name} Locations</Title>
+                <Button
+                onClick={() => router.push(`/locations/new`)}
+            >
+                New Location
+            </Button>
                 <>
+                    {/* Location QR code */}
+                    {/* CSV */}
+                    {/* Applicants pending clock in / out at each location? (mass) */}
                     {/* Green Zone - Update Profile Form */}
                     <ZoneGreen>
                         {locations.forEach((location) => 

@@ -16,6 +16,18 @@ export type Vacancy = {
     created_by: string; // UUID as string
     updated_by: string; // UUID as string
     status: string;
+
+            // Date start
+        // Date end
+        // Shifts, so you can select the days, like 1 = monday - wensday, 2 = Monday - Friday. Different times, different number of Employee_places. But everything else about the job is the same.
+        // Employee_places 
+        // Assign
+                // managers []
+        // Required Certification
+
+        // Manager clock in time
+        // applicant clock in time
+        // admin clock in time
 };
 
 export type NewVacancy = Omit<Vacancy, "id">;

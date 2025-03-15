@@ -5,7 +5,7 @@ export type User = {
     contact_number?: string;
     created_at: string; // Timestamp ISO string
     updated_at: string; // Timestamp ISO string
-
+    company_id?: string;
     profileData?: ManagerProfile | ApplicantProfile | AdminProfile;
 };
 export type ApplicantProfile = Omit<User, ""> & {

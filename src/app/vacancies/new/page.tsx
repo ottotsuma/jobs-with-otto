@@ -10,21 +10,28 @@ export default function NewVacancy() {
     const router = useRouter();
     const { user } = useUser();
     const [vacancyData, setVacancyData] = useState<NewVacancyType>({
-        company_id: "",
-        type_id: NaN,
+        company_id: user?.company_id || "",
+        type_id: NaN, // full time, part time, Hidden different parts of the job creation based on this.
         location_id: NaN,
 
         job_title: "",
         description: "",
         special_instructions: "",
+        // Date start
+        // Date end
+        // Shifts, so you can select the days, like 1 = monday - wensday, 2 = Monday - Friday. Different times, different number of Employee_places. But everything else about the job is the same.
+        // Employee_places 
+        // Assign
 
-        hourly_rate: NaN,
+        hourly_rate: NaN, //(only one type of salary needs to show once one is filled in)
         day_salary: NaN,
         month_salary: NaN,
         yearly_salary: NaN,
 
         status: "active",
         job_level: 1,
+        // managers []
+        // Required Certification
 
         approved_datetime: null,
         approved_by: null,
@@ -76,23 +83,23 @@ export default function NewVacancy() {
                 console.error(locationError);
             }
             setLocations(locations || []);
+            if(!vacancyData.company_id) {
+// Get manager's company
+const { data: managerProfile, error: profileError } = await supabase
+.from("manager_profiles")
+.select("company_id")
+.eq("user_id", user?.id)
+.single();
 
-            // Get manager's company
-            const { data: managerProfile, error: profileError } = await supabase
-                .from("manager_profiles")
-                .select("company_id")
-                .eq("user_id", user?.id)
-                .single();
-
-            if (profileError) {
-                console.error(profileError);
+if (profileError) {
+console.error(profileError);
+}
+if (managerProfile) setVacancyData((prevData) => ({
+...prevData,
+company_id: managerProfile.company_id
+}));
             }
-            if (managerProfile) setVacancyData((prevData) => ({
-                ...prevData,
-                company_id: managerProfile.company_id
-            }));
         }
-
         fetchData();
     }, [user]);
 
@@ -124,11 +131,12 @@ export default function NewVacancy() {
     return (
         <div className="max-w-2xl mx-auto p-6">
             <h1 className="text-2xl font-bold mb-4">Create New Vacancy</h1>
+            {/* Use template */}
             <form onSubmit={handleSubmit} className="space-y-4">
                 {/* Dynamically generate form fields */}
                 {Object.keys(vacancyData).map((key) => {
                     const fieldValue = (vacancyData as any)[key];
-                    if (key === "created_by" || key === "updated_by") return null; // Skip these fields
+                    if (["company_id", "created_by", "updated_by"].includes(key)) return null; // Skip these fields
                     if (key === "type_id") {
                         return (
                             <div key={key}>

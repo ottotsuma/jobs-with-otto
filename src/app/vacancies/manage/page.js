@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "superbase";
+import { Button } from '@/styles/basic';
 
 export default function ManageVacancies() {
     const router = useRouter();
@@ -66,7 +67,13 @@ export default function ManageVacancies() {
     return (
         <div className="max-w-3xl mx-auto p-6">
             <h1 className="text-2xl font-bold mb-4">Manage Vacancies</h1>
-
+            {/* Create new - src\app\vacancies\new\page.tsx */}
+            <Button
+                onClick={() => router.push(`/vacancies/new`)}
+            >
+                New Vacancy
+            </Button>
+            {/* options */}
             {/* Filter by Location */}
             <select
                 value={selectedLocation}
@@ -84,7 +91,11 @@ export default function ManageVacancies() {
                 ))}
             </select>
 
-            {/* Job Listings */}
+            {/* Job Listings - Table*/}
+            {/* Jobs by Date */}
+            {/* Applications */}
+            {/* Assigned - Status - Could be hundreds*/}
+            {/* Job Details */}
             {vacancies.length > 0 ? (
                 vacancies.map((vacancy) => (
                     <div key={vacancy.id} className="p-4 border rounded mb-3 shadow-sm">
