@@ -29,7 +29,7 @@ const Nav = styled('nav', {
             },
             false: {
                 minWidth: '200px',
-                width: '20%'
+                width: '15%'
             }
         },
         hidden: {
