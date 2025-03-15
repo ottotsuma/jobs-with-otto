@@ -224,7 +224,6 @@ export default function NewVacancy() {
                             </div>
                         );
                     }
-
                     if (typeof fieldValue === "number") {
                         return (
                             <div key={key}>
@@ -240,7 +239,6 @@ export default function NewVacancy() {
                             </div>
                         );
                     }
-
                     return null;
                 })}
 

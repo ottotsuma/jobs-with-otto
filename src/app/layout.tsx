@@ -69,7 +69,7 @@ export default function RootLayout({
           <ThemeProvider>
             <div style={{display:'flex', minWidth: '100vw', minHeight: '100vh'}}>
               <Navbar />
-              <div style={{display: 'flex' , flexDirection: 'column', justifyContent: "space-between"}}>
+              <div style={{display: 'flex', width: '100%', flexDirection: 'column', justifyContent: "space-between"}}>
                 {children}
               </div>
             </div>

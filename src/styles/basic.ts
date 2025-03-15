@@ -2,8 +2,16 @@
 import { styled } from '@stitches/react';
 
 export const Container = styled('div', {
-    maxWidth: '32rem',
+    // minWidth: '100%',
+    minHeight: '100vh',
+    // maxWidth: '32rem',
     // margin: '0 auto',
+    margin: '1rem',
+});
+
+export const FocusContainer = styled('div', {
+    maxWidth: '32rem',
+    margin: '0 auto',
     padding: '1.5rem',
 });
 

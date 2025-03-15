@@ -136,7 +136,7 @@ const Navbar = () => {
                 <CloseButton onClick={() => setIsOpen(false)}>✖</CloseButton>
 
                 <List>
-                    {!user && <ListItem><StyledLink href="/">Home</StyledLink></ListItem>}
+                    {/* {!user && <ListItem><StyledLink href="/">Home</StyledLink></ListItem>} */}
                     {user && <ListItem><StyledLink href="/profile">My Profile</StyledLink></ListItem>}
                     {user?.role_name === "applicant" && (
                         <>

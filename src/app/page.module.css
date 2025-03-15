@@ -97,6 +97,7 @@ a.secondary {
   display: flex;
   gap: 24px;
   flex: 1;
+  justify-content: center;
 }
 
 .footer a {
