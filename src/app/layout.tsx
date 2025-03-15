@@ -67,8 +67,12 @@ export default function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <UserProvider>
           <ThemeProvider>
-        <Navbar />
-        {children}
+            <div style={{display:'flex', minWidth: '100vw', minHeight: '100vh'}}>
+              <Navbar />
+              <div style={{display: 'flex' , flexDirection: 'column', justifyContent: "space-between"}}>
+                {children}
+              </div>
+            </div>
         </ThemeProvider>
         </UserProvider>
       </body>

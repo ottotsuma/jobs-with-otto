@@ -3,7 +3,7 @@ import { styled } from '@stitches/react';
 
 export const Container = styled('div', {
     maxWidth: '32rem',
-    margin: '0 auto',
+    // margin: '0 auto',
     padding: '1.5rem',
 });
 
