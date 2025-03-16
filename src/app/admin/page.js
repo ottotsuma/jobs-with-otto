@@ -3,7 +3,54 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "superbase";
 import ProtectedRoute from '@/contexts/ProtectedRoute.js';
+import { Button, Container, FocusContainer } from '@/styles/basic';
+import { createStitches } from "@stitches/react";
+import Toast from '@/components/toast'
+
+const { styled } = createStitches({
+    theme: {
+        colors: {
+            blue600: "#2563eb",
+            gray200: "#e5e7eb",
+            white: "#ffffff",
+            black: "#000000",
+        },
+        radii: {
+            rounded: "4px",
+        },
+        space: {
+            small: "8px 16px", // px-4 py-2
+        },
+    },
+});
+
+const Tab = styled("button", {
+    padding: "$small",
+    borderRadius: "$rounded",
+    backgroundColor: "$gray200",
+    color: "$black",
+    cursor: "pointer",
+    transition: "background-color 0.2s ease",
+
+    variants: {
+        active: {
+            true: {
+                backgroundColor: "$blue600",
+                color: "$white",
+            },
+        },
+    },
+});
+
+
 export default function AdminDashboard() {
+    const [showToast, setShowToast] = useState(false);
+    const [toastMessage, setToastMessage] = useState("");
+    const copyToClipboard = (value) => {
+        navigator.clipboard.writeText(String(value));
+        setToastMessage("Copied to clipboard!");
+        setShowToast(true);
+    };
     const router = useRouter();
     const [tab, setTab] = useState("vacancies");
     const [data, setData] = useState([]);
@@ -45,34 +92,35 @@ export default function AdminDashboard() {
 
     return (
         <ProtectedRoute allowedRoles={['admin']}>
+            <Toast message={toastMessage} show={showToast} onClose={() => setShowToast(false)} />
             <div className="max-w-6xl mx-auto p-6">
                 <h1 className="text-3xl font-bold mb-4">Admin Dashboard</h1>
 
                 {/* Navigation Tabs */}
                 <div className="flex gap-4 mb-4">
                     {["vacancies", "applicants", "managers", "companies"].map((section) => (
-                        <button
+                        <Tab
                             key={section}
                             onClick={() => setTab(section)}
-                            className={`px-4 py-2 rounded ${tab === section ? "bg-blue-600 text-white" : "bg-gray-200"}`}
+                            active={tab === section}
                         >
                             {section.charAt(0).toUpperCase() + section.slice(1)}
-                        </button>
+                        </Tab>
                     ))}
                 </div>
 
                 {/* Data Table */}
                 <div className="border rounded p-4 bg-white shadow">
                     {data.length > 0 ? (
-                        <table className="w-full border-collapse">
+                        <table style={{ borderSpacing: "10px" }}>
                             <thead>
                                 <tr className="bg-gray-100">
                                     {Object.keys(data[0])
                                         .slice(0, 4) // Show first 4 columns
                                         .map((key) => (
-                                            <th key={key} className="border p-2 text-left">{key}</th>
+                                            <th key={key} style={{ border: "1px solid white", padding: "10px" }}>{key}</th>
                                         ))}
-                                    <th className="border p-2">Actions</th>
+                                    <th style={{ border: "1px solid white", padding: "10px" }}>Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -81,21 +129,24 @@ export default function AdminDashboard() {
                                         {Object.values(item)
                                             .slice(0, 4)
                                             .map((value, idx) => (
-                                                <td key={idx} className="border p-2">{String(value)}</td>
+                                                <td key={idx} style={{ border: "1px solid white", padding: "10px", cursor: "copy", }}
+                                                    onClick={() => copyToClipboard(value)}
+                                                >{String(value)}</td>
                                             ))}
-                                        <td className="border p-2">
-                                            <button
+                                        <td style={{ border: "1px solid white", padding: "10px" }}>
+                                            <Button
                                                 onClick={() => router.push(`/admin/edit/${tab}/${item.id}`)}
-                                                className="bg-green-500 text-white px-3 py-1 rounded mr-2"
+                                                style={{ border: "1px solid white", padding: "10px", margin: '5px' }}
                                             >
                                                 Edit
-                                            </button>
-                                            <button
+                                            </Button>
+                                            <Button
                                                 onClick={() => deleteItem(tab, item.id)}
-                                                className="bg-red-500 text-white px-3 py-1 rounded"
+                                                style={{ border: "1px solid white", padding: "10px", margin: '5px' }}
+                                                color="red"
                                             >
                                                 Delete
-                                            </button>
+                                            </Button>
                                         </td>
                                     </tr>
                                 ))}

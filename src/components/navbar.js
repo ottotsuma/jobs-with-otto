@@ -13,7 +13,8 @@ const Nav = styled('nav', {
     backgroundColor: '#fff',
     padding: '1rem',
     boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-    height: '100vh',
+    minHeight: '100vh',
+    height: 'auto',
     left: 0,
     top: 0,
     width: '250px',
@@ -138,6 +139,13 @@ const Navbar = () => {
                 <List>
                     {/* {!user && <ListItem><StyledLink href="/">Home</StyledLink></ListItem>} */}
                     {user && <ListItem><StyledLink href="/profile">My Profile</StyledLink></ListItem>}
+                    {!user && (
+                        <>
+                            <ListItem><StyledLink href="/vacancies">View All Vacancies</StyledLink></ListItem>
+                            <ListItem><StyledLink href="/companies">View All Companies</StyledLink></ListItem>
+                            <ListItem><StyledLink href="/analytics">Public Analytics</StyledLink></ListItem>
+                        </>
+                    )}
                     {user?.role_name === "applicant" && (
                         <>
                             <ListItem><StyledLink href="/vacancies">View All Vacancies</StyledLink></ListItem>
