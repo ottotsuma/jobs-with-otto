@@ -151,7 +151,7 @@ export default function NewLocation() {
       alert("Error creating location");
       console.error(error);
     } else {
-      router.push("/manage/locations");
+      router.push("/locations/manage");
     }
   };
 

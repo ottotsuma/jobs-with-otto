@@ -8,19 +8,22 @@ import { Company } from '@/types/company';
 import { Location } from '@/types/location';
 import { Button, Container, Title, Form, Input, ZoneGreen, ZoneRed, ZoneYellow, Label, Select } from '@/styles/basic';
 import ProtectedRoute from '@/contexts/ProtectedRoute.js';
-
+import Table from '@/components/table'
+import {useCurrentPermission} from '@/app/hooks/permissions'
+import {Permissions} from '@/utils/constants/permissions'
 export default function ProfilePage() {
     const router = useRouter();
+    const [, checkHasPermission] = useCurrentPermission();
     const { user, setUser } = useUser();
     const [company, setCompany] = useState < Company > ({});
     const [locations, setLocations] = useState < Location[] > ([]);
-
+    const [selectedLocation, SetSelectedLocation] = useState < Location | null > (null);
     const blockedValues = ["id", "user_id", "created_at", "updated_at"];
 
     useEffect(() => {
-        async function fetchLocations(e) {
-            e.preventDefault();
+        async function fetchLocations() {
         }
+        fetchLocations()
     }, [user]);
     async function updateLocation(e) {
         e.preventDefault();
@@ -43,7 +46,10 @@ export default function ProfilePage() {
                     {/* Applicants pending clock in / out at each location? (mass) */}
                     {/* Green Zone - Update Profile Form */}
                     <ZoneGreen>
-                        {locations.forEach((location) => 
+                        <h1>Table 1</h1>
+                        {/* https://www.youtube.com/watch?v=CjqG277Hmgg */}
+                        <h1>Table 2</h1>
+                        {/* {locations.forEach((location) => 
                         <Form onSubmit={updateLocation}>
                             {Object.entries(location)
                                 .filter(([key]) => !blockedValues.includes(key))
@@ -84,7 +90,7 @@ export default function ProfilePage() {
                                 Update Location
                             </Button>
                         </Form>
-                        )}
+                        )} */}
                     </ZoneGreen>
 
                     {/* Yellow Zone - Change Password & Role Update Forms */}
