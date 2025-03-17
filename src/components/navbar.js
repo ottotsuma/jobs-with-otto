@@ -7,6 +7,7 @@ import ThemeToggle from "@/components/ThemeToggle";
 import { styled } from '@stitches/react';
 import { useState, useEffect } from 'react';
 import { Button } from '@/styles/basic';
+import Logo from '@/components/logo'
 
 // Styled components using Stitches.js
 const Nav = styled('nav', {
@@ -137,6 +138,7 @@ const Navbar = () => {
                 <CloseButton onClick={() => setIsOpen(false)}>✖</CloseButton>
 
                 <List>
+                    <Logo />
                     {/* {!user && <ListItem><StyledLink href="/">Home</StyledLink></ListItem>} */}
                     {user && <ListItem><StyledLink href="/profile">My Profile</StyledLink></ListItem>}
                     {!user && (

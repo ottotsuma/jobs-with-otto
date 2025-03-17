@@ -1,7 +1,7 @@
 async function saveQRCodeUrl(locationId, qrCodeUrl) {
     const { data, error } = await supabase
         .from('locations')
-        .update({ qr_code_url: qrCodeUrl })
+        .update({ location_qr: qrCodeUrl })
         .eq('id', locationId);
 
     if (error) {

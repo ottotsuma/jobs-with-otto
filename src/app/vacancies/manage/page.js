@@ -3,34 +3,26 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "superbase";
 import { Button } from '@/styles/basic';
-
+import Table from "@/components/Table";
+import { useUser } from "@/contexts/UserContext";
 export default function ManageVacancies() {
     const router = useRouter();
-    const [companyId, setCompanyId] = useState(null);
+    const { user, setUser } = useUser();
+    const [companyId, setCompanyId] = useState(user?.company_id || null);
     const [vacancies, setVacancies] = useState([]);
     const [locations, setLocations] = useState([]);
     const [selectedLocation, setSelectedLocation] = useState("");
 
+    const columns = vacancies.length
+        ? Object.keys(vacancies[0]).map((key) => ({
+            accessorKey: key,
+            header: key.charAt(0).toUpperCase() + key.slice(1), // Capitalize the header
+        }))
+        : [];
+
     useEffect(() => {
-        async function fetchManagerData() {
-            const { data: userData, error } = await supabase.auth.getUser();
-            if (error) return;
-
-            // Fetch manager's company
-            const { data: managerProfile } = await supabase
-                .from("manager_profiles")
-                .select("company_id")
-                .eq("user_id", userData?.id)
-                .single();
-
-            if (managerProfile) {
-                setCompanyId(managerProfile.company_id);
-                fetchVacancies(managerProfile.company_id);
-                fetchLocations();
-            }
-        }
-
-        fetchManagerData();
+        fetchVacancies()
+        fetchLocations()
     }, []);
 
     async function fetchVacancies(companyId) {
@@ -55,6 +47,7 @@ export default function ManageVacancies() {
     }
 
     async function deleteVacancy(vacancyId) {
+        return true;
         const { error } = await supabase.from("vacancies").delete().eq("id", vacancyId);
         if (error) {
             alert("Error deleting vacancy");
@@ -63,6 +56,10 @@ export default function ManageVacancies() {
             fetchVacancies(companyId);
         }
     }
+
+    const updateVacancies = (updatedData) => {
+        setVacancies(updatedData);
+    };
 
     return (
         <div className="max-w-3xl mx-auto p-6">
@@ -73,6 +70,21 @@ export default function ManageVacancies() {
             >
                 New Vacancy
             </Button>
+            <Table
+                columns={columns}
+                data={locations}
+                onDataChange={updateVacancies}
+                deleteRow={deleteVacancy}
+                bannedEdit={[
+                    "company_id",
+                    "id",
+                    "created_at",
+                    "updated_at",
+                    "location_qr",
+                    "created_by",
+                    "updated_by",
+                ]}
+            />
             {/* options */}
             {/* Filter by Location */}
             <select
