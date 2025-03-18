@@ -8,8 +8,8 @@ const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 export default function Analytics() {
   const [vacanciesStats, setVacanciesStats] = useState({
     total: 0,
-    open: 0,
-    closed: 0,
+    active: 0,
+    inactive: 0,
   });
   const [applicantStats, setApplicantStats] = useState(0);
   const [companyStats, setCompanyStats] = useState(0);
@@ -26,7 +26,7 @@ export default function Analytics() {
       const { count: closedCount, error: closedError } = await supabase
         .from("vacancies")
         .select("id", { count: "exact", head: true })
-        .eq("status", "closed");
+        .eq("status", "inactive");
 
       if (totalError || openError || closedError) {
         console.error(
@@ -38,8 +38,8 @@ export default function Analytics() {
 
       setVacanciesStats({
         total: totalCount || 0,
-        open: openCount || 0,
-        closed: closedCount || 0,
+        active: openCount || 0,
+        inactive: closedCount || 0,
       });
     }
 
@@ -70,8 +70,8 @@ export default function Analytics() {
   }, []);
 
   const vacancyData = [
-    { name: "Open Jobs", value: vacanciesStats.open },
-    { name: "Closed Jobs", value: vacanciesStats.closed },
+    { name: "Active Jobs", value: vacanciesStats.active },
+    { name: "Inactive Jobs", value: vacanciesStats.inactive },
   ];
 
   const chartOptions = {
@@ -103,8 +103,8 @@ export default function Analytics() {
       <div>
         <h2>Job Postings</h2>
         <p>Total Posts: {vacanciesStats.total}</p>
-        <p>Total Open: {vacanciesStats.open}</p>
-        <p>Total Closed: {vacanciesStats.closed}</p>
+        <p>Total Active: {vacanciesStats.active}</p>
+        <p>Total Inactive: {vacanciesStats.inactive}</p>
 
         <Chart
           options={chartOptions}

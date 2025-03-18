@@ -32,11 +32,6 @@ const statusOptions = ["Active", "Inactive", "Pending"];
 // Stitches styled components
 const TableWrapper = styled("div", {
   overflowX: "auto",
-  borderRadius: "8px",
-  //   padding: "1rem",
-  maxWidth: "100%", // Ensure it does not exceed the screen width
-  width: "100%", // Make sure the wrapper takes up the full available width
-  boxSizing: "border-box", // Include padding and border in the element's total width/height calculation
 });
 
 const TableElement = styled("table", {

@@ -397,7 +397,7 @@ export default function NewVacancy() {
                   <option value="">Select Country</option>
                   {countries.map((status) => (
                     <option key={key} value={status}>
-                      {status ? "Open" : "Closed"}
+                      {status ? "Active" : "Inactive"}
                     </option>
                   ))}
                 </Select>
@@ -419,7 +419,7 @@ export default function NewVacancy() {
                   <option value="">Select Currency</option>
                   {currencies.map((status) => (
                     <option key={key} value={status}>
-                      {status ? "Open" : "Closed"}
+                      {status ? "Active" : "Inactive"}
                     </option>
                   ))}
                 </Select>

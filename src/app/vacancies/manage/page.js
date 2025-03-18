@@ -67,8 +67,8 @@ export default function ManageVacancies() {
     };
 
     return (
-        <div className="max-w-3xl mx-auto p-6">
-            <h1 className="text-2xl font-bold mb-4">Manage Vacancies</h1>
+        <div>
+            <h1>Manage Vacancies</h1>
             {/* Create new - src\app\vacancies\new\page.tsx */}
             <Button
                 onClick={() => router.push(`/vacancies/new`)}

@@ -51,8 +51,8 @@ export default function Analytics() {
             <div>
                 <h2>Job Postings</h2>
                 <p>Total Posts: {vacanciesStats.total}</p>
-                <p>Open Jobs: {vacanciesStats.open}</p>
-                <p>Closed Jobs: {vacanciesStats.closed}</p>
+                <p>Active Jobs: {vacanciesStats.active}</p>
+                <p>Inactive Jobs: {vacanciesStats.inactive}</p>
             </div>
 
             <div>

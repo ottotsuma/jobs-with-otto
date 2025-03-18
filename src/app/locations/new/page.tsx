@@ -196,8 +196,8 @@ export default function NewLocation() {
                 >
                   <option value="">Select Status</option>
                   {[true, false].map((status) => (
-                    <option key={status ? "open" : "closed"} value={status}>
-                      {status ? "Open" : "Closed"}
+                    <option key={status ? "active" : "inactive"} value={status}>
+                      {status ? "Active" : "Inactive"}
                     </option>
                   ))}
                 </Select>
