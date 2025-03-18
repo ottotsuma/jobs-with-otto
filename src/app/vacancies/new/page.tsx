@@ -1,259 +1,512 @@
-'use client';
+"use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "superbase";
 import { NewVacancy as NewVacancyType, JobType } from "@/types/vacancies";
 import { Location as LocationType } from "@/types/location";
-import { useUser } from '@/contexts/UserContext';
+import { useUser } from "@/contexts/UserContext";
+import { styled } from "@stitches/react";
+import {
+  Button,
+  Title,
+  Form,
+  Input,
+  Label,
+  Select,
+  ZoneGreen,
+} from "@/styles/basic";
 
+const FormWrapper = styled("div", {
+  margin: "0 auto",
+  padding: "2rem",
+  borderRadius: "8px",
+  boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+});
+
+const TextArea = styled("textarea", {
+  width: "100%",
+  padding: "0.75rem",
+  border: "1px solid #ccc",
+  borderRadius: "4px",
+  fontSize: "16px",
+  resize: "vertical",
+});
+
+const InputWrapper = styled("div", {
+  display: "flex",
+  flexDirection: "column",
+});
+
+const Checkbox = styled("input", {
+  marginTop: "8px",
+});
+
+const RequiredStar = styled("span", {
+  color: "red",
+  fontWeight: "bold",
+});
+
+// Modal Styles
+const ModalOverlay = styled("div", {
+  position: "fixed",
+  top: "0",
+  left: "0",
+  right: "0",
+  bottom: "0",
+  background: "rgba(0, 0, 0, 0.5)",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  zIndex: 1000,
+});
+
+const ModalContent = styled("div", {
+  backgroundColor: "WhiteSmoke",
+  color: "Black",
+  padding: "2rem",
+  borderRadius: "8px",
+  width: "400px",
+  maxWidth: "90%",
+});
 export default function NewVacancy() {
-    const router = useRouter();
-    const { user } = useUser();
-    const [vacancyData, setVacancyData] = useState<NewVacancyType>({
-        company_id: user?.company_id || "",
-        type_id: NaN, // full time, part time, Hidden different parts of the job creation based on this.
-        location_id: NaN,
+  const router = useRouter();
+  const { user } = useUser();
+  const [vacancyData, setVacancyData] = useState<NewVacancyType>({
+    company_id:
+      user?.company_id || localStorage.getItem("user")?.company_id || "", // fallback to empty string
+    type_id: NaN, // full-time, part-time
+    location_id: NaN,
+    job_title: "", // required
+    description: "", // required
+    special_instructions: "",
+    currency: "",
+    hourly_rate: NaN,
+    day_salary: NaN,
+    month_salary: NaN,
+    yearly_salary: NaN,
+    status: "active", // required
+    job_level: 1, // required
+    approved_datetime: null,
+    approved_by: null,
+    created_by: "",
+    updated_by: "",
+    employee_places: 1, // optional
+    start_date: "",
+    end_date: "",
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+    vacancy_applicants: [],
+    vacancy_skills: [],
+    vacancy_languages: [],
+    vacancy_certifications: [],
+    vacancy_managers: [],
+    country: "",
+    work_address: "",
+  });
+  const requiredFields = ["job_title", "description"];
+  const [templates, setTemplates] = useState<any[]>([]); // Store templates
+  const [showModal, setShowModal] = useState(false); // Control Modal visibility
+  const [templateName, setTemplateName] = useState(""); // Template Name
+  const [currencies, setCurrencies] = useState<string[]>([]);
+  const [payType, setPayType] = useState<string[]>([]); // hourly, monthly
+  const [countries, setCountries] = useState<string[]>([]);
+  const [jobTypes, setJobTypes] = useState<JobType[]>([]);
+  const [locations, setLocations] = useState<LocationType[]>([]);
+  const isFormValid = requiredFields.every(
+    (field) => vacancyData[field] !== ""
+  );
+  const job_level = [
+    { id: 1, name: "public" },
+    { id: 2, name: "company" },
+    { id: 3, name: "location" },
+  ];
 
-        job_title: "",
-        description: "",
-        special_instructions: "",
-        // Date start
-        // Date end
-        // Shifts, so you can select the days, like 1 = monday - wensday, 2 = Monday - Friday. Different times, different number of Employee_places. But everything else about the job is the same.
-        // Employee_places 
-        // Assign
+  const job_status = [
+    { id: 1, name: "active" },
+    { id: 2, name: "draft" },
+  ];
 
-        hourly_rate: NaN, //(only one type of salary needs to show once one is filled in)
-        day_salary: NaN,
-        month_salary: NaN,
-        yearly_salary: NaN,
+  useEffect(() => {
+    async function fetchData() {
+      // Fetch job types
+      const { data: jobTypes, error: jobTypeError } = await supabase
+        .from("job_types")
+        .select("*");
+      if (jobTypeError) {
+        console.error(jobTypeError);
+      }
+      setJobTypes(jobTypes || []);
 
-        status: "active",
-        job_level: 1,
-        // managers []
-        // Required Certification
+      // Fetch locations
+      const { data: locations, error: locationError } = await supabase
+        .from("locations")
+        .select("*");
+      if (locationError) {
+        console.error(locationError);
+      }
+      setLocations(locations || []);
 
-        approved_datetime: null,
-        approved_by: null,
-        created_by: "",
-        updated_by: "",
-    });
-    const [jobTypes, setJobTypes] = useState<JobType[]>([]);
-    const [locations, setLocations] = useState<LocationType[]>([]); 
-    const job_level = [
-        {
-            id: 1,
-            name: "public"
-        },
-        {
-            id: 2,
-            name: "company"
-        },
-        {
-            id: 3,
-            name: "location"
-        },
-    ]
-    const job_status = [
-        {
-            id: 1,
-            name: "active"
-        },
-        {
-            id: 2,
-            name: "draft"
-        }
-    ]
-    useEffect(() => {
-        async function fetchData() {
-            const { data: { user }, error } = await supabase.auth.getUser();
-            if (error || !user) return;
+      //   fetch countries
+      // fetch currencies
 
-            // Fetch job types
-            const { data: jobTypes, error: jobTypeError } = await supabase.from("job_types").select("*");
-            if (jobTypeError) {
-                console.error(jobTypeError);
-            }
-            console.log(jobTypes, "jobTypes");
-            setJobTypes(jobTypes || []);
+      // Fetch vacancy templates based on company_id
+      const { data: templatesData, error: templatesError } = await supabase
+        .from("vacancy_templates")
+        .select("*")
+        .eq(
+          "company_id",
+          user?.company_id || localStorage.getItem("user")?.company_id
+        );
+      if (templatesError) console.error(templatesError);
+      setTemplates(templatesData || []);
+    }
+    fetchData();
+  }, [user]);
 
-            // Fetch locations
-            const { data: locations, error: locationError } = await supabase.from("locations").select("*");
-            if (locationError) {
-                console.error(locationError);
-            }
-            setLocations(locations || []);
-            if(!vacancyData.company_id) {
-// Get manager's company
-const { data: managerProfile, error: profileError } = await supabase
-.from("manager_profiles")
-.select("company_id")
-.eq("user_id", user?.id)
-.single();
-
-if (profileError) {
-console.error(profileError);
-}
-if (managerProfile) setVacancyData((prevData) => ({
-...prevData,
-company_id: managerProfile.company_id
-}));
-            }
-        }
-        fetchData();
-    }, [user]);
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-        const { name, value } = e.target;
-        setVacancyData((prevData) => ({
-            ...prevData,
-            [name]: value
-        }));
-    };
-
-    async function handleSubmit(e: React.FormEvent) {
-        e.preventDefault();
-        if (!user || !vacancyData.company_id) {
-            alert("Unauthorized");
-            return;
-        }
-
-        const { data, error } = await supabase.from("vacancies").insert([vacancyData]);
-
-        if (error) {
-            alert("Error creating vacancy");
-            console.error(error);
-        } else {
-            router.push("/vacancies");
-        }
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
+    const { name, value } = e.target;
+    setVacancyData((prevData) => ({
+      ...prevData,
+      [name]: value || "", // Default to empty string if no value
+    }));
+  };
+  const handleSaveTemplate = async () => {
+    if (!templateName) {
+      alert("Template name is required");
+      return;
     }
 
-    return (
-        <div className="max-w-2xl mx-auto p-6">
-            <h1 className="text-2xl font-bold mb-4">Create New Vacancy</h1>
-            {/* Use template */}
-            <form onSubmit={handleSubmit} className="space-y-4">
-                {/* Dynamically generate form fields */}
-                {Object.keys(vacancyData).map((key) => {
-                    const fieldValue = (vacancyData as any)[key];
-                    if (["company_id", "created_by", "updated_by"].includes(key)) return null; // Skip these fields
-                    if (key === "type_id") {
-                        return (
-                            <div key={key}>
-                                <label className="block mb-2">Job Type</label>
-                                <select
-                                    name={key}
-                                    value={fieldValue}
-                                    onChange={handleChange}
-                                    className="w-full p-2 border rounded"
-                                >
-                                    <option value="">Select Job Type</option>
-                                    {jobTypes.map((type) => (
-                                        <option key={type.id} value={type.id}>
-                                            {type.name}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-                        );
-                    }
-                    if (key === "location_id") {
-                        return (
-                            <div key={key}>
-                                <label className="block mb-2">Location</label>
-                                <select
-                                    name={key}
-                                    value={fieldValue}
-                                    onChange={handleChange}
-                                    className="w-full p-2 border rounded"
-                                >
-                                    <option value="">Select Location</option>
-                                    {locations.map((location) => (
-                                        <option key={location.id} value={location.id}>
-                                            {location.name}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-                        );
-                    }
-                    if (key === "job_level") {
-                        return (
-                            <div key={key}>
-                                <label className="block mb-2">Job Visability</label>
-                                <select
-                                    name={key}
-                                    value={fieldValue}
-                                    onChange={handleChange}
-                                    className="w-full p-2 border rounded"
-                                >
-                                    <option value="">Select Visability</option>
-                                    {job_level.map((location) => (
-                                        <option key={location.id} value={location.id}>
-                                            {location.name}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-                        );
-                    }
-                    if (key === "status") {
-                        return (
-                            <div key={key}>
-                                <label className="block mb-2">Status</label>
-                                <select
-                                    name={key}
-                                    value={fieldValue}
-                                    onChange={handleChange}
-                                    className="w-full p-2 border rounded"
-                                >
-                                    <option value="">Select Status</option>
-                                    {job_status.map((location) => (
-                                        <option key={location.id} value={location.id}>
-                                            {location.name}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-                        );
-                    }
-                    if (typeof fieldValue === "string") {
-                        return (
-                            <div key={key}>
-                                <label className="block mb-2">{key.replace("_", " ").toUpperCase()}</label>
-                                <input
-                                    type="text"
-                                    name={key}
-                                    value={fieldValue}
-                                    onChange={handleChange}
-                                    className="w-full p-2 border rounded"
-                                    placeholder={key.replace("_", " ").toUpperCase()}
-                                />
-                            </div>
-                        );
-                    }
-                    if (typeof fieldValue === "number") {
-                        return (
-                            <div key={key}>
-                                <label className="block mb-2">{key.replace("_", " ").toUpperCase()}</label>
-                                <input
-                                    type="number"
-                                    name={key}
-                                    value={fieldValue || ""}
-                                    onChange={handleChange}
-                                    className="w-full p-2 border rounded"
-                                    placeholder={key.replace("_", " ").toUpperCase()}
-                                />
-                            </div>
-                        );
-                    }
-                    return null;
-                })}
+    const { error } = await supabase.from("vacancy_templates").insert([
+      {
+        company_id:
+          user?.company_id || localStorage.getItem("user")?.company_id,
+        name: templateName,
+        data: vacancyData,
+      },
+    ]);
 
-                <button type="submit" className="bg-blue-600 text-white p-2 rounded">
-                    Create Vacancy
-                </button>
-            </form>
-        </div>
-    );
+    if (error) {
+      alert("Error saving template");
+      console.error(error);
+    } else {
+      setShowModal(false);
+      alert("Template saved successfully");
+    }
+  };
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // Ensure all required fields are populated
+    if (
+      !user ||
+      !vacancyData.company_id ||
+      !vacancyData.job_title ||
+      !vacancyData.description
+    ) {
+      alert("Missing required fields");
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from("vacancies")
+      .insert([vacancyData]);
+
+    if (error) {
+      alert("Error creating vacancy");
+      console.error(error);
+    } else {
+      router.push("/vacancies");
+    }
+  };
+
+  return (
+    <FormWrapper>
+      <Title>Create New Vacancy</Title>
+      {/* Template Selection Dropdown */}
+      {templates.length > 0 && (
+        <ZoneGreen>
+          <Label>Select Template</Label>
+          <Select
+            name="template"
+            onChange={(e) => {
+              const selectedTemplate = templates.find(
+                (template) => template.id === Number(e.target.value)
+              );
+              if (selectedTemplate) {
+                setVacancyData(selectedTemplate.data);
+              }
+            }}
+          >
+            <option value="">Select Template</option>
+            {templates.map((template) => (
+              <option key={template.id} value={template.id}>
+                {template.name}
+              </option>
+            ))}
+          </Select>
+        </ZoneGreen>
+      )}
+      <Form onSubmit={handleSubmit}>
+        {Object.keys(vacancyData).map((key) => {
+          const fieldValue = (vacancyData as any)[key];
+          if (
+            [
+              "company_id",
+              "created_by",
+              "updated_by",
+              "created_at",
+              "updated_at",
+            ].includes(key)
+          )
+            return null; // Skip these fields
+
+          const isRequired = requiredFields.includes(key);
+          if (key === "type_id") {
+            {
+              /* Job Type */
+            }
+            return (
+              <div key={key}>
+                <Label>Job Type</Label>
+                {isRequired && <RequiredStar>*</RequiredStar>}
+                <Select
+                  name="type_id"
+                  value={vacancyData.type_id || ""}
+                  onChange={handleChange}
+                >
+                  <option value="">Select Job Type</option>
+                  {jobTypes.map((type) => (
+                    <option key={type.id} value={type.id}>
+                      {type.name}
+                    </option>
+                  ))}
+                </Select>
+              </div>
+            );
+          } else if (key === "location_id") {
+            {
+              /* Location */
+            }
+            return (
+              <div key={key}>
+                <Label>Location</Label>
+                {isRequired && <RequiredStar>*</RequiredStar>}
+                <Select
+                  name="location_id"
+                  value={vacancyData.location_id || ""}
+                  onChange={handleChange}
+                >
+                  <option value="">Select Location</option>
+                  {locations.map((location) => (
+                    <option key={location.id} value={location.id}>
+                      {location.name}
+                    </option>
+                  ))}
+                </Select>
+              </div>
+            );
+          } else if (key === "job_title") {
+            {
+              /* Job Title */
+            }
+            return (
+              <div key={key}>
+                <Label>Job Title</Label>
+                {isRequired && <RequiredStar>*</RequiredStar>}
+                <Input
+                  type="text"
+                  name="job_title"
+                  value={vacancyData.job_title}
+                  onChange={handleChange}
+                />
+              </div>
+            );
+          } else if (key === "description") {
+            {
+              /* Description */
+            }
+            return (
+              <div key={key}>
+                <Label>Description</Label>
+                {isRequired && <RequiredStar>*</RequiredStar>}
+                <TextArea
+                  name="description"
+                  value={vacancyData.description}
+                  onChange={handleChange}
+                  rows={4}
+                />
+              </div>
+            );
+          } else if (key === "job_level") {
+            return (
+              <div key={key}>
+                <Label>Job Level</Label>
+                {isRequired && <RequiredStar>*</RequiredStar>}
+                <Select
+                  name="job_level"
+                  value={vacancyData.job_level || ""}
+                  onChange={handleChange}
+                >
+                  <option value="">Select Job Level</option>
+                  {job_level.map((level) => (
+                    <option key={level.id} value={level.id}>
+                      {level.name}
+                    </option>
+                  ))}
+                </Select>
+              </div>
+            );
+          } else if (key === "status") {
+            {
+              /* Status */
+            }
+            return (
+              <div key={key}>
+                <Label>Status</Label>
+                {isRequired && <RequiredStar>*</RequiredStar>}
+                <Select
+                  name="status"
+                  value={vacancyData.status}
+                  onChange={handleChange}
+                >
+                  {job_status.map((status) => (
+                    <option key={status.id} value={status.id}>
+                      {status.name}
+                    </option>
+                  ))}
+                </Select>
+              </div>
+            );
+          } else if (key === "country") {
+            return (
+              <InputWrapper key={key}>
+                <Label>
+                  Country
+                  {isRequired && <RequiredStar>*</RequiredStar>}
+                </Label>
+                <Select
+                  name={key}
+                  value={fieldValue}
+                  onChange={handleChange}
+                  required={isRequired}
+                >
+                  <option value="">Select Country</option>
+                  {countries.map((status) => (
+                    <option key={key} value={status}>
+                      {status ? "Open" : "Closed"}
+                    </option>
+                  ))}
+                </Select>
+              </InputWrapper>
+            );
+          } else if (key === "currency") {
+            return (
+              <InputWrapper key={key}>
+                <Label>
+                  Currency
+                  {isRequired && <RequiredStar>*</RequiredStar>}
+                </Label>
+                <Select
+                  name={key}
+                  value={fieldValue}
+                  onChange={handleChange}
+                  required={isRequired}
+                >
+                  <option value="">Select Currency</option>
+                  {currencies.map((status) => (
+                    <option key={key} value={status}>
+                      {status ? "Open" : "Closed"}
+                    </option>
+                  ))}
+                </Select>
+              </InputWrapper>
+            );
+          } else if (typeof fieldValue === "string") {
+            return (
+              <InputWrapper key={key}>
+                <Label>
+                  {key.replace("_", " ")}
+                  {isRequired && <RequiredStar>*</RequiredStar>}
+                </Label>
+                <Input
+                  type="text"
+                  name={key}
+                  value={fieldValue}
+                  onChange={handleChange}
+                  required={isRequired}
+                  placeholder={key.replace("_", " ")}
+                />
+              </InputWrapper>
+            );
+          } else if (typeof fieldValue === "number") {
+            return (
+              <InputWrapper key={key}>
+                <Label>
+                  {key.replace("_", " ")}
+                  {isRequired && <RequiredStar>*</RequiredStar>}
+                </Label>
+                <Input
+                  type="number"
+                  name={key}
+                  value={fieldValue || ""}
+                  onChange={handleChange}
+                  required={isRequired}
+                  placeholder={key.replace("_", " ")}
+                />
+              </InputWrapper>
+            );
+          } else if (typeof fieldValue === "boolean") {
+            return (
+              <InputWrapper key={key}>
+                <Label>
+                  {key.replace("_", " ")}
+                  {isRequired && <RequiredStar>*</RequiredStar>}
+                </Label>
+                <Checkbox
+                  type="checkbox"
+                  name={key}
+                  checked={fieldValue}
+                  onChange={handleChange}
+                  required={isRequired}
+                />
+              </InputWrapper>
+            );
+          }
+          return null;
+        })}
+        {/* Save as Template Button */}
+        <Button color="blue" type="button" onClick={() => setShowModal(true)}>
+          Save as Template
+        </Button>
+        <Button type="submit" disabled={!isFormValid}>
+          Create Vacancy
+        </Button>
+      </Form>
+      {/* Modal to save template */}
+      {showModal && (
+        <ModalOverlay>
+          <ModalContent>
+            <h3>Save as Template</h3>
+            <Label>Template Name</Label>
+            <Input
+              type="text"
+              value={templateName}
+              onChange={(e) => setTemplateName(e.target.value)}
+              placeholder="Enter template name"
+            />
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <Button color="red" onClick={() => setShowModal(false)}>
+                Close
+              </Button>
+              <Button onClick={handleSaveTemplate}>Save Template</Button>
+            </div>
+          </ModalContent>
+        </ModalOverlay>
+      )}
+    </FormWrapper>
+  );
 }

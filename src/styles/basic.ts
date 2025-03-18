@@ -20,7 +20,9 @@ export const Title = styled('h1', {
 export const Form = styled('form', {
     display: 'flex',
     flexDirection: 'column',
+    flexWrap: 'wrap',
     gap: '1rem',
+    height: '100%'
 });
 
 export const Input = styled('input', {
@@ -50,6 +52,7 @@ export const Button = styled('button', {
 export const Label = styled('label', {
     fontWeight: 'bold',
     marginBottom: '0.5rem',
+    textTransform: 'capitalize'
 });
 
 export const Select = styled('select', {

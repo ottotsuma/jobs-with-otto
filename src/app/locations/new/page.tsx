@@ -1,81 +1,81 @@
-'use client';
+"use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "superbase";
 import { NewLocationType } from "@/types/location";
-import { useUser } from '@/contexts/UserContext';
-import { styled } from '@stitches/react';
+import { useUser } from "@/contexts/UserContext";
+import { styled } from "@stitches/react";
 
 // Stitches styling
-const FormContainer = styled('div', {
-  maxWidth: '800px',
-  margin: 'auto',
-  padding: '16px',
+const FormContainer = styled("div", {
+  // maxWidth: "800px",
+  margin: "auto",
+  padding: "16px",
 });
 
-const Title = styled('h1', {
-  fontSize: '24px',
-  fontWeight: 'bold',
-  marginBottom: '16px',
+const Title = styled("h1", {
+  fontSize: "24px",
+  fontWeight: "bold",
+  marginBottom: "16px",
 });
 
-const Form = styled('form', {
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '16px',
+const Form = styled("form", {
+  display: "flex",
+  flexDirection: "column",
+  gap: "16px",
 });
 
-const InputWrapper = styled('div', {
-  display: 'flex',
-  flexDirection: 'column',
+const InputWrapper = styled("div", {
+  display: "flex",
+  flexDirection: "column",
 });
 
-const Label = styled('label', {
-  marginBottom: '8px',
-  fontSize: '16px',
+const Label = styled("label", {
+  marginBottom: "8px",
+  fontSize: "16px",
 });
 
-const Input = styled('input', {
-  padding: '8px',
-  border: '1px solid #ccc',
-  borderRadius: '4px',
-  fontSize: '14px',
-  '&:focus': {
-    borderColor: '#007bff',
+const Input = styled("input", {
+  padding: "8px",
+  border: "1px solid #ccc",
+  borderRadius: "4px",
+  fontSize: "14px",
+  "&:focus": {
+    borderColor: "#007bff",
   },
 });
 
-const Select = styled('select', {
-  padding: '8px',
-  border: '1px solid #ccc',
-  borderRadius: '4px',
-  fontSize: '14px',
-  '&:focus': {
-    borderColor: '#007bff',
+const Select = styled("select", {
+  padding: "8px",
+  border: "1px solid #ccc",
+  borderRadius: "4px",
+  fontSize: "14px",
+  "&:focus": {
+    borderColor: "#007bff",
   },
 });
 
-const Checkbox = styled('input', {
-  marginTop: '8px',
+const Checkbox = styled("input", {
+  marginTop: "8px",
 });
 
-const Button = styled('button', {
-  backgroundColor: '#007bff',
-  color: 'white',
-  padding: '10px 20px',
-  borderRadius: '4px',
-  cursor: 'pointer',
-  border: 'none',
-  fontSize: '16px',
-  '&:disabled': {
-    backgroundColor: '#ccc',
-    cursor: 'not-allowed',
+const Button = styled("button", {
+  backgroundColor: "#007bff",
+  color: "white",
+  padding: "10px 20px",
+  borderRadius: "4px",
+  cursor: "pointer",
+  border: "none",
+  fontSize: "16px",
+  "&:disabled": {
+    backgroundColor: "#ccc",
+    cursor: "not-allowed",
   },
 });
 
-const RequiredStar = styled('span', {
-  color: 'red',
-  fontWeight: 'bold',
+const RequiredStar = styled("span", {
+  color: "red",
+  fontWeight: "bold",
 });
 
 export default function NewLocation() {
@@ -96,8 +96,8 @@ export default function NewLocation() {
     location_qr: "",
     country: "",
     geolocation: {
-        type: "Point",
-        coordinates: [0, 0], // [longitude, latitude]
+      type: "Point",
+      coordinates: [0, 0], // [longitude, latitude]
     }, // Point type
 
     // Times
@@ -130,7 +130,11 @@ export default function NewLocation() {
     // "updated_by",
   ];
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
+  ) => {
     const { name, value } = e.target;
     setLocation((prevData) => ({
       ...prevData,
@@ -164,8 +168,17 @@ export default function NewLocation() {
       <Form onSubmit={handleSubmit}>
         {Object.keys(location).map((key) => {
           const fieldValue = (location as any)[key];
-          if (["company_id", "created_by", "updated_by", "created_at", "updated_at"].includes(key)) return null; // Skip these fields
-          
+          if (
+            [
+              "company_id",
+              "created_by",
+              "updated_by",
+              "created_at",
+              "updated_at",
+            ].includes(key)
+          )
+            return null; // Skip these fields
+
           const isRequired = requiredFields.includes(key);
 
           if (key === "status") {
@@ -194,7 +207,7 @@ export default function NewLocation() {
             return (
               <InputWrapper key={key}>
                 <Label>
-                  {key.replace("_", " ").toUpperCase()}
+                  {key.replace("_", " ")}
                   {isRequired && <RequiredStar>*</RequiredStar>}
                 </Label>
                 <Input
@@ -203,7 +216,7 @@ export default function NewLocation() {
                   value={fieldValue}
                   onChange={handleChange}
                   required={isRequired}
-                  placeholder={key.replace("_", " ").toUpperCase()}
+                  placeholder={key.replace("_", " ")}
                 />
               </InputWrapper>
             );
@@ -211,7 +224,7 @@ export default function NewLocation() {
             return (
               <InputWrapper key={key}>
                 <Label>
-                  {key.replace("_", " ").toUpperCase()}
+                  {key.replace("_", " ")}
                   {isRequired && <RequiredStar>*</RequiredStar>}
                 </Label>
                 <Input
@@ -220,7 +233,7 @@ export default function NewLocation() {
                   value={fieldValue || ""}
                   onChange={handleChange}
                   required={isRequired}
-                  placeholder={key.replace("_", " ").toUpperCase()}
+                  placeholder={key.replace("_", " ")}
                 />
               </InputWrapper>
             );
@@ -228,7 +241,7 @@ export default function NewLocation() {
             return (
               <InputWrapper key={key}>
                 <Label>
-                  {key.replace("_", " ").toUpperCase()}
+                  {key.replace("_", " ")}
                   {isRequired && <RequiredStar>*</RequiredStar>}
                 </Label>
                 <Checkbox
@@ -241,7 +254,6 @@ export default function NewLocation() {
               </InputWrapper>
             );
           }
-
           return null;
         })}
 
