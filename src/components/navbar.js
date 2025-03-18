@@ -8,6 +8,7 @@ import { styled } from '@stitches/react';
 import { useState, useEffect } from 'react';
 import { Button } from '@/styles/basic';
 import Logo from '@/components/logo'
+import { useTheme } from 'next-themes';
 
 // Styled components using Stitches.js
 const Nav = styled('nav', {
@@ -20,7 +21,7 @@ const Nav = styled('nav', {
     top: 0,
     width: '250px',
     transition: 'transform 0.3s ease-in-out',
-
+    zIndex: 1000,
     variants: {
         mobile: {
             true: {
@@ -45,6 +46,16 @@ const Nav = styled('nav', {
 
             },
         },
+        theme: {
+            true: {
+                backgroundColor: '#fff',
+                color: '#333',
+            },
+            false: {
+                backgroundColor: '#1C1C1C',
+                color: "WhiteSmoke"
+            }
+        }
     },
 });
 
@@ -57,7 +68,6 @@ const CloseButton = styled('button', {
     fontSize: '1.5rem',
     cursor: 'pointer',
     display: 'none', // Only show on mobile
-    color: 'black',
     '@media (max-width: 1023px)': {
         display: 'block',
     },
@@ -92,7 +102,6 @@ const ListItem = styled('li', {
 
 const StyledLink = styled(Link, {
     textDecoration: 'none',
-    color: '#333',
     fontWeight: '500',
     '&:hover': {
         color: '#007bff',
@@ -100,6 +109,7 @@ const StyledLink = styled(Link, {
 });
 
 const Navbar = () => {
+    const { theme, setTheme } = useTheme();
     const { user, setUser } = useUser();
     const router = useRouter();
     const [isOpen, setIsOpen] = useState(true); // Default open on desktop
@@ -139,14 +149,13 @@ const Navbar = () => {
             {!isOpen && <MenuButton onClick={() => setIsOpen(true)}>☰</MenuButton>}
 
             {/* Sidebar */}
-            <Nav hidden={!isOpen} mobile={isOpen && window.innerWidth < 1024}>
+            <Nav theme={theme === "dark" ? false : true} hidden={!isOpen} mobile={isOpen && window.innerWidth < 1024}>
                 {/* Close button (only on mobile) */}
                 <CloseButton onClick={() => setIsOpen(false)}>✖</CloseButton>
 
                 <List>
                     <Logo />
 
-                    <p style={{ color: "blue" }}>Logged in status {user?.id ? "True" : "False"}</p>
                     {/* {!user && <ListItem><StyledLink onClick={closeSidebar} href="/">Home</StyledLink></ListItem>} */}
                     {user && <ListItem><StyledLink onClick={closeSidebar} href="/profile">My Profile</StyledLink></ListItem>}
                     {!user && (
