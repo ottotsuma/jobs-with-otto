@@ -127,6 +127,12 @@ const Navbar = () => {
         }
     };
 
+    const closeSidebar = () => {
+        if (window.innerWidth < 1024) {
+            setIsOpen(false); // Close the sidebar on mobile
+        }
+    };
+
     return (
         <>
             {/* Mobile Menu Button */}
@@ -139,40 +145,40 @@ const Navbar = () => {
 
                 <List>
                     <Logo />
-                    {/* {!user && <ListItem><StyledLink href="/">Home</StyledLink></ListItem>} */}
-                    {user && <ListItem><StyledLink href="/profile">My Profile</StyledLink></ListItem>}
+                    {/* {!user && <ListItem><StyledLink onClick={closeSidebar} href="/">Home</StyledLink></ListItem>} */}
+                    {user && <ListItem><StyledLink onClick={closeSidebar} href="/profile">My Profile</StyledLink></ListItem>}
                     {!user && (
                         <>
-                            <ListItem><StyledLink href="/vacancies">View All Vacancies</StyledLink></ListItem>
-                            <ListItem><StyledLink href="/companies">View All Companies</StyledLink></ListItem>
-                            <ListItem><StyledLink href="/analytics">Public Analytics</StyledLink></ListItem>
+                            <ListItem><StyledLink onClick={closeSidebar} href="/vacancies">View All Vacancies</StyledLink></ListItem>
+                            <ListItem><StyledLink onClick={closeSidebar} href="/companies">View All Companies</StyledLink></ListItem>
+                            <ListItem><StyledLink onClick={closeSidebar} href="/analytics">Public Analytics</StyledLink></ListItem>
                         </>
                     )}
                     {user?.role_name === "applicant" && (
                         <>
-                            <ListItem><StyledLink href="/vacancies">View All Vacancies</StyledLink></ListItem>
-                            <ListItem><StyledLink href="/companies">View All Companies</StyledLink></ListItem>
-                            <ListItem><StyledLink href="/analytics">Public Analytics</StyledLink></ListItem>
+                            <ListItem><StyledLink onClick={closeSidebar} href="/vacancies">View All Vacancies</StyledLink></ListItem>
+                            <ListItem><StyledLink onClick={closeSidebar} href="/companies">View All Companies</StyledLink></ListItem>
+                            <ListItem><StyledLink onClick={closeSidebar} href="/analytics">Public Analytics</StyledLink></ListItem>
                         </>
                     )}
                     {user?.role_name === "applicant" && user?.company_id && (<>
-                        <ListItem><StyledLink href="/vacancies">My Locations + Vacancies</StyledLink></ListItem>
-                        <ListItem><StyledLink href="/analytics">My Company + Vacancies</StyledLink></ListItem>
+                        <ListItem><StyledLink onClick={closeSidebar} href="/vacancies">My Locations + Vacancies</StyledLink></ListItem>
+                        <ListItem><StyledLink onClick={closeSidebar} href="/analytics">My Company + Vacancies</StyledLink></ListItem>
                     </>)}
                     {user?.role_name === "manager" && !user.company_id && (
-                        <ListItem><StyledLink href="/companies/create">Create Company</StyledLink></ListItem>
+                        <ListItem><StyledLink onClick={closeSidebar} href="/companies/create">Create Company</StyledLink></ListItem>
                     )}
                     {user?.role_name === "manager" && user?.company_id && (
                         <>
-                            <ListItem><StyledLink href="/companies/manage">Manage Company</StyledLink></ListItem>
-                            <ListItem><StyledLink href="/locations/manage">Manage Locations</StyledLink></ListItem>
-                            <ListItem><StyledLink href="/vacancies/manage">Manage Jobs</StyledLink></ListItem>
+                            <ListItem><StyledLink onClick={closeSidebar} href="/companies/manage">Manage Company</StyledLink></ListItem>
+                            <ListItem><StyledLink onClick={closeSidebar} href="/locations/manage">Manage Locations</StyledLink></ListItem>
+                            <ListItem><StyledLink onClick={closeSidebar} href="/vacancies/manage">Manage Jobs</StyledLink></ListItem>
                         </>
                     )}
                     {user?.role_name === "admin" && (
-                        <ListItem><StyledLink href="/admin">Admin Dashboard</StyledLink></ListItem>
+                        <ListItem><StyledLink onClick={closeSidebar} href="/admin">Admin Dashboard</StyledLink></ListItem>
                     )}
-                    {!user && <ListItem><StyledLink href="/">Login/Sign Up</StyledLink></ListItem>}
+                    {!user && <ListItem><StyledLink onClick={closeSidebar} href="/">Login/Sign Up</StyledLink></ListItem>}
                     {user && <ListItem><Button style={{ fontSize: "1rem" }} color="red" onClick={handleSignOut}>Sign Out</Button></ListItem>}
                     <ListItem><ThemeToggle /></ListItem>
                 </List>
