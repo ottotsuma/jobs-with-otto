@@ -74,12 +74,12 @@ export default function NewVacancy() {
   const [vacancyData, setVacancyData] = useState<NewVacancyType>({
     company_id:
       user?.company_id || localStorage.getItem("user")?.company_id || "", // fallback to empty string
-    type_id: NaN, // full-time, part-time
-    location_id: NaN,
+    type_id: null, // full-time, part-time
+    location_id: null,
     job_title: "", // required
     description: "", // required
     special_instructions: "",
-    currency: "",
+    currency_id: null,
     hourly_rate: NaN,
     day_salary: NaN,
     month_salary: NaN,
@@ -88,20 +88,20 @@ export default function NewVacancy() {
     job_level: 1, // required
     approved_datetime: null,
     approved_by: null,
-    created_by: "",
-    updated_by: "",
+    created_by: user?.id,
+    updated_by: user?.id,
     employee_places: 1, // optional
-    start_date: "",
-    end_date: "",
+    start_date: null,
+    end_date: null,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
-    vacancy_applicants: [],
-    vacancy_skills: [],
-    vacancy_languages: [],
-    vacancy_certifications: [],
-    vacancy_managers: [],
-    country: "",
-    work_address: "",
+    // vacancy_applicants: [],
+    // vacancy_skills: [],
+    // vacancy_languages: [],
+    // vacancy_certifications: [],
+    // vacancy_managers: [],
+    country_id: null,
+    // work_address: "",
   });
   const requiredFields = ["job_title", "description"];
   const [templates, setTemplates] = useState<any[]>([]); // Store templates
@@ -199,7 +199,7 @@ export default function NewVacancy() {
   };
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+    vacancyData.company_id = user?.company_id || "";
     // Ensure all required fields are populated
     if (
       !user ||
@@ -219,7 +219,7 @@ export default function NewVacancy() {
       alert("Error creating vacancy");
       console.error(error);
     } else {
-      router.push("/vacancies");
+      router.push("/vacancies/manage");
     }
   };
 
@@ -275,7 +275,7 @@ export default function NewVacancy() {
                 {isRequired && <RequiredStar>*</RequiredStar>}
                 <Select
                   name="type_id"
-                  value={vacancyData.type_id || ""}
+                  value={vacancyData.type_id}
                   onChange={handleChange}
                 >
                   <option value="">Select Job Type</option>
@@ -297,7 +297,7 @@ export default function NewVacancy() {
                 {isRequired && <RequiredStar>*</RequiredStar>}
                 <Select
                   name="location_id"
-                  value={vacancyData.location_id || ""}
+                  value={vacancyData.location_id}
                   onChange={handleChange}
                 >
                   <option value="">Select Location</option>
@@ -381,7 +381,7 @@ export default function NewVacancy() {
                 </Select>
               </div>
             );
-          } else if (key === "country") {
+          } else if (key === "country_id") {
             return (
               <InputWrapper key={key}>
                 <Label>
@@ -403,7 +403,7 @@ export default function NewVacancy() {
                 </Select>
               </InputWrapper>
             );
-          } else if (key === "currency") {
+          } else if (key === "currency_id") {
             return (
               <InputWrapper key={key}>
                 <Label>

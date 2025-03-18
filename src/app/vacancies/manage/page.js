@@ -8,7 +8,6 @@ import { useUser } from "@/contexts/UserContext";
 export default function ManageVacancies() {
     const router = useRouter();
     const { user, setUser } = useUser();
-    const [companyId, setCompanyId] = useState(user?.company_id || null);
     const [vacancies, setVacancies] = useState([]);
     const [locations, setLocations] = useState([]);
     const [selectedLocation, setSelectedLocation] = useState("");
@@ -21,18 +20,24 @@ export default function ManageVacancies() {
         : [];
 
     useEffect(() => {
-        fetchVacancies()
-        fetchLocations()
+        fetchLocations(user?.company_id || localStorage.getItem("user")?.company_id)
     }, []);
+
+    useEffect(() => {
+        fetchVacancies(user?.company_id || localStorage.getItem("user")?.company_id)
+    }, [selectedLocation, user?.company_id]);
 
     async function fetchVacancies(companyId) {
         let query = supabase
             .from("vacancies")
-            .select("id, job_title, description, hourly_rate, location_id")
+            .select("*")
             .eq("company_id", companyId);
 
-        if (selectedLocation) {
+        if (selectedLocation && selectedLocation !== '') {
+            console.log("Location filter applied:", selectedLocation);
             query = query.eq("location_id", selectedLocation);
+        } else {
+            console.log("No location filter applied.");
         }
 
         const { data, error } = await query;
@@ -40,8 +45,8 @@ export default function ManageVacancies() {
         else setVacancies(data);
     }
 
-    async function fetchLocations() {
-        const { data, error } = await supabase.from("locations").select("*");
+    async function fetchLocations(companyId) {
+        const { data, error } = await supabase.from("locations").select("*").eq("company_id", companyId);;
         if (error) console.error("Error fetching locations:", error);
         else setLocations(data);
     }
@@ -70,6 +75,20 @@ export default function ManageVacancies() {
             >
                 New Vacancy
             </Button>
+            <select
+                value={selectedLocation}
+                onChange={(e) => {
+                    setSelectedLocation(e.target.value);
+                }}
+                className="w-full p-2 border rounded mb-4"
+            >
+                <option value="">All Locations</option>
+                {locations.map((location) => (
+                    <option key={location.id} value={location.id}>
+                        {location.name}
+                    </option>
+                ))}
+            </select>
             <Table
                 columns={columns}
                 data={locations}
@@ -87,53 +106,14 @@ export default function ManageVacancies() {
             />
             {/* options */}
             {/* Filter by Location */}
-            <select
-                value={selectedLocation}
-                onChange={(e) => {
-                    setSelectedLocation(e.target.value);
-                    fetchVacancies(companyId);
-                }}
-                className="w-full p-2 border rounded mb-4"
-            >
-                <option value="">All Locations</option>
-                {locations.map((location) => (
-                    <option key={location.id} value={location.id}>
-                        {location.name}
-                    </option>
-                ))}
-            </select>
+
 
             {/* Job Listings - Table*/}
             {/* Jobs by Date */}
             {/* Applications */}
             {/* Assigned - Status - Could be hundreds*/}
             {/* Job Details */}
-            {vacancies.length > 0 ? (
-                vacancies.map((vacancy) => (
-                    <div key={vacancy.id} className="p-4 border rounded mb-3 shadow-sm">
-                        <h2 className="text-lg font-bold">{vacancy.job_title}</h2>
-                        <p className="text-gray-600">{vacancy.description}</p>
-                        <p className="font-semibold">💰 {vacancy.hourly_rate} / hour</p>
-
-                        <div className="mt-3 flex gap-2">
-                            <button
-                                onClick={() => router.push(`/vacancies/edit/${vacancy.id}`)}
-                                className="bg-blue-500 text-white px-3 py-1 rounded"
-                            >
-                                Edit
-                            </button>
-                            <button
-                                onClick={() => deleteVacancy(vacancy.id)}
-                                className="bg-red-500 text-white px-3 py-1 rounded"
-                            >
-                                Delete
-                            </button>
-                        </div>
-                    </div>
-                ))
-            ) : (
-                <p>No vacancies found.</p>
-            )}
+            {/* Templates - delete, update */}
         </div>
     );
 }

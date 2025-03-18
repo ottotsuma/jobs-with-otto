@@ -42,9 +42,9 @@ export type Vacancy = {
   vacancy_managers?: {
     user_id: string; // Foreign key to users.id (managers overseeing the vacancy)
   }[];
-  currency: string;
-  country: string;
-  work_address: string;
+  currency_id: number | null;
+  country_id: number | null;
+  work_address?: string;
   // Manager clock in time
   // applicant clock in time
   // admin clock in time

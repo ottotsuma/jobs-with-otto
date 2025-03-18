@@ -145,6 +145,8 @@ const Navbar = () => {
 
                 <List>
                     <Logo />
+
+                    <p style={{ color: "blue" }}>Logged in status {user?.id ? "True" : "False"}</p>
                     {/* {!user && <ListItem><StyledLink onClick={closeSidebar} href="/">Home</StyledLink></ListItem>} */}
                     {user && <ListItem><StyledLink onClick={closeSidebar} href="/profile">My Profile</StyledLink></ListItem>}
                     {!user && (
@@ -182,7 +184,7 @@ const Navbar = () => {
                     {user && <ListItem><Button style={{ fontSize: "1rem" }} color="red" onClick={handleSignOut}>Sign Out</Button></ListItem>}
                     <ListItem><ThemeToggle /></ListItem>
                 </List>
-            </Nav>
+            </Nav >
         </>
     );
 };
