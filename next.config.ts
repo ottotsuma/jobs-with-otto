@@ -1,4 +1,4 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
     eslint: {
@@ -7,6 +7,11 @@ const nextConfig: NextConfig = {
     typescript: {
         ignoreBuildErrors: true, // Ignores TypeScript errors during build
     },
+    reactStrictMode: true
 };
 
-export default nextConfig;
+const i18nextConfig = {
+    ...nextConfig,
+};
+
+export default i18nextConfig;

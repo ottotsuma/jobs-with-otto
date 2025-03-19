@@ -9,7 +9,7 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/styles/basic';
 import Logo from '@/components/logo'
 import { useTheme } from 'next-themes';
-
+import { useTranslation } from 'next-i18next';
 // Styled components using Stitches.js
 const Nav = styled('nav', {
     backgroundColor: '#fff',
@@ -109,6 +109,7 @@ const StyledLink = styled(Link, {
 });
 
 const Navbar = () => {
+    const { t, i18n } = useTranslation('common');
     const { theme, setTheme } = useTheme();
     const { user, setUser } = useUser();
     const router = useRouter();
@@ -116,6 +117,8 @@ const Navbar = () => {
 
     // Detect screen size changes
     useEffect(() => {
+        console.log('Active locale:', i18n.language);
+        console.log('Translation result:', t('profile.my_profile'));
         const handleResize = () => {
             const isDesktop = window.matchMedia("(min-width: 1024px)").matches;
             setIsOpen(isDesktop);
@@ -157,7 +160,7 @@ const Navbar = () => {
                     <Logo />
 
                     {/* {!user && <ListItem><StyledLink onClick={closeSidebar} href="/">Home</StyledLink></ListItem>} */}
-                    {user && <ListItem><StyledLink onClick={closeSidebar} href="/profile">My Profile</StyledLink></ListItem>}
+                    {user && <ListItem><StyledLink onClick={closeSidebar} href="/profile">{t('profile.my_profile')}</StyledLink></ListItem>}
                     {!user && (
                         <>
                             <ListItem><StyledLink onClick={closeSidebar} href="/vacancies">View All Vacancies</StyledLink></ListItem>
