@@ -182,7 +182,6 @@ const Table = ({
                 <TableRow key={row.id}>
                   {row.getVisibleCells().map((cell) => {
                     const cellValue = cell.getValue();
-
                     return (
                       <TableCell
                         onClick={() => {
@@ -195,7 +194,9 @@ const Table = ({
                         key={cell.id}
                       >
                         {/* Handle different data types */}
-                        {bannedEdit.includes(cell.column.id) ? (
+                        {bannedEdit &&
+                        bannedEdit.length > 0 &&
+                        bannedEdit.includes(cell.column.id) ? (
                           <div>
                             🚫
                             {isValidDate(cellValue)

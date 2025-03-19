@@ -10,6 +10,7 @@ import { Button } from '@/styles/basic';
 import Logo from '@/components/logo'
 import { useTheme } from 'next-themes';
 import { useTranslation } from 'next-i18next';
+import LanguageSwitcher from './langSwitch';
 // Styled components using Stitches.js
 const Nav = styled('nav', {
     backgroundColor: '#fff',
@@ -193,6 +194,7 @@ const Navbar = () => {
                     {!user && <ListItem><StyledLink onClick={closeSidebar} href="/">Login/Sign Up</StyledLink></ListItem>}
                     {user && <ListItem><Button style={{ fontSize: "1rem" }} color="red" onClick={handleSignOut}>Sign Out</Button></ListItem>}
                     <ListItem><ThemeToggle /></ListItem>
+                    <LanguageSwitcher />
                 </List>
             </Nav >
         </>
