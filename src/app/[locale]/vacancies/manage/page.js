@@ -5,9 +5,14 @@ import { supabase } from "superbase";
 import { Button } from '@/styles/basic';
 import Table from "@/components/Table";
 import { useUser } from "@/contexts/UserContext";
+import { vacancy_bannedEdit } from '@/types/vacancies'
+import Loading from "@/components/loading";
 export default function ManageVacancies() {
     const router = useRouter();
-    const { user, setUser } = useUser();
+    const { user, userLoading } = useUser();
+    const [loading, setLoading] = useState(true);
+    const [locationsLoading, setLocationsLoading] = useState(false);
+    const [vacanciesLoading, setVacanciesLoading] = useState(false);
     const [vacancies, setVacancies] = useState([]);
     const [locations, setLocations] = useState([]);
     const [selectedLocation, setSelectedLocation] = useState("");
@@ -20,12 +25,23 @@ export default function ManageVacancies() {
         : [];
 
     useEffect(() => {
-        fetchLocations(user?.company_id || localStorage.getItem("user")?.company_id)
-    }, []);
+        setLoading(vacanciesLoading && locationsLoading && userLoading)
+    }, [vacanciesLoading, locationsLoading, userLoading]);
 
     useEffect(() => {
-        fetchVacancies(user?.company_id || localStorage.getItem("user")?.company_id)
-    }, [selectedLocation, user?.company_id]);
+        if (!userLoading) {
+            setLocationsLoading(true)
+            fetchLocations(user?.company_id)
+        }
+
+    }, [userLoading]);
+
+    useEffect(() => {
+        if (!userLoading) {
+            setVacanciesLoading(true)
+            fetchVacancies(user?.company_id)
+        }
+    }, [selectedLocation, user?.company_id, userLoading]);
 
     async function fetchVacancies(companyId) {
         let query = supabase
@@ -43,12 +59,14 @@ export default function ManageVacancies() {
         const { data, error } = await query;
         if (error) console.error("Error fetching vacancies:", error);
         else setVacancies(data);
+        setVacanciesLoading(false)
     }
 
     async function fetchLocations(companyId) {
         const { data, error } = await supabase.from("locations").select("*").eq("company_id", companyId);;
         if (error) console.error("Error fetching locations:", error);
         else setLocations(data);
+        setLocationsLoading(false)
     }
 
     async function deleteVacancy(vacancyId) {
@@ -68,52 +86,48 @@ export default function ManageVacancies() {
 
     return (
         <div>
-            <h1>Manage Vacancies</h1>
-            {/* Create new - src\app\vacancies\new\page.tsx */}
-            <Button
-                onClick={() => router.push(`/vacancies/new`)}
-            >
-                New Vacancy
-            </Button>
-            <select
-                value={selectedLocation}
-                onChange={(e) => {
-                    setSelectedLocation(e.target.value);
-                }}
-                className="w-full p-2 border rounded mb-4"
-            >
-                <option value="">All Locations</option>
-                {locations.map((location) => (
-                    <option key={location.id} value={location.id}>
-                        {location.name}
-                    </option>
-                ))}
-            </select>
-            <Table
-                columns={columns}
-                data={locations}
-                onDataChange={updateVacancies}
-                deleteRow={deleteVacancy}
-                bannedEdit={[
-                    "company_id",
-                    "id",
-                    "created_at",
-                    "updated_at",
-                    "location_qr",
-                    "created_by",
-                    "updated_by",
-                ]}
-            />
-            {/* options */}
-            {/* Filter by Location */}
+            {loading ? <Loading /> :
+                <>
+                    <h1>Manage Vacancies</h1>
+                    {/* Create new - src\app\vacancies\new\page.tsx */}
+                    <Button
+                        onClick={() => router.push(`/vacancies/new`)}
+                    >
+                        New Vacancy
+                    </Button>
+                    <select
+                        value={selectedLocation}
+                        onChange={(e) => {
+                            setSelectedLocation(e.target.value);
+                        }}
+                        className="w-full p-2 border rounded mb-4"
+                    >
+                        <option value="">All Locations</option>
+                        {locations.map((location) => (
+                            <option key={location.id} value={location.id}>
+                                {location.name}
+                            </option>
+                        ))}
+                    </select>
+                    <Table
+                        columns={columns}
+                        data={locations}
+                        onDataChange={updateVacancies}
+                        deleteRow={deleteVacancy}
+                        bannedEdit={vacancy_bannedEdit}
+                    />
+                    {/* options */}
+                    {/* Filter by Location */}
 
 
-            {/* Job Listings - Table*/}
-            {/* Jobs by Date */}
-            {/* Applications */}
-            {/* Assigned - Status - Could be hundreds*/}
-            {/* Job Details */}
-            {/* Templates - delete, update */}
+                    {/* Job Listings - Table*/}
+                    {/* Jobs by Date */}
+                    {/* Applications */}
+                    {/* Assigned - Status - Could be hundreds*/}
+                    {/* Job Details */}
+                    {/* Templates - delete, update */}
+                </>
+            }
         </div>
     );
 }

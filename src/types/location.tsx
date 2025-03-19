@@ -1,42 +1,51 @@
-
 type Point = {
-    type: "Point";
-    coordinates: [number, number]; // [longitude, latitude]
-  };
+  type: "Point";
+  coordinates: [number, number]; // [longitude, latitude]
+};
 
 export type Location = {
-    id: number;
-    name: string;
-    status: boolean;
-    address?: string;
-    company_id?: string; // UUID type, as it appears to be a UUID
-    latitude?: number;
-    longitude?: number;
-    requires_geolock?: boolean;
-    region?: string;
-    city?: string;
-    district?: string;
-    postal_code?: string;
-    job_approval_required?: boolean;
-    create_template_only?: boolean;
-    location_qr?: string;
-    created_by?: string; // UUID type
-    updated_by?: string; // UUID type
-    time_zone?: string;
-    country?: string;
-    opening_hours?: string;
-    created_at?: string; // Timestamp with timezone
-    updated_at?: string; // Timestamp with timezone
-    contact_email?: string;
-    contact_phone?: string;
-    location_type_id?: string; // UUID type
-    geolocation?: Point; 
-  };
-  
+  id: number;
+  name: string;
+  status: boolean;
+  address?: string;
+  company_id?: string; // UUID type, as it appears to be a UUID
+  latitude?: number;
+  longitude?: number;
+  requires_geolock?: boolean;
+  region?: string;
+  city?: string;
+  district?: string;
+  postal_code?: string;
+  job_approval_required?: boolean;
+  create_template_only?: boolean;
+  location_qr?: string;
+  created_by?: string; // UUID type
+  updated_by?: string; // UUID type
+  time_zone?: string;
+  country?: string;
+  opening_hours?: string;
+  created_at?: string; // Timestamp with timezone
+  updated_at?: string; // Timestamp with timezone
+  contact_email?: string;
+  contact_phone?: string;
+  location_type_id?: string; // UUID type
+  geolocation?: Point;
+};
 
 export type NewLocationType = Omit<Location, "id">;
 
-// Example of geolocation 
+export const location_bannedEdit = [
+  "company_id",
+  "id",
+  "created_at",
+  "updated_at",
+  "location_qr",
+  "created_by",
+  "updated_by",
+  "average_rating",
+];
+
+// Example of geolocation
 // // pages/api/insertLocation.js
 // import supabase from '../../lib/supabase';
 

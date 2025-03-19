@@ -1,21 +1,8 @@
-// components/ThemeProvider.js
-'use client';
-
-import { useState, useEffect } from 'react';
+// components/ThemeProvider.tsx
 import { ThemeProvider as NextThemesProvider } from 'next-themes';
 import { darkTheme, lightTheme } from '@/styles/stitches';
 
 const ThemeProvider = ({ children }) => {
-    const [mounted, setMounted] = useState(false);
-
-    useEffect(() => {
-        setMounted(true);
-    }, []);
-
-    // If the component hasn't mounted yet, render nothing to prevent hydration mismatch
-    if (!mounted) {
-        return null;
-    }
 
     return (
         <NextThemesProvider

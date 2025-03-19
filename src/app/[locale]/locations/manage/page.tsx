@@ -5,7 +5,7 @@ import { ApplicantProfile, ManagerProfile, AdminProfile } from "@/types/users";
 import { useUser } from "@/contexts/UserContext";
 import { useRouter } from "next/navigation";
 import { Company } from "@/types/company";
-import { Location } from "@/types/location";
+import { Location, location_bannedEdit } from "@/types/location";
 import {
   Button,
   Container,
@@ -19,7 +19,7 @@ import {
   Select,
 } from "@/styles/basic";
 import ProtectedRoute from "@/contexts/ProtectedRoute.js";
-import { useCurrentPermission } from "@/app/hooks/permissions";
+import { useCurrentPermission } from "@/app/[locale]/hooks/permissions";
 import { Permissions } from "@/utils/constants/permissions";
 import Table, { RowData } from "@/components/Table";
 
@@ -95,15 +95,7 @@ export default function ProfilePage() {
           data={locations}
           onDataChange={handleDataChange}
           deleteRow={deleteLocation}
-          bannedEdit={[
-            "company_id",
-            "id",
-            "created_at",
-            "updated_at",
-            "location_qr",
-            "created_by",
-            "updated_by",
-          ]}
+          bannedEdit={location_bannedEdit}
         />
         <>
           {/* Location QR code */}

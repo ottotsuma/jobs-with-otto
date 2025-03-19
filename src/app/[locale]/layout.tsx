@@ -4,9 +4,10 @@ import "@/app/globals.css";
 import { UserProvider } from "@/contexts/UserContext";
 import Navbar from "@/components/navbar";
 import { dir } from "i18next";
-import { languages } from "@/i18n/settings"; // Create this settings file
-import ServerTranslation from "@/i18n/ServerTranslation"; // Create this component
+// import { languages } from "@/i18n/settings";
+import ServerTranslation from "@/i18n/ServerTranslation";
 import ThemeProvider from "@/components/ThemeProvider";
+// import { globalStyles } from "@/styles/theme";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -59,20 +60,21 @@ export const metadata: Metadata = {
     apple: "/apple-touch-icon.png",
   },
 };
-
-export default function RootLayout({
+export default async function RootLayout({
   children,
   params,
 }: Readonly<{
   children: React.ReactNode;
   params: { locale: string };
 }>) {
+  const awaitedParams = await params;
+  const { locale } = awaitedParams;
   return (
-    <html lang={params.locale} dir={dir(params.locale)}>
+    <html lang={locale} dir={dir(locale)}>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <UserProvider>
           <ThemeProvider>
-            <ServerTranslation locale={params.locale}>
+            <ServerTranslation locale={locale}>
               <div
                 style={{
                   display: "flex",

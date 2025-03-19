@@ -311,7 +311,6 @@ const Table = ({
                 <TableRow key={row.id}>
                   {row.getVisibleCells().map((cell) => {
                     const cellValue = cell.getValue();
-
                     return (
                       <TableCell
                         onClick={() => {
@@ -333,13 +332,7 @@ const Table = ({
                         ) : isValidDate(cellValue) ? (
                           <div>{formatDate(cellValue)}</div>
                         ) : cell.column.id === "status" ? (
-                          <div value={cellValue as string}>
-                            {statusOptions.map((status) => (
-                              <option key={status} value={status}>
-                                {status}
-                              </option>
-                            ))}
-                          </div>
+                          <div>{cellValue}</div>
                         ) : typeof cellValue === "string" ||
                           typeof cellValue === "number" ? (
                           <div>{cellValue}</div>

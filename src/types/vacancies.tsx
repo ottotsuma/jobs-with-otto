@@ -52,6 +52,17 @@ export type Vacancy = {
 
 export type NewVacancy = Omit<Vacancy, "id">;
 
+export const vacancy_bannedEdit = [
+  "company_id",
+  "id",
+  "created_at",
+  "updated_at",
+  "location_qr",
+  "created_by",
+  "updated_by",
+  "average_rating",
+];
+
 export type JobType = {
   id: number;
   name: string;

@@ -117,8 +117,6 @@ const Navbar = () => {
 
     // Detect screen size changes
     useEffect(() => {
-        console.log('Active locale:', i18n.language);
-        console.log('Translation result:', t('profile.my_profile'));
         const handleResize = () => {
             const isDesktop = window.matchMedia("(min-width: 1024px)").matches;
             setIsOpen(isDesktop);

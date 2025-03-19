@@ -59,7 +59,6 @@ export default function CompaniesPage() {
     async function fetchCompanies() {
       const { data, error } = await supabase.from("companies").select("*");
       if (!error) setCompanies(data);
-      console.log(data, "companies");
     }
     fetchCompanies();
   }, []);

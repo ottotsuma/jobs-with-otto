@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
@@ -50,7 +50,6 @@ export default function VacanciesPage() {
     async function fetchVacancies() {
       const { data, error } = await supabase.from("vacancies").select("*");
       if (!error) setVacancies(data);
-      console.log(data, "vacancies");
     }
     fetchVacancies();
   }, []);
@@ -71,16 +70,17 @@ export default function VacanciesPage() {
               {vacancy.yearly_salary
                 ? `$${vacancy.yearly_salary} / year`
                 : vacancy.month_salary
-                ? `$${vacancy.month_salary} / month`
-                : vacancy.day_salary
-                ? `$${vacancy.day_salary} / day`
-                : vacancy.hourly_rate
-                ? `$${vacancy.hourly_rate} / hour`
-                : "N/A"}
+                  ? `$${vacancy.month_salary} / month`
+                  : vacancy.day_salary
+                    ? `$${vacancy.day_salary} / day`
+                    : vacancy.hourly_rate
+                      ? `$${vacancy.hourly_rate} / hour`
+                      : "N/A"}
             </DetailRow>
             {vacancy.special_instructions && (
               <DetailRow>
-                <strong>Special Instructions:</strong> {vacancy.special_instructions}
+                <strong>Special Instructions:</strong>{" "}
+                {vacancy.special_instructions}
               </DetailRow>
             )}
           </Card>
