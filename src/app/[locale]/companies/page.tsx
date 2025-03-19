@@ -1,7 +1,8 @@
-'use client';
+"use client";
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Logo from "@/components/logo";
 import { supabase } from "superbase";
 import { styled } from "@stitches/react";
 import { Container, Title } from "@/styles/basic";
@@ -70,7 +71,9 @@ export default function CompaniesPage() {
         {companies.map((company) => {
           // Determine the industry style. Default to white background if not found.
           const industryStyle = industryStyles[company.industry];
-          const backgroundColor = industryStyle ? industryStyle.color : "#ffffff";
+          const backgroundColor = industryStyle
+            ? industryStyle.color
+            : "#ffffff";
           // Use white text for colored backgrounds, black for white background.
           const textColor = backgroundColor === "#ffffff" ? "black" : "white";
 
@@ -80,7 +83,7 @@ export default function CompaniesPage() {
               href={`/companies/${company.id}`}
               style={{ backgroundColor, color: textColor }}
             >
-                              {company.company_logo_url && (
+              {company.company_logo_url && (
                 <Logo
                   src={company.company_logo_url}
                   alt={`${company.name} logo`}
@@ -91,12 +94,14 @@ export default function CompaniesPage() {
               <DetailRow>
                 {/* <strong>Type:</strong> {company.company_type} */}
               </DetailRow>
-              {company.industry&&<DetailRow>
-                <strong>Industry:</strong>{" "}
-                {industryStyle
-                  ? `${industryStyle.emoji} ${company.industry}`
-                  : company.industry}
-              </DetailRow>}
+              {company.industry && (
+                <DetailRow>
+                  <strong>Industry:</strong>{" "}
+                  {industryStyle
+                    ? `${industryStyle.emoji} ${company.industry}`
+                    : company.industry}
+                </DetailRow>
+              )}
               {company.foundedDate && (
                 <DetailRow>
                   <strong>Founded:</strong> {company.foundedDate}

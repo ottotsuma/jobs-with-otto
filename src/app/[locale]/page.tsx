@@ -1,5 +1,5 @@
 "use client";
-import styles from "./page.module.css";
+import styles from "@/app/page.module.css";
 import { useUser } from "@/contexts/UserContext";
 import { useEffect } from "react";
 import { supabase } from "superbase";
@@ -7,8 +7,8 @@ import { Auth } from "@supabase/auth-ui-react";
 import { useRouter } from "next/navigation";
 import { fetchProfile } from "@/utils/user";
 import { checkFirstLogin } from "@/utils/utils";
-import { Button, Container, FocusContainer } from "@/styles/basic";
 import Logo from "@/components/logo";
+import { Button, Container, FocusContainer } from "@/styles/basic";
 export default function Home() {
   const router = useRouter();
   const { user, setUser } = useUser();
