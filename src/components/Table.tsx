@@ -89,6 +89,8 @@ const Table = ({
   const [enableCopy, SetEnableCopy] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
+  const [locationOptions, setLocationOptions] = useState([]);
+  const [vacancyTypeOptions, setVacancyTypeOptions] = useState([]);
   const copyToClipboard = (value) => {
     navigator.clipboard.writeText(String(value));
     setToastMessage("Copied to clipboard!");
@@ -169,10 +171,10 @@ const Table = ({
                     {flexRender(
                       header.column.columnDef.header,
                       header.getContext()
-                    )}
+                    ) ?? <></>}
                   </TableHeader>
                 ))}
-                <TableHeader>Actions</TableHeader> {/* Delete column */}
+                <TableHeader>Actions</TableHeader>
               </TableRow>
             ))}
           </thead>
@@ -257,6 +259,40 @@ const Table = ({
                               </option>
                             ))}
                           </select>
+                        ) : cell.column.id === "location_id" ? (
+                          <select
+                            value={cellValue as string}
+                            onChange={(e) =>
+                              updateData(
+                                row.index,
+                                cell.column.id,
+                                e.target.value
+                              )
+                            }
+                          >
+                            {locationOptions.map((status) => (
+                              <option key={status} value={status}>
+                                {status}
+                              </option>
+                            ))}
+                          </select>
+                        ) : cell.column.id === "type_id" ? (
+                          <select
+                            value={cellValue as string}
+                            onChange={(e) =>
+                              updateData(
+                                row.index,
+                                cell.column.id,
+                                e.target.value
+                              )
+                            }
+                          >
+                            {vacancyTypeOptions.map((status) => (
+                              <option key={status} value={status}>
+                                {status}
+                              </option>
+                            ))}
+                          </select>
                         ) : typeof cellValue === "string" ||
                           typeof cellValue === "number" ? (
                           <input
@@ -290,7 +326,9 @@ const Table = ({
                           <Button onClick={() => cellValue(row.original)}>
                             🏃‍♂️ Run
                           </Button>
-                        ) : null}
+                        ) : (
+                          <></>
+                        )}
                       </TableCell>
                     );
                   })}
@@ -323,13 +361,15 @@ const Table = ({
                         }}
                         key={cell.id}
                       >
-                        {/* Handle different data types */}
                         {cell.column.id === "geolocation" ? (
-                          // {"type":"Point","crs":{"type":"name","properties":{"name":"EPSG:4326"}},"coordinates":[0,0]}
-                          <div>
-                            {cellValue?.coordinates[0]},{" "}
-                            {cellValue?.coordinates[1]}
-                          </div>
+                          cellValue?.coordinates ? (
+                            <div>
+                              {cellValue.coordinates[0]},{" "}
+                              {cellValue.coordinates[1]}
+                            </div>
+                          ) : (
+                            <></>
+                          )
                         ) : isValidDate(cellValue) ? (
                           <div>{formatDate(cellValue)}</div>
                         ) : cell.column.id === "status" ? (
@@ -344,17 +384,19 @@ const Table = ({
                         ) : typeof cellValue === "boolean" ? (
                           <input
                             type="checkbox"
+                            readOnly
                             checked={cellValue as boolean}
                           />
                         ) : typeof cellValue === "function" ? (
                           <Button onClick={() => cellValue(row.original)}>
                             🏃‍♂️ Run
                           </Button>
-                        ) : null}
+                        ) : (
+                          <></>
+                        )}
                       </TableCell>
                     );
                   })}
-                  {/* Delete button */}
                   <TableCell>
                     <Button
                       onClick={() => deleteRowInteral(row.index)}

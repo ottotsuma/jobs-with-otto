@@ -2,6 +2,28 @@
     "profile": {
         "my_profile": "My Profile"
     },
+    "auth": {
+        "loginSignup": "Login/Sign Up",
+        "signout": "Sign Out"
+    },
+    "admin": {
+        "dashboard": "Admin Dashboard"
+    },
+    "vacancies": {
+        "view_all": "View All Vacancies",
+        "manage": "Manage Vacancies"
+    },
+    "companies": {
+        "view_all": "View All Companies",
+        "create": "Create Company",
+        "manage": "Manage Company"
+    },
+    "locations": {
+        "manage": "Manage Locations"
+    },
+    "analytics": {
+        "public": "Public Analytics"
+    },
     "welcome": "Welcome",
     "goodbye": "Goodbye"
 }

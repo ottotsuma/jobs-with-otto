@@ -5,12 +5,15 @@ import { useUser } from '@/contexts/UserContext';
 import { supabase } from 'superbase';
 import ThemeToggle from "@/components/ThemeToggle";
 import { styled } from '@stitches/react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useLayoutEffect } from 'react';
 import { Button } from '@/styles/basic';
 import Logo from '@/components/logo'
 import { useTheme } from 'next-themes';
 import { useTranslation } from 'next-i18next';
 import LanguageSwitcher from './langSwitch';
+import { useLocale } from "@/app/[locale]/hooks/useLocal";
+import { useNav } from '@/contexts/navContext';
+
 // Styled components using Stitches.js
 const Nav = styled('nav', {
     backgroundColor: '#fff',
@@ -18,8 +21,6 @@ const Nav = styled('nav', {
     boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
     minHeight: '100vh',
     height: 'auto',
-    left: 0,
-    top: 0,
     width: '250px',
     transition: 'transform 0.3s ease-in-out',
     zIndex: 1000,
@@ -98,7 +99,9 @@ const List = styled('ul', {
 });
 
 const ListItem = styled('li', {
-    fontSize: '1.2rem'
+    fontSize: '1.2rem',
+    display: 'flex',
+    flexDirection: "column" // aligns items to the middle. 
 });
 
 const StyledLink = styled(Link, {
@@ -108,26 +111,28 @@ const StyledLink = styled(Link, {
         color: '#007bff',
     },
 });
+const useScreenSize = () => {
+    const [screenSize, setScreenSize] = useState(null);
 
-const Navbar = () => {
-    const { t, i18n } = useTranslation('common');
-    const { theme, setTheme } = useTheme();
-    const { user, setUser } = useUser();
-    const router = useRouter();
-    const [isOpen, setIsOpen] = useState(true); // Default open on desktop
-
-    // Detect screen size changes
     useEffect(() => {
-        const handleResize = () => {
-            const isDesktop = window.matchMedia("(min-width: 1024px)").matches;
-            setIsOpen(isDesktop);
-        };
+        const updateSize = () => setScreenSize(window.innerWidth);
+        window.addEventListener("resize", updateSize);
+        updateSize(); // Set initial size on mount
 
-        handleResize(); // Set initial state
-        window.addEventListener("resize", handleResize);
-        return () => window.removeEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", updateSize);
     }, []);
 
+    return screenSize;
+};
+
+const Navbar = () => {
+    const screenSize = useScreenSize();
+    const { t, i18n } = useTranslation('common');
+    const { theme } = useTheme();
+    const { user, setUser } = useUser();
+    const { navOpen, setNavOpen } = useNav()
+    const router = useRouter();
+    const currentLocale = useLocale();
     const handleSignOut = async () => {
         const { error } = await supabase.auth.signOut();
         if (!error) {
@@ -138,61 +143,64 @@ const Navbar = () => {
             console.error('Error signing out:', error);
         }
     };
-
+    useEffect(() => {
+        if (screenSize >= 1024) {
+            setNavOpen(true);
+        }
+    }, [screenSize, setNavOpen]);
     const closeSidebar = () => {
-        if (window.innerWidth < 1024) {
-            setIsOpen(false); // Close the sidebar on mobile
+        if (screenSize < 1024) {
+            setNavOpen(false);
         }
     };
-
     return (
         <>
             {/* Mobile Menu Button */}
-            {!isOpen && <MenuButton onClick={() => setIsOpen(true)}>☰</MenuButton>}
+            {/* {!navOpen && <MenuButton onClick={() => setNavOpen(true)}>☰</MenuButton>} */}
 
             {/* Sidebar */}
-            <Nav theme={theme === "dark" ? false : true} hidden={!isOpen} mobile={isOpen && window.innerWidth < 1024}>
+            <Nav theme={theme === "dark" ? false : true} hidden={!navOpen} mobile={navOpen && screenSize < 1024}>
                 {/* Close button (only on mobile) */}
-                <CloseButton onClick={() => setIsOpen(false)}>✖</CloseButton>
+                <CloseButton onClick={() => setNavOpen(false)}>✖</CloseButton>
                 <List>
-                    <Logo />
-                    {/* {!user && <ListItem><StyledLink onClick={closeSidebar} href="/">Home</StyledLink></ListItem>} */}
-                    {user && <ListItem><StyledLink onClick={closeSidebar} href="/profile">{t('profile.my_profile')}</StyledLink></ListItem>}
+                    <ListItem style={{ alignItems: "center" }}><Logo /></ListItem>
+                    {/* {!user && <ListItem><StyledLink onClick={closeSidebar} href={`/${currentLocale}">Home</StyledLink></ListItem>} */}
+                    {user && <ListItem ><StyledLink onClick={closeSidebar} href={`/${currentLocale}/profile`}>{t('profile.my_profile')}</StyledLink></ListItem>}
                     {!user && (
                         <>
-                            <ListItem><StyledLink onClick={closeSidebar} href="/vacancies">View All Vacancies</StyledLink></ListItem>
-                            <ListItem><StyledLink onClick={closeSidebar} href="/companies">View All Companies</StyledLink></ListItem>
-                            <ListItem><StyledLink onClick={closeSidebar} href="/analytics">Public Analytics</StyledLink></ListItem>
+                            <ListItem><StyledLink onClick={closeSidebar} href={`/${currentLocale}/vacancies`}>{t('vacancies.view_all')}</StyledLink></ListItem>
+                            <ListItem><StyledLink onClick={closeSidebar} href={`/${currentLocale}/companies`}>{t('companies.view_all')}</StyledLink></ListItem>
+                            <ListItem><StyledLink onClick={closeSidebar} href={`/${currentLocale}/analytics`} passHref>{t('analytics.public')}</StyledLink></ListItem>
                         </>
                     )}
                     {user?.role_name === "applicant" && (
                         <>
-                            <ListItem><StyledLink onClick={closeSidebar} href="/vacancies">View All Vacancies</StyledLink></ListItem>
-                            <ListItem><StyledLink onClick={closeSidebar} href="/companies">View All Companies</StyledLink></ListItem>
-                            <ListItem><StyledLink onClick={closeSidebar} href="/analytics">Public Analytics</StyledLink></ListItem>
+                            <ListItem><StyledLink onClick={closeSidebar} href={`/${currentLocale}/vacancies`}>{t('vacancies.view_all')}</StyledLink></ListItem>
+                            <ListItem><StyledLink onClick={closeSidebar} href={`/${currentLocale}/companies`}>{t('companies.view_all')}</StyledLink></ListItem>
+                            <ListItem><StyledLink onClick={closeSidebar} href={`/${currentLocale}/analytics`}>{t('analytics.public')}</StyledLink></ListItem>
                         </>
                     )}
                     {user?.role_name === "applicant" && user?.company_id && (<>
-                        <ListItem><StyledLink onClick={closeSidebar} href="/vacancies">My Locations + Vacancies</StyledLink></ListItem>
-                        <ListItem><StyledLink onClick={closeSidebar} href="/analytics">My Company + Vacancies</StyledLink></ListItem>
+                        <ListItem><StyledLink onClick={closeSidebar} href={`/${currentLocale}/vacancies`}>My Locations + Vacancies</StyledLink></ListItem>
+                        <ListItem><StyledLink onClick={closeSidebar} href={`/${currentLocale}/analytics`}>My Company + Vacancies</StyledLink></ListItem>
                     </>)}
                     {user?.role_name === "manager" && !user.company_id && (
-                        <ListItem><StyledLink onClick={closeSidebar} href="/companies/create">Create Company</StyledLink></ListItem>
+                        <ListItem><StyledLink onClick={closeSidebar} href={`/${currentLocale}/companies/create`}>{t('companies.create')}</StyledLink></ListItem>
                     )}
                     {user?.role_name === "manager" && user?.company_id && (
                         <>
-                            <ListItem><StyledLink onClick={closeSidebar} href="/companies/manage">Manage Company</StyledLink></ListItem>
-                            <ListItem><StyledLink onClick={closeSidebar} href="/locations/manage">Manage Locations</StyledLink></ListItem>
-                            <ListItem><StyledLink onClick={closeSidebar} href="/vacancies/manage">Manage Jobs</StyledLink></ListItem>
+                            <ListItem><StyledLink onClick={closeSidebar} href={`/${currentLocale}/companies/manage`}>{t('companies.manage')}</StyledLink></ListItem>
+                            <ListItem><StyledLink onClick={closeSidebar} href={`/${currentLocale}/locations/manage`}>{t('locations.manage')}</StyledLink></ListItem>
+                            <ListItem><StyledLink onClick={closeSidebar} href={`/${currentLocale}/vacancies/manage`}>{t('vacancies.manage')}</StyledLink></ListItem>
                         </>
                     )}
                     {user?.role_name === "admin" && (
-                        <ListItem><StyledLink onClick={closeSidebar} href="/admin">Admin Dashboard</StyledLink></ListItem>
+                        <ListItem><StyledLink onClick={closeSidebar} href={`/${currentLocale}/admin`}>{t('admin.dashboard')}</StyledLink></ListItem>
                     )}
-                    {!user && <ListItem><StyledLink onClick={closeSidebar} href="/">Login/Sign Up</StyledLink></ListItem>}
-                    {user && <ListItem><Button style={{ fontSize: "1rem" }} color="red" onClick={handleSignOut}>Sign Out</Button></ListItem>}
+                    {!user && <ListItem><StyledLink onClick={closeSidebar} href={`/${currentLocale}/`}>{t('auth.loginSignup')}</StyledLink></ListItem>}
+                    {user && <ListItem><Button style={{ fontSize: "1rem" }} color="red" onClick={handleSignOut}>{t('auth.signout')}</Button></ListItem>}
                     <ListItem><ThemeToggle /></ListItem>
-                    <LanguageSwitcher />
+                    <ListItem><LanguageSwitcher /></ListItem>
                 </List>
             </Nav >
         </>

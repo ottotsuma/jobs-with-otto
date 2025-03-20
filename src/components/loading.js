@@ -11,16 +11,17 @@ const Loader = styled("div", {
     width: "40px",
     height: "40px",
     borderRadius: "50%",
-    border: "4px solid $gray200",
-    borderTopColor: "$blue600",
+    border: "4px solid #e0e0e0", // Light gray border
+    borderTopColor: "#007bff", // Blue top border
     animation: `${spin} 1s linear infinite`,
 });
+
 
 const LoadingContainer = styled("div", {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    height: "100vh",
+    flexGrow: 1,
 
     variants: {
         theme: {
@@ -45,4 +46,4 @@ const Loading = () => {
     );
 };
 
-export default Loading;
+export default Loading; 

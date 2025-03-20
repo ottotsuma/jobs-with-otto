@@ -1,7 +1,29 @@
 {
     "profile": {
-        "my_profile": "My Profile"
+        "my_profile": "マイプロフィール"
     },
-    "welcome": "Welcome",
-    "goodbye": "Goodbye"
+    "auth": {
+        "loginSignup": "ログイン/新規登録",
+        "signout": "サインアウト"
+    },
+    "admin": {
+        "dashboard": "管理者ダッシュボード"
+    },
+    "vacancies": {
+        "view_all": "すべての求人を見る",
+        "manage": "求人を管理する"
+    },
+    "companies": {
+        "view_all": "すべての企業を見る",
+        "create": "企業を作成する",
+        "manage": "企業を管理する"
+    },
+    "locations": {
+        "manage": "勤務地を管理する"
+    },
+    "analytics": {
+        "public": "公開分析"
+    },
+    "welcome": "ようこそ",
+    "goodbye": "さようなら"
 }

@@ -9,10 +9,13 @@ import { fetchProfile } from "@/utils/user";
 import { checkFirstLogin } from "@/utils/utils";
 import Logo from "@/components/logo";
 import { Button, Container, FocusContainer } from "@/styles/basic";
+import { useTitle } from "@/contexts/TitleContext";
 export default function Home() {
   const router = useRouter();
+  const { setTitle } = useTitle();
   const { user, setUser } = useUser();
   useEffect(() => {
+    setTitle("Login");
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
@@ -21,6 +24,7 @@ export default function Home() {
         fetchProfile(session?.user, setUser);
       }
     });
+
     return () => {
       subscription?.unsubscribe();
     };

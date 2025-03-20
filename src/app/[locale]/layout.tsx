@@ -7,17 +7,19 @@ import { dir } from "i18next";
 // import { languages } from "@/i18n/settings";
 import ServerTranslation from "@/i18n/ServerTranslation";
 import ThemeProvider from "@/components/ThemeProvider";
+import { NavProvider } from "@/contexts/navContext";
+import Title from "@/components/Title";
+import { TitleProvider } from "@/contexts/TitleContext";
+import ContextsWrapper from "@/contexts/ContextsWrapper";
 // import { globalStyles } from "@/styles/theme";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
 });
-
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
-
 export const metadata: Metadata = {
   title: "Jobs With Otto - Find Your Next Job",
   description:
@@ -72,31 +74,47 @@ export default async function RootLayout({
   return (
     <html lang={locale} dir={dir(locale)}>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <UserProvider>
-          <ThemeProvider>
-            <ServerTranslation locale={locale}>
+        <ContextsWrapper>
+          <ServerTranslation locale={locale}>
+            <div
+              style={{
+                display: "flex",
+                minWidth: "100vw",
+                minHeight: "100vh",
+              }}
+            >
+              <Navbar />
               <div
                 style={{
                   display: "flex",
-                  minWidth: "100vw",
-                  minHeight: "100vh",
+                  flexDirection: "column",
+                  flexGrow: 1, // Takes up all remaining space
+                  width: "100%",
                 }}
               >
-                <Navbar />
+                <div
+                  style={{
+                    width: "100%",
+                    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+                  }}
+                >
+                  <Title />
+                </div>
+                {/* Main Content (Children) - Fills Remaining Space */}
                 <div
                   style={{
                     display: "flex",
-                    width: "100%",
                     flexDirection: "column",
-                    justifyContent: "space-between",
+                    flexGrow: 1, // Takes up all available space
+                    overflowY: "auto", // Allows scrolling if content is too long
                   }}
                 >
                   {children}
                 </div>
               </div>
-            </ServerTranslation>
-          </ThemeProvider>
-        </UserProvider>
+            </div>
+          </ServerTranslation>
+        </ContextsWrapper>
       </body>
     </html>
   );

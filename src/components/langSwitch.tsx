@@ -3,14 +3,15 @@
 import { useRouter, usePathname } from "next/navigation";
 import { styled } from "@stitches/react";
 import Select from "react-select"; // Import react-select
-import { darkTheme, lightTheme } from "../styles/stitches"; // Import your themes
 import { useTheme } from "next-themes";
-
+import i18n from "@/i18n/client-i18n";
+import { useState } from "react";
+import { useLocale } from "@/app/[locale]/hooks/useLocal";
 // Styled components using Stitches
 const Wrapper = styled("div", {
   display: "flex",
   justifyContent: "center", // Center the dropdown
-  padding: "10px",
+  // padding: "10px",
   variants: {
     theme: {
       true: {
@@ -26,6 +27,10 @@ const Wrapper = styled("div", {
 });
 
 const customSelectStyles = (theme) => ({
+  container: (base, state) => ({
+    ...base,
+    width: "100%",
+  }),
   control: (base, state) => ({
     ...base,
     backgroundColor: theme === "dark" ? "#333" : "#fff", // Dark mode vs light mode
@@ -68,9 +73,9 @@ const LanguageSwitcher = () => {
   const router = useRouter();
   const pathname = usePathname();
   const locales = ["en", "ja"]; // Supported locales
-
+  const currentLocale = useLocale();
   // Safe access for currentLocale, fallback to 'en' if not found
-  const currentLocale = pathname.split("/")[1] || "en"; // Defaults to 'en' if no locale in path
+  // const currentLocale = pathname.split("/")[1] || "en"; // Defaults to 'en' if no locale in path
 
   const languages = locales.map((l) => {
     return {
@@ -79,13 +84,14 @@ const LanguageSwitcher = () => {
     };
   });
 
-  // Add a null check to handle missing language option safely
-  const selectedLanguage = languages.find(
-    (lang) => lang.value === currentLocale
+  const [selectedLanguage, setSelectedLanguage] = useState(
+    languages.find((lang) => lang.value === currentLocale)
   );
 
   const handleLanguageChange = (selectedOption) => {
     const newLocale = selectedOption.value;
+    setSelectedLanguage(languages.find((lang) => lang.value === newLocale));
+    i18n.changeLanguage(newLocale);
     router.push(`/${newLocale}${pathname.substring(currentLocale.length + 1)}`);
   };
 

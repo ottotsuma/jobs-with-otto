@@ -19,7 +19,11 @@ interface UserContextType {
 }
 
 // Create the context
-const UserContext = createContext<UserContextType | undefined>(undefined);
+const UserContext = createContext<UserContextType>({
+  user: null,
+  setUser: () => {},
+  userLoading: true,
+});
 
 // Define the UserProvider component
 export const UserProvider = ({ children }: { children: ReactNode }) => {
@@ -52,9 +56,9 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
     // Listen for changes in auth state
     const { data: listener } = supabase.auth.onAuthStateChange(
-      (event, session) => {
+      async (event, session) => {
         if (session?.user) {
-          fetchProfile(session.user, setUser);
+          await fetchProfile(session.user, setUser);
         } else {
           if (typeof window !== "undefined") {
             localStorage.removeItem("user");
@@ -91,3 +95,5 @@ export const useUser = () => {
 
   return context;
 };
+
+// export default UserProvider;
