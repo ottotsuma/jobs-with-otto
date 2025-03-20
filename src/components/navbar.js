@@ -154,10 +154,8 @@ const Navbar = () => {
             <Nav theme={theme === "dark" ? false : true} hidden={!isOpen} mobile={isOpen && window.innerWidth < 1024}>
                 {/* Close button (only on mobile) */}
                 <CloseButton onClick={() => setIsOpen(false)}>✖</CloseButton>
-
                 <List>
                     <Logo />
-
                     {/* {!user && <ListItem><StyledLink onClick={closeSidebar} href="/">Home</StyledLink></ListItem>} */}
                     {user && <ListItem><StyledLink onClick={closeSidebar} href="/profile">{t('profile.my_profile')}</StyledLink></ListItem>}
                     {!user && (
