@@ -6,6 +6,7 @@ import { supabase } from "superbase";
 import { Auth } from "@supabase/auth-ui-react";
 import { useRouter } from "next/navigation";
 import { fetchProfile } from "@/utils/user";
+import RegisterSW from "@/components/RegisterSW";
 import { checkFirstLogin } from "@/utils/utils";
 import Logo from "@/components/logo";
 import { Button, Container, FocusContainer } from "@/styles/basic";
@@ -38,6 +39,7 @@ export default function Home() {
 
   return (
     <Container>
+      <RegisterSW />
       <main className={styles.main}>
         <FocusContainer>
           <Logo />

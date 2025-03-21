@@ -1,15 +1,11 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "@/app/globals.css";
-import { UserProvider } from "@/contexts/UserContext";
 import Navbar from "@/components/navbar";
 import { dir } from "i18next";
 // import { languages } from "@/i18n/settings";
 import ServerTranslation from "@/i18n/ServerTranslation";
-import ThemeProvider from "@/components/ThemeProvider";
-import { NavProvider } from "@/contexts/navContext";
 import Title from "@/components/Title";
-import { TitleProvider } from "@/contexts/TitleContext";
 import ContextsWrapper from "@/contexts/ContextsWrapper";
 // import { globalStyles } from "@/styles/theme";
 const geistSans = Geist({
@@ -61,6 +57,8 @@ export const metadata: Metadata = {
     shortcut: "/favicon.ico",
     apple: "/apple-touch-icon.png",
   },
+  // PWA meta tags and manifest link:
+  manifest: "/manifest.json", // Link to the PWA manifest
 };
 export default async function RootLayout({
   children,
@@ -73,6 +71,16 @@ export default async function RootLayout({
   const { locale } = awaitedParams;
   return (
     <html lang={locale} dir={dir(locale)}>
+      <head>
+        {/* Add PWA Meta Tags */}
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#000000" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <meta
+          name="apple-mobile-web-app-status-bar-style"
+          content="black-translucent"
+        />
+      </head>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <ContextsWrapper>
           <ServerTranslation locale={locale}>

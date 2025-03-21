@@ -48,3 +48,33 @@
   Desc: Required Equipment: Indicate if the worker needs to bring their own tools/laptop.
 - skills
   Skills: Language Requirement: If certain jobs require specific language proficiency.
+
+Service Workers: Use service workers to cache assets, enabling offline access to your web app and improving performance.
+
+App Shell Architecture: Implement app shell architecture to speed up loading by caching the basic UI shell of the app.
+
+Push Notifications: Allow sending push notifications to users even when the app is not open, keeping them engaged with updates or reminders.
+
+Responsive Design: Ensure your PWA is responsive across all devices, from mobile phones to desktops, for a smooth user experience.
+
+Web App Manifest: Use a web app manifest to define how the app appears when installed on a device, including the icon, theme color, and splash screen.
+
+Background Sync: Enable background sync for tasks like sending user data to the server when connectivity is restored after an offline period.
+
+Lazy Loading: Implement lazy loading for images and other resources to speed up initial loading times.
+
+Home Screen Installation: Allow users to add your web app to their home screen, providing them with an app-like experience.
+
+Access to Device Features: Use features like geolocation, camera, and microphone access within your PWA to enhance its functionality.
+
+HTTPS: Ensure your app is served over HTTPS for security and to enable service worker functionality.
+
+IndexedDB: Use IndexedDB to store large amounts of structured data in the browser for offline access and enhanced performance.
+
+Web Push API: Implement the Web Push API for sending messages to the user's device without opening the app.
+
+Custom Splash Screen: Customize the splash screen that appears when the app is launched from the home screen for a smoother, branded experience.
+
+Progressive Enhancement: Ensure that the app works even for users with limited support (such as older browsers) by providing a core experience while adding advanced features for modern browsers.
+
+Performance Optimization: Focus on improving page load speeds, reducing JavaScript bundle sizes, and optimizing resources like images, videos, and fonts.
