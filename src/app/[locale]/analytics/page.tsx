@@ -2,10 +2,13 @@
 import { useState, useEffect } from "react";
 import { supabase } from "superbase";
 import dynamic from "next/dynamic";
+import { useTitle } from "@/contexts/TitleContext";
 
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
 export default function Analytics() {
+  const { setTitle } = useTitle();
+
   const [vacanciesStats, setVacanciesStats] = useState({
     total: 0,
     active: 0,
@@ -15,6 +18,7 @@ export default function Analytics() {
   const [companyStats, setCompanyStats] = useState(0);
 
   useEffect(() => {
+    setTitle("Analytics");
     async function fetchVacancyStats() {
       const { count: totalCount, error: totalError } = await supabase
         .from("vacancies")

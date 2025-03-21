@@ -21,14 +21,19 @@ import {
 } from "@/styles/basic";
 import { supabase } from "superbase";
 import ProtectedRoute from "@/contexts/ProtectedRoute.js";
+import { useTitle } from "@/contexts/TitleContext";
 
 export default function ProfilePage() {
   const router = useRouter();
   const { user } = useUser();
   const [company, setCompany] = useState<Company | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const { setTitle } = useTitle();
 
   const blockedValues = ["id", "user_id", "created_at", "updated_at"];
+  useEffect(() => {
+    setTitle("Manage Company");
+  }, []);
 
   useEffect(() => {
     async function fetchCompany(companyId: number) {

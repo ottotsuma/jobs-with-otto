@@ -6,7 +6,7 @@ import { supabase } from "superbase";
 import { styled } from "@stitches/react";
 import { Container, Title } from "@/styles/basic";
 import { Vacancy } from "@/types/vacancies";
-
+import { useTitle } from "@/contexts/TitleContext";
 const Grid = styled("div", {
   display: "grid",
   gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))",
@@ -45,8 +45,9 @@ const DetailRow = styled("div", {
 
 export default function VacanciesPage() {
   const [vacancies, setVacancies] = useState<Vacancy[]>([]);
-
+  const { setTitle } = useTitle();
   useEffect(() => {
+    setTitle("Vacancies");
     async function fetchVacancies() {
       const { data, error } = await supabase.from("vacancies").select("*");
       if (!error) setVacancies(data);

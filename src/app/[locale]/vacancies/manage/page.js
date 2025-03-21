@@ -7,8 +7,12 @@ import Table from "@/components/Table";
 import { useUser } from "@/contexts/UserContext";
 import { vacancy_bannedEdit } from '@/types/vacancies'
 import Loading from "@/components/loading";
+import { useTitle } from "@/contexts/TitleContext";
+
 export default function ManageVacancies() {
     const router = useRouter();
+    const { setTitle } = useTitle();
+
     const { user, userLoading } = useUser();
     const [loading, setLoading] = useState(true);
     const [locationsLoading, setLocationsLoading] = useState(false);
@@ -23,6 +27,10 @@ export default function ManageVacancies() {
             header: key.charAt(0).toUpperCase() + key.slice(1), // Capitalize the header
         }))
         : [];
+
+    useEffect(() => {
+        setTitle("Manage Vacancies");
+    }, [])
 
     useEffect(() => {
         setLoading(vacanciesLoading && locationsLoading && userLoading)

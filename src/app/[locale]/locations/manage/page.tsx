@@ -16,8 +16,12 @@ import {
 import ProtectedRoute from "@/contexts/ProtectedRoute.js";
 import Table, { RowData } from "@/components/Table";
 import Loading from "@/components/loading";
+import { useTitle } from "@/contexts/TitleContext";
+
 export default function ProfilePage() {
   const router = useRouter();
+  const { setTitle } = useTitle();
+
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const { user } = useUser();
@@ -36,6 +40,9 @@ export default function ProfilePage() {
   const handleDataChange = (updatedData: RowData[]) => {
     setLocations(updatedData);
   };
+  useEffect(() => {
+    setTitle("Manage Locations");
+  }, []);
 
   useEffect(() => {
     async function fetchLocations() {

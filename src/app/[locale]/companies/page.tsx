@@ -7,6 +7,7 @@ import { supabase } from "superbase";
 import { styled } from "@stitches/react";
 import { Container, Title } from "@/styles/basic";
 import { Company } from "@/types/company";
+import { useTitle } from "@/contexts/TitleContext";
 
 // Mapping of industries to card background colors and emoji's
 const industryStyles: Record<string, { color: string; emoji: string }> = {
@@ -54,8 +55,10 @@ const DetailRow = styled("div", {
 
 export default function CompaniesPage() {
   const [companies, setCompanies] = useState<Company[]>([]);
+  const { setTitle } = useTitle();
 
   useEffect(() => {
+    setTitle("Companies");
     async function fetchCompanies() {
       const { data, error } = await supabase.from("companies").select("*");
       if (!error) setCompanies(data);

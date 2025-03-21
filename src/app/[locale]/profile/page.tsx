@@ -20,8 +20,11 @@ import {
   Select,
 } from "@/styles/basic";
 import ProtectedRoute from "@/contexts/ProtectedRoute.js";
+import { useTitle } from "@/contexts/TitleContext";
 
 export default function ProfilePage() {
+  const { setTitle } = useTitle();
+
   const router = useRouter();
   const { user, setUser } = useUser();
   const [profile, setProfile] = useState<
@@ -105,6 +108,9 @@ export default function ProfilePage() {
   }
 
   const blockedValues = ["id", "user_id", "created_at", "updated_at"];
+  useEffect(() => {
+    setTitle("Profile");
+  }, []);
 
   useEffect(() => {
     if (user && user?.profileData) {
