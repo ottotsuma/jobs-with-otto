@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import Table from "@/components/Table";
 // import { supabase } from "superbase";
 // import { ApplicantProfile, ManagerProfile, AdminProfile } from '@/types/users';
 import Loading from "@/components/loading";
@@ -22,11 +23,15 @@ import {
 import { supabase } from "superbase";
 import ProtectedRoute from "@/contexts/ProtectedRoute.js";
 import { useTitle } from "@/contexts/TitleContext";
-
+import { useLocale } from "@/app/[locale]/hooks/useLocal";
+import { location_bannedEdit as bannedEdit } from "@/types/location";
 export default function ProfilePage() {
   const router = useRouter();
   const { user } = useUser();
+  const currentLocale = useLocale();
   const [company, setCompany] = useState<Company | null>(null);
+  const [companyManagers, setCompanyManagers] = useState([]);
+  const [companyApplicants, setCompanyApplicants] = useState([]);
   const [loading, setLoading] = useState<boolean>(true);
   const { setTitle } = useTitle();
 
@@ -45,16 +50,72 @@ export default function ProfilePage() {
       if (!error) setCompany(data);
       setLoading(false);
     }
+    async function fetchCompanyManagers(companyId: number) {
+      const { data, error } = await supabase
+        .from("manager_profiles")
+        .select("*")
+        .eq("company_id", companyId);
+      if (!error) setCompanyManagers(data);
+    }
+    async function fetchCompanyApplicants(companyId: number) {
+      const { data, error } = await supabase
+        .from("applicant_profiles")
+        .select("*")
+        .eq("company_id", companyId);
+      if (!error) setCompanyApplicants(data);
+    }
     fetchCompany(user?.company_id || localStorage.getItem("user")?.company_id);
+    fetchCompanyManagers(user?.company_id);
+    fetchCompanyApplicants(user?.company_id);
   }, [user]);
   async function updateCompany(e) {
     e.preventDefault();
+    if (!company) return;
+    const { error } = await supabase
+      .from("companies")
+      .update(company)
+      .eq("id", company.id);
+    if (error) {
+      console.error("Update error:", error);
+    } else {
+      alert("Company updated successfully");
+    }
   }
-  async function deleteCompany(e) {
-    e.preventDefault();
+
+  async function deleteCompany() {
+    if (!company) return;
+    const confirmDelete = confirm(
+      "Are you sure you want to delete this company?"
+    );
+    if (!confirmDelete) return;
+    const { error } = await supabase
+      .from("companies")
+      .delete()
+      .eq("id", company.id);
+    if (error) {
+      console.error("Delete error:", error);
+    } else {
+      alert("Company deleted successfully");
+      router.push(`${currentLocale}/`);
+    }
   }
   const statusOptions = ["Active", "Inactive"];
-
+  const ManagerColumns: ColumnDef[] = companyManagers.length
+    ? Object.keys(companyManagers[0]).map((key) => ({
+        accessorKey: key,
+        header: key.charAt(0).toUpperCase() + key.slice(1), // Capitalize the header
+      }))
+    : [];
+  const ApplicantColumns: ColumnDef[] = companyApplicants.length
+    ? Object.keys(companyApplicants[0]).map((key) => ({
+        accessorKey: key,
+        header: key.charAt(0).toUpperCase() + key.slice(1), // Capitalize the header
+      }))
+    : [];
+  function handleManagersChange() {}
+  function removeManager() {}
+  function handleApplicantsChange() {}
+  function removeApplicant() {}
   return (
     <ProtectedRoute allowedRoles={["admin", "manager", "applicant"]}>
       {!loading && company ? (
@@ -118,10 +179,34 @@ export default function ProfilePage() {
                 </Button>
               </Form>
             </ZoneGreen>
-
+            <ZoneGreen>
+              <h1>Company Managers:</h1>
+              {companyManagers.length > 0 ? (
+                <Table
+                  columns={ManagerColumns}
+                  data={companyManagers}
+                  onDataChange={handleManagersChange}
+                  deleteRow={removeManager}
+                  bannedEdit={bannedEdit}
+                />
+              ) : (
+                <p>None Found</p>
+              )}
+              <h1 style={{ marginTop: "15px" }}>Company Applicants:</h1>
+              {companyApplicants.length > 0 ? (
+                <Table
+                  columns={ApplicantColumns}
+                  data={companyApplicants}
+                  onDataChange={handleApplicantsChange}
+                  deleteRow={removeApplicant}
+                  bannedEdit={bannedEdit}
+                />
+              ) : (
+                <p>None Found</p>
+              )}
+            </ZoneGreen>
             {/* Yellow Zone - Change Password & Role Update Forms */}
             <ZoneYellow>Permissions</ZoneYellow>
-
             {/* Red Zone - Delete Profile */}
             <ZoneRed>
               <Button onClick={deleteCompany} color="red">
@@ -133,14 +218,6 @@ export default function ProfilePage() {
       ) : (
         <Loading />
       )}
-      <footer>
-        <Button onClick={() => router.push("/about")} color="blue">
-          about
-        </Button>
-        <Button onClick={() => router.push("/contact")} color="blue">
-          contact
-        </Button>
-      </footer>
     </ProtectedRoute>
   );
 }

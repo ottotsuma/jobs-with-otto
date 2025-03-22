@@ -14,9 +14,10 @@ import {
   Label,
   Select,
 } from "@/styles/basic";
-
+import { useLocale } from "@/app/[locale]/hooks/useLocal";
 const CreateCompanyPage: React.FC = () => {
   const { user, setUser } = useUser();
+  const currentLocale = useLocale();
   const [company, setCompany] = useState<newCompany>({
     name: "",
     address: "",
@@ -94,7 +95,7 @@ const CreateCompanyPage: React.FC = () => {
     if (profileError) {
       console.error("Error updating manager profile:", profileError);
     }
-    router.push("/companies/manage");
+    router.push(`/${currentLocale}/companies/manage`);
   };
 
   return (

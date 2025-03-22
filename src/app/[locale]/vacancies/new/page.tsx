@@ -6,6 +6,7 @@ import { NewVacancy as NewVacancyType, JobType } from "@/types/vacancies";
 import { Location as LocationType } from "@/types/location";
 import { useUser } from "@/contexts/UserContext";
 import { styled } from "@stitches/react";
+import { useLocale } from "@/app/[locale]/hooks/useLocal";
 import {
   Button,
   Title,
@@ -103,6 +104,7 @@ export default function NewVacancy() {
     country_id: null,
     // work_address: "",
   });
+  const currentLocale = useLocale();
   const requiredFields = ["job_title", "description"];
   const [templates, setTemplates] = useState<any[]>([]); // Store templates
   const [showModal, setShowModal] = useState(false); // Control Modal visibility
@@ -219,7 +221,7 @@ export default function NewVacancy() {
       alert("Error creating vacancy");
       console.error(error);
     } else {
-      router.push("/vacancies/manage");
+      router.push(`/${currentLocale}/vacancies/manage`);
     }
   };
 

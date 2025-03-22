@@ -8,11 +8,11 @@ import { useUser } from "@/contexts/UserContext";
 import { vacancy_bannedEdit } from '@/types/vacancies'
 import Loading from "@/components/loading";
 import { useTitle } from "@/contexts/TitleContext";
-
+import { useLocale } from "@/app/[locale]/hooks/useLocal";
 export default function ManageVacancies() {
     const router = useRouter();
     const { setTitle } = useTitle();
-
+    const currentLocale = useLocale();
     const { user, userLoading } = useUser();
     const [loading, setLoading] = useState(true);
     const [locationsLoading, setLocationsLoading] = useState(false);
@@ -99,7 +99,7 @@ export default function ManageVacancies() {
                     <h1>Manage Vacancies</h1>
                     {/* Create new - src\app\vacancies\new\page.tsx */}
                     <Button
-                        onClick={() => router.push(`/vacancies/new`)}
+                        onClick={() => router.push(`/${currentLocale}/vacancies/new`)}
                     >
                         New Vacancy
                     </Button>

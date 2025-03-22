@@ -1,7 +1,6 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-
 export const useLocale = () => {
   const pathname = usePathname();
   const locales = ["en", "ja"]; // Add more if needed

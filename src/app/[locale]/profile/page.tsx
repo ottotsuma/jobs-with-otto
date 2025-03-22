@@ -21,7 +21,7 @@ import {
 } from "@/styles/basic";
 import ProtectedRoute from "@/contexts/ProtectedRoute.js";
 import { useTitle } from "@/contexts/TitleContext";
-
+import { useLocale } from "@/app/[locale]/hooks/useLocal";
 export default function ProfilePage() {
   const { setTitle } = useTitle();
 
@@ -33,7 +33,7 @@ export default function ProfilePage() {
   const [password, setPassword] = useState("");
   const [locations, setLocations] = useState<Location[] | []>([]);
   const [companies, setCompanies] = useState<Company[] | []>([]);
-
+  const currentLocale = useLocale();
   async function updateRole(newRole) {
     try {
       // 1. Ensure the user is defined
@@ -116,7 +116,7 @@ export default function ProfilePage() {
     if (user && user?.profileData) {
       setProfile(user?.profileData);
     } else if (!user) {
-      router.push("/");
+      router.push(`/${currentLocale}/`);
     } else {
       console.log(user);
       console.log("user, but no profile");
@@ -201,7 +201,7 @@ export default function ProfilePage() {
     } else {
       alert("Profile and account deleted successfully.");
       localStorage.setItem("user", JSON.stringify(null));
-      router.push("/");
+      router.push(`/${currentLocale}/`);
     }
   }
 
@@ -316,14 +316,6 @@ export default function ProfilePage() {
           </ZoneRed>
         </>
       </Container>
-      <footer>
-        <Button onClick={() => router.push("/about")} color="blue">
-          about
-        </Button>
-        <Button onClick={() => router.push("/contact")} color="blue">
-          contact
-        </Button>
-      </footer>
     </ProtectedRoute>
   );
 }

@@ -6,7 +6,7 @@ import ProtectedRoute from '@/contexts/ProtectedRoute.js';
 import { Button, Container, FocusContainer } from '@/styles/basic';
 import { createStitches } from "@stitches/react";
 import Toast from '@/components/toast'
-
+import { useLocale } from "@/app/[locale]/hooks/useLocal";
 const { styled } = createStitches({
     theme: {
         colors: {
@@ -44,6 +44,7 @@ const Tab = styled("button", {
 
 
 export default function AdminDashboard() {
+    const currentLocale = useLocale();
     const [showToast, setShowToast] = useState(false);
     const [toastMessage, setToastMessage] = useState("");
     const copyToClipboard = (value) => {
@@ -135,7 +136,7 @@ export default function AdminDashboard() {
                                             ))}
                                         <td style={{ border: "1px solid white", padding: "10px" }}>
                                             <Button
-                                                onClick={() => router.push(`/admin/edit/${tab}/${item.id}`)}
+                                                onClick={() => router.push(`/${currentLocale}/admin/edit/${tab}/${item.id}`)}
                                                 style={{ border: "1px solid white", padding: "10px", margin: '5px' }}
                                             >
                                                 Edit

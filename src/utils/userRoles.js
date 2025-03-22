@@ -1,11 +1,11 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-
+import { useLocale } from "@/app/[locale]/hooks/useLocal";
 export function useUserRole(requiredRole) {
     const [hasAccess, setHasAccess] = useState(false);
     const router = useRouter();
-
+    const currentLocale = useLocale();
     useEffect(() => {
         const checkUserRole = async () => {
             const user = supabase.auth.user();
@@ -14,10 +14,10 @@ export function useUserRole(requiredRole) {
                 if (userRole === requiredRole) {
                     setHasAccess(true);
                 } else {
-                    router.push('/unauthorized'); // Redirect to an unauthorized page
+                    router.push(`/${currentLocale}/unauthorized`); // Redirect to an unauthorized page
                 }
             } else {
-                router.push('/login'); // Redirect to the login page if not authenticated
+                router.push(`/${currentLocale}/login`); // Redirect to the login page if not authenticated
             }
         };
 

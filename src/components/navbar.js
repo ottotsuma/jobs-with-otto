@@ -138,7 +138,7 @@ const Navbar = () => {
         if (!error) {
             localStorage.setItem('user', JSON.stringify(null));
             setUser(null);
-            router.push('/');
+            router.push(`/${currentLocale}/`);
         } else {
             console.error('Error signing out:', error);
         }
@@ -181,8 +181,9 @@ const Navbar = () => {
                         </>
                     )}
                     {user?.role_name === "applicant" && user?.company_id && (<>
-                        <ListItem><StyledLink onClick={closeSidebar} href={`/${currentLocale}/vacancies`}>My Locations + Vacancies</StyledLink></ListItem>
-                        <ListItem><StyledLink onClick={closeSidebar} href={`/${currentLocale}/analytics`}>My Company + Vacancies</StyledLink></ListItem>
+                        <ListItem><StyledLink onClick={closeSidebar} href={`/${currentLocale}/locations/${user?.company_id}
+                        `}>My Locations + Vacancies</StyledLink></ListItem>
+                        <ListItem><StyledLink onClick={closeSidebar} href={`/${currentLocale}/companies/${user?.company_id}`}>My Company + Vacancies</StyledLink></ListItem>
                     </>)}
                     {user?.role_name === "manager" && !user.company_id && (
                         <ListItem><StyledLink onClick={closeSidebar} href={`/${currentLocale}/companies/create`}>{t('companies.create')}</StyledLink></ListItem>
@@ -201,6 +202,18 @@ const Navbar = () => {
                     {user && <ListItem><Button style={{ fontSize: "1rem" }} color="red" onClick={handleSignOut}>{t('auth.signout')}</Button></ListItem>}
                     <ListItem><ThemeToggle /></ListItem>
                     <ListItem><LanguageSwitcher /></ListItem>
+                    <Button
+                        onClick={() => router.push(`/${currentLocale}/about`)}
+                        color="blue"
+                    >
+                        about
+                    </Button>
+                    <Button
+                        onClick={() => router.push(`/${currentLocale}/contact`)}
+                        color="blue"
+                    >
+                        contact
+                    </Button>
                 </List>
             </Nav >
         </>

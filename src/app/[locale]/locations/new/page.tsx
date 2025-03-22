@@ -5,7 +5,7 @@ import { supabase } from "superbase";
 import { NewLocationType } from "@/types/location";
 import { useUser } from "@/contexts/UserContext";
 import { styled } from "@stitches/react";
-
+import { useLocale } from "@/app/[locale]/hooks/useLocal";
 // Stitches styling
 const FormContainer = styled("div", {
   // maxWidth: "800px",
@@ -81,6 +81,7 @@ const RequiredStar = styled("span", {
 export default function NewLocation() {
   const router = useRouter();
   const { user } = useUser();
+  const currentLocale = useLocale();
   const [location, setLocation] = useState<NewLocationType>({
     // Basic information
     name: "", // required
@@ -155,7 +156,7 @@ export default function NewLocation() {
       alert("Error creating location");
       console.error(error);
     } else {
-      router.push("/locations/manage");
+      router.push(`/${currentLocale}/locations/manage`);
     }
   };
 

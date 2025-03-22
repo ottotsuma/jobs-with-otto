@@ -87,7 +87,7 @@ export default async function RootLayout({
             <div
               style={{
                 display: "flex",
-                minWidth: "100vw",
+                // minWidth: "100vw",
                 minHeight: "100vh",
               }}
             >

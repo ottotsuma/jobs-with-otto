@@ -11,8 +11,10 @@ import { checkFirstLogin } from "@/utils/utils";
 import Logo from "@/components/logo";
 import { Button, Container, FocusContainer } from "@/styles/basic";
 import { useTitle } from "@/contexts/TitleContext";
+import { useLocale } from "@/app/[locale]/hooks/useLocal";
 export default function Home() {
   const router = useRouter();
+  const currentLocale = useLocale();
   const { setTitle } = useTitle();
   const { user, setUser } = useUser();
   useEffect(() => {
@@ -33,7 +35,7 @@ export default function Home() {
 
   useEffect(() => {
     if (user) {
-      router.push("/profile");
+      router.push(`/${currentLocale}/profile`);
     }
   }, [user]);
 
@@ -51,14 +53,6 @@ export default function Home() {
           />
         </FocusContainer>
       </main>
-      <footer className={styles.footer}>
-        <Button onClick={() => router.push("/about")} color="blue">
-          about
-        </Button>
-        <Button onClick={() => router.push("/contact")} color="blue">
-          contact
-        </Button>
-      </footer>
     </Container>
   );
 }

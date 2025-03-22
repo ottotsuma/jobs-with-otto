@@ -276,6 +276,23 @@ const Table = ({
                               </option>
                             ))}
                           </select>
+                        ) : cell.column.id === "location_ids" ? (
+                          <select
+                            value={cellValue as string}
+                            onChange={(e) =>
+                              updateData(
+                                row.index,
+                                cell.column.id,
+                                e.target.value
+                              )
+                            }
+                          >
+                            {locationOptions.map((status) => (
+                              <option key={status} value={status}>
+                                {status}
+                              </option>
+                            ))}
+                          </select>
                         ) : cell.column.id === "type_id" ? (
                           <select
                             value={cellValue as string}

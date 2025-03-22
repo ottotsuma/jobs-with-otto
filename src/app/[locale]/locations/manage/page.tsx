@@ -17,11 +17,11 @@ import ProtectedRoute from "@/contexts/ProtectedRoute.js";
 import Table, { RowData } from "@/components/Table";
 import Loading from "@/components/loading";
 import { useTitle } from "@/contexts/TitleContext";
-
+import { useLocale } from "@/app/[locale]/hooks/useLocal";
 export default function ProfilePage() {
   const router = useRouter();
   const { setTitle } = useTitle();
-
+  const currentLocale = useLocale();
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const { user } = useUser();
@@ -87,7 +87,7 @@ export default function ProfilePage() {
       /> */}
       <Container>
         <Title>{company.name} Locations</Title>
-        <Button onClick={() => router.push(`/locations/new`)}>
+        <Button onClick={() => router.push(`/${currentLocale}/locations/new`)}>
           New Location
         </Button>
         <Table
@@ -122,14 +122,6 @@ export default function ProfilePage() {
           </ZoneRed>
         </>
       </Container>
-      <footer>
-        <Button onClick={() => router.push("/about")} color="blue">
-          about
-        </Button>
-        <Button onClick={() => router.push("/contact")} color="blue">
-          contact
-        </Button>
-      </footer>
     </ProtectedRoute>
   );
 }

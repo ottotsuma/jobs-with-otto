@@ -2,9 +2,10 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "superbase";
-
+import { useLocale } from "@/app/[locale]/hooks/useLocal";
 export default function EditEntry() {
     const router = useRouter();
+    const currentLocale = useLocale();
     const { table, id } = router.query;
     const [formData, setFormData] = useState({});
     const [loading, setLoading] = useState(true);
@@ -27,7 +28,7 @@ export default function EditEntry() {
             alert("Error updating entry");
             console.error(error);
         } else {
-            router.push("/admin/dashboard");
+            router.push(`/${currentLocale}/admin/dashboard`);
         }
     }
 
