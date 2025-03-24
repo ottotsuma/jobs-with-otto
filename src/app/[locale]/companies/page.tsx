@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useLocale } from "@/app/[locale]/hooks/useLocal";
 import Logo from "@/components/logo";
 import { supabase } from "superbase";
 import { styled } from "@stitches/react";
@@ -54,6 +55,7 @@ const DetailRow = styled("div", {
 });
 
 export default function CompaniesPage() {
+  const currentLocale = useLocale();
   const [companies, setCompanies] = useState<Company[]>([]);
   const { setTitle } = useTitle();
 
@@ -82,7 +84,7 @@ export default function CompaniesPage() {
           return (
             <Card
               key={company.id}
-              href={`/companies/${company.id}`}
+              href={`${currentLocale}/companies/${company.id}`}
               style={{ backgroundColor, color: textColor }}
             >
               {company.company_logo_url && (

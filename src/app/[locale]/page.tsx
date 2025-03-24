@@ -9,7 +9,7 @@ import { fetchProfile } from "@/utils/user";
 import RegisterSW from "@/components/RegisterSW";
 import { checkFirstLogin } from "@/utils/utils";
 import Logo from "@/components/logo";
-import { Button, Container, FocusContainer } from "@/styles/basic";
+import { Container, FocusContainer } from "@/styles/basic";
 import { useTitle } from "@/contexts/TitleContext";
 import { useLocale } from "@/app/[locale]/hooks/useLocal";
 export default function Home() {
@@ -24,6 +24,7 @@ export default function Home() {
     } = supabase.auth.onAuthStateChange((event, session) => {
       if (session?.user) {
         checkFirstLogin(session?.user);
+        console.log("getting profile");
         fetchProfile(session?.user, setUser);
       }
     });
@@ -34,6 +35,7 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
+    console.log(user, "user set?");
     if (user) {
       router.push(`/${currentLocale}/profile`);
     }

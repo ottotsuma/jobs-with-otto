@@ -45,7 +45,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         if (typeof window !== "undefined") {
           const storedUser = localStorage.getItem("user");
           if (storedUser) {
-            setUser(JSON.parse(storedUser));
+            setUser({ ...JSON.parse(storedUser) });
           }
         }
       }

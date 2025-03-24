@@ -6,65 +6,96 @@ export async function fetchProfile(
   user: User,
   setUser: Dispatch<SetStateAction<null>>
 ) {
-  // Step 1: Fetch the user's role from the user_roles table
-  const { data: roleIDData, error: roleIDError } = await supabase
-    .from("user_roles")
-    .select("role_id")
-    .eq("user_id", user.id)
-    .single(); // Assuming each user has only one role
-
-  if (roleIDError || !roleIDData?.role_id) {
-    console.error("Error fetching role_id data:", roleIDError);
-    return;
-  }
-  const { data: roleData, error: roleError } = await supabase
-    .from("roles")
-    .select("role_name")
-    .eq("id", roleIDData.role_id)
-    .single();
-  if (roleError || !roleData?.role_name) {
-    console.error("Error fetching role data:", roleError);
+  if (!user || !user.id) {
+    console.warn("Invalid user object provided.");
     return;
   }
 
-  // Step 2: Based on the role, fetch the corresponding profile data
-  let profileData;
-  if (roleData.role_name === "applicant") {
-    const { data, error } = await supabase
-      .from("applicant_profiles")
-      .select("*")
+  try {
+    console.log("getting role");
+    // Step 1: Fetch the user's role
+    let { data: roleIDData, error: roleIDError } = await supabase
+      .from("user_roles")
+      .select("role_id")
       .eq("user_id", user.id)
       .single();
-    if (error) {
-      console.error("Error fetching applicant profile data:", error);
-      return;
-    }
-    profileData = data;
-  } else if (roleData.role_name === "manager") {
-    const { data, error } = await supabase
-      .from("manager_profiles")
-      .select("*")
-      .eq("user_id", user.id)
-      .single();
-    if (error) {
-      console.error("Error fetching manager profile data:", error);
-      return;
-    }
-    profileData = data;
-  } else if (roleData.role_name === "admin") {
-    // Admins don't have a profile
-    console.log("admin role");
-  } else {
-    console.log("anon role:", roleData.role_name);
-    return;
-  }
+    console.log(roleIDData, "got role");
+    // If user has no role, assign role_id = 4
+    if (roleIDError || !roleIDData?.role_id) {
+      console.warn("User has no assigned role. Assigning role_id = 4 (anon).");
 
-  // Step 3: Set the profile data to your state
-  const mergedProfile = { ...user, ...profileData, ...roleData };
-  mergedProfile.profileData = profileData;
-  mergedProfile.roleData = roleData;
-  setUser(mergedProfile); // Adjust this based on your state management
-  localStorage.setItem("user", JSON.stringify(mergedProfile ?? null));
+      const { error: insertError } = await supabase
+        .from("user_roles")
+        .insert([{ user_id: user.id, role_id: 4 }]);
+
+      if (insertError) {
+        console.error("Error assigning default role:", insertError);
+        return;
+      }
+
+      // Fetch role_id again after inserting
+      roleIDData = { role_id: 4 };
+    }
+    console.log("getting role 2", roleIDData);
+
+    // Step 2: Fetch the role name
+    const { data: roleData, error: roleError } = await supabase
+      .from("roles")
+      .select("role_name")
+      .eq("id", roleIDData.role_id)
+      .single();
+
+    if (roleError) {
+      console.error("Error fetching role data:", roleError);
+      return;
+    }
+
+    if (!roleData?.role_name) {
+      console.warn("Role not found.");
+      return;
+    }
+    console.log("getting role 3", roleIDData);
+
+    let profileData = null;
+
+    // Step 3: Fetch the corresponding profile data based on the role
+    if (roleData?.role_name === "applicant") {
+      const { data, error } = await supabase
+        .from("applicant_profiles")
+        .select("*")
+        .eq("user_id", user.id)
+        .single();
+
+      if (error) console.warn("No applicant profile found:", error);
+      profileData = data || null;
+    } else if (roleData?.role_name === "manager") {
+      const { data, error } = await supabase
+        .from("manager_profiles")
+        .select("*")
+        .eq("user_id", user.id)
+        .single();
+
+      if (error) console.warn("No manager profile found:", error);
+      profileData = data || null;
+    } else if (roleData?.role_name === "admin") {
+      console.log("Admin role - no profile needed.");
+    } else {
+      console.warn("Unknown role:", roleData.role_name);
+    }
+    console.log("getting role 4", roleIDData);
+
+    // Step 4: Merge and store user data
+    const mergedProfile = {
+      ...user,
+      role: roleData.role_name,
+      profile: profileData,
+    };
+    console.log("User set:", mergedProfile);
+    setUser({ ...mergedProfile });
+    localStorage.setItem("user", JSON.stringify(mergedProfile ?? null));
+  } catch (error) {
+    console.error("Unexpected error fetching profile:", error);
+  }
 }
 
 export async function updateRole(newRole, user, setUser) {

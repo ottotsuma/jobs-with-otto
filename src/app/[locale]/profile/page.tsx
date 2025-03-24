@@ -24,7 +24,6 @@ import { useTitle } from "@/contexts/TitleContext";
 import { useLocale } from "@/app/[locale]/hooks/useLocal";
 export default function ProfilePage() {
   const { setTitle } = useTitle();
-
   const router = useRouter();
   const { user, setUser } = useUser();
   const [profile, setProfile] = useState<
@@ -51,6 +50,7 @@ export default function ProfilePage() {
       if (!roleData) throw new Error("Role not found in roles table");
       const roleId = roleData.id;
 
+      // Might not have a role, should be set to applicant.
       // 3. Update the user's role in the 'user_roles' table using the fetched role ID
       const { error: updateRoleError } = await supabase
         .from("user_roles")
@@ -113,8 +113,8 @@ export default function ProfilePage() {
   }, []);
 
   useEffect(() => {
-    if (user && user?.profileData) {
-      setProfile(user?.profileData);
+    if (user && user?.profile) {
+      setProfile(user?.profile);
     } else if (!user) {
       router.push(`/${currentLocale}/`);
     } else {
@@ -206,12 +206,12 @@ export default function ProfilePage() {
   }
 
   return (
-    <ProtectedRoute allowedRoles={["admin", "manager", "applicant"]}>
-      <Container>
-        <Title>My Profile</Title>
+    // <ProtectedRoute allowedRoles={["admin", "manager", "applicant", "anon"]}>
+    <Container>
+      <Title>My Profile</Title>
+      {user?.role ? (
         <>
           <p>{profile?.id}</p>
-
           {/* Green Zone - Update Profile Form */}
           <ZoneGreen>
             <Form onSubmit={updateProfile}>
@@ -220,7 +220,7 @@ export default function ProfilePage() {
                 .map(([key, value]) =>
                   key === "company_id" ? (
                     <div key={key}>
-                      <Label>Company</Label>
+                      {/* <Label>Company</Label>
                       <Select name={key} value={value} onChange={() => {}}>
                         <option value="">Select Company</option>
                         {companies.map((company) => (
@@ -228,7 +228,7 @@ export default function ProfilePage() {
                             {company.name}
                           </option>
                         ))}
-                      </Select>
+                      </Select> */}
                     </div>
                   ) : key === "location_ids" ? (
                     <div key={key}>
@@ -295,7 +295,7 @@ export default function ProfilePage() {
                 <Label>Role</Label>
                 <Select
                   name="role"
-                  value={user?.role_name}
+                  value={user?.role}
                   onChange={(e) => updateRole(e.target.value)}
                 >
                   <option value="manager">Manager</option>
@@ -315,7 +315,51 @@ export default function ProfilePage() {
             </Button>
           </ZoneRed>
         </>
-      </Container>
-    </ProtectedRoute>
+      ) : (
+        <>
+          <p>Assign new role</p>
+          <ZoneGreen>
+            <Form onSubmit={updateRole}>
+              <div>
+                <Label>Role</Label>
+                <Select
+                  name="role"
+                  value={user?.role}
+                  onChange={(e) => updateRole(e.target.value)}
+                >
+                  <option value="manager">Manager</option>
+                  <option value="applicant">Applicant</option>
+                </Select>
+              </div>
+            </Form>
+          </ZoneGreen>
+          {/* Yellow Zone - Change Password & Role Update Forms */}
+          <ZoneYellow>
+            <h2>Change Password</h2>
+            <Form onSubmit={updatePassword}>
+              <div>
+                <Label>New Password</Label>
+                <Input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </div>
+              <Button type="submit" color="blue">
+                Update Password
+              </Button>
+            </Form>
+          </ZoneYellow>
+
+          {/* Red Zone - Delete Profile */}
+          <ZoneRed>
+            <Button onClick={deleteProfile} color="red">
+              Delete Profile (needs warning popup)
+            </Button>
+          </ZoneRed>
+        </>
+      )}
+    </Container>
+    // </ProtectedRoute>
   );
 }

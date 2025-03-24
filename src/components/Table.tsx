@@ -22,6 +22,8 @@ import {
 } from "@/styles/basic";
 import { styled } from "@stitches/react";
 import { isValidDate, formatDate } from "@/utils/utils";
+import { useLocale } from "@/app/[locale]/hooks/useLocal";
+import Link from "next/link";
 export type RowData = {
   id: number;
   [key: string]: any;
@@ -58,7 +60,7 @@ const TableCell = styled("td", {
   textAlign: "left",
   border: "1px solid #ddd",
   "&:hover": {
-    backgroundColor: "lightgrey",
+    // backgroundColor: "lightgrey",
   },
   whiteSpace: "nowrap", // Prevent text wrapping in the cells
   overflow: "hidden", // Prevent text overflow if it's too long
@@ -67,7 +69,20 @@ const TableCell = styled("td", {
 
 const TableRow = styled("tr", {
   "&:hover": {
-    backgroundColor: "#f5f5f5",
+    // backgroundColor: "#f5f5f5",
+  },
+});
+
+const StyledLink = styled(Link, {
+  display: "block",
+  padding: "16px",
+  borderRadius: "12px",
+  textDecoration: "none",
+  boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
+  // transition: "transform 0.2s ease, box-shadow 0.2s ease",
+  "&:hover": {
+    // transform: "translateY(-5px)",
+    boxShadow: "0px 6px 10px rgba(0, 0, 0, 0.15)",
   },
 });
 
@@ -84,6 +99,7 @@ const Table = ({
   deleteRow?: (id: number) => void;
   bannedEdit?: string[];
 }) => {
+  const currentLocale = useLocale();
   const [enableEdit, SetEnableEdit] = useState(false);
   // Copy to clipboard
   const [enableCopy, SetEnableCopy] = useState(false);
@@ -378,7 +394,16 @@ const Table = ({
                         }}
                         key={cell.id}
                       >
-                        {cell.column.id === "geolocation" ? (
+                        {cell.column.id === "user_id" ? (
+                          <div>
+                            <StyledLink
+                              href={`/${currentLocale}/profile/${cellValue}`}
+                              passHref
+                            >
+                              👁️{cellValue}
+                            </StyledLink>
+                          </div>
+                        ) : cell.column.id === "geolocation" ? (
                           cellValue?.coordinates ? (
                             <div>
                               {cellValue.coordinates[0]},{" "}

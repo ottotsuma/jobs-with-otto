@@ -70,7 +70,7 @@ export default async function RootLayout({
   const awaitedParams = await params;
   const { locale } = awaitedParams;
   return (
-    <html lang={locale} dir={dir(locale)}>
+    <html lang={locale || "en"} dir={dir(locale || "en")}>
       <head>
         {/* Add PWA Meta Tags */}
         <link rel="manifest" href="/manifest.json" />

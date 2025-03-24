@@ -5,6 +5,7 @@ import Link from "next/link";
 import { supabase } from "superbase";
 import { styled } from "@stitches/react";
 import { Container, Title } from "@/styles/basic";
+import { useLocale } from "@/app/[locale]/hooks/useLocal";
 import { Vacancy } from "@/types/vacancies";
 import { useTitle } from "@/contexts/TitleContext";
 const Grid = styled("div", {
@@ -44,6 +45,7 @@ const DetailRow = styled("div", {
 });
 
 export default function VacanciesPage() {
+  const currentLocale = useLocale();
   const [vacancies, setVacancies] = useState<Vacancy[]>([]);
   const { setTitle } = useTitle();
   useEffect(() => {
@@ -60,7 +62,10 @@ export default function VacanciesPage() {
       <Title>Vacancies</Title>
       <Grid>
         {vacancies.map((vacancy) => (
-          <Card key={vacancy.id} href={`/vacancies/${vacancy.id}`}>
+          <Card
+            key={vacancy.id}
+            href={`${currentLocale}/vacancies/${vacancy.id}`}
+          >
             <CardTitle>{vacancy.job_title}</CardTitle>
             <CardDetails>{vacancy.description}</CardDetails>
             <DetailRow>

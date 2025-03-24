@@ -134,12 +134,22 @@ const Navbar = () => {
     const router = useRouter();
     const currentLocale = useLocale();
     const handleSignOut = async () => {
-        const { error } = await supabase.auth.signOut();
-        if (!error) {
-            localStorage.setItem('user', JSON.stringify(null));
-            setUser(null);
-            router.push(`/${currentLocale}/`);
-        } else {
+        try {
+            console.log('signing out')
+            console.log('Supabase instance:', supabase);
+            console.log('Auth state:', supabase.auth);
+            const user = await supabase.auth.getUser();
+            console.log('Current user:', user);
+            const { error } = await supabase.auth.signOut();
+            console.log('signing out 2')
+            if (!error) {
+                localStorage.setItem('user', JSON.stringify(null));
+                setUser(null);
+                router.push(`/${currentLocale}/`);
+            } else {
+                console.error('Error signing out:', error);
+            }
+        } catch (error) {
             console.error('Error signing out:', error);
         }
     };
@@ -173,29 +183,43 @@ const Navbar = () => {
                             <ListItem><StyledLink onClick={closeSidebar} href={`/${currentLocale}/analytics`} passHref>{t('analytics.public')}</StyledLink></ListItem>
                         </>
                     )}
-                    {user?.role_name === "applicant" && (
+                    {user && !user?.role && (
+                        <>
+                            <ListItem><StyledLink onClick={closeSidebar} href={`/${currentLocale}/vacancies`}>{t('vacancies.view_all')}</StyledLink></ListItem>
+                            <ListItem><StyledLink onClick={closeSidebar} href={`/${currentLocale}/companies`}>{t('companies.view_all')}</StyledLink></ListItem>
+                            <ListItem><StyledLink onClick={closeSidebar} href={`/${currentLocale}/analytics`} passHref>{t('analytics.public')}</StyledLink></ListItem>
+                        </>
+                    )}
+                    {user?.role === "anon" && (
+                        <>
+                            <ListItem><StyledLink onClick={closeSidebar} href={`/${currentLocale}/vacancies`}>{t('vacancies.view_all')}</StyledLink></ListItem>
+                            <ListItem><StyledLink onClick={closeSidebar} href={`/${currentLocale}/companies`}>{t('companies.view_all')}</StyledLink></ListItem>
+                            <ListItem><StyledLink onClick={closeSidebar} href={`/${currentLocale}/analytics`} passHref>{t('analytics.public')}</StyledLink></ListItem>
+                        </>
+                    )}
+                    {user?.role === "applicant" && (
                         <>
                             <ListItem><StyledLink onClick={closeSidebar} href={`/${currentLocale}/vacancies`}>{t('vacancies.view_all')}</StyledLink></ListItem>
                             <ListItem><StyledLink onClick={closeSidebar} href={`/${currentLocale}/companies`}>{t('companies.view_all')}</StyledLink></ListItem>
                             <ListItem><StyledLink onClick={closeSidebar} href={`/${currentLocale}/analytics`}>{t('analytics.public')}</StyledLink></ListItem>
                         </>
                     )}
-                    {user?.role_name === "applicant" && user?.company_id && (<>
+                    {user?.role === "applicant" && user?.company_id && (<>
                         <ListItem><StyledLink onClick={closeSidebar} href={`/${currentLocale}/locations/${user?.company_id}
                         `}>My Locations + Vacancies</StyledLink></ListItem>
                         <ListItem><StyledLink onClick={closeSidebar} href={`/${currentLocale}/companies/${user?.company_id}`}>My Company + Vacancies</StyledLink></ListItem>
                     </>)}
-                    {user?.role_name === "manager" && !user.company_id && (
+                    {user?.role === "manager" && !user.company_id && (
                         <ListItem><StyledLink onClick={closeSidebar} href={`/${currentLocale}/companies/create`}>{t('companies.create')}</StyledLink></ListItem>
                     )}
-                    {user?.role_name === "manager" && user?.company_id && (
+                    {user?.role === "manager" && user?.company_id && (
                         <>
                             <ListItem><StyledLink onClick={closeSidebar} href={`/${currentLocale}/companies/manage`}>{t('companies.manage')}</StyledLink></ListItem>
                             <ListItem><StyledLink onClick={closeSidebar} href={`/${currentLocale}/locations/manage`}>{t('locations.manage')}</StyledLink></ListItem>
                             <ListItem><StyledLink onClick={closeSidebar} href={`/${currentLocale}/vacancies/manage`}>{t('vacancies.manage')}</StyledLink></ListItem>
                         </>
                     )}
-                    {user?.role_name === "admin" && (
+                    {user?.role === "admin" && (
                         <ListItem><StyledLink onClick={closeSidebar} href={`/${currentLocale}/admin`}>{t('admin.dashboard')}</StyledLink></ListItem>
                     )}
                     {!user && <ListItem><StyledLink onClick={closeSidebar} href={`/${currentLocale}/`}>{t('auth.loginSignup')}</StyledLink></ListItem>}

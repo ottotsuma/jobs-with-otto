@@ -24,7 +24,7 @@ import { supabase } from "superbase";
 import ProtectedRoute from "@/contexts/ProtectedRoute.js";
 import { useTitle } from "@/contexts/TitleContext";
 import { useLocale } from "@/app/[locale]/hooks/useLocal";
-import { location_bannedEdit as bannedEdit } from "@/types/location";
+import { company_manager_banned_edit } from "@/types/users";
 export default function ProfilePage() {
   const router = useRouter();
   const { user } = useUser();
@@ -187,7 +187,7 @@ export default function ProfilePage() {
                   data={companyManagers}
                   onDataChange={handleManagersChange}
                   deleteRow={removeManager}
-                  bannedEdit={bannedEdit}
+                  bannedEdit={company_manager_banned_edit}
                 />
               ) : (
                 <p>None Found</p>
@@ -199,7 +199,7 @@ export default function ProfilePage() {
                   data={companyApplicants}
                   onDataChange={handleApplicantsChange}
                   deleteRow={removeApplicant}
-                  bannedEdit={bannedEdit}
+                  bannedEdit={company_manager_banned_edit}
                 />
               ) : (
                 <p>None Found</p>
