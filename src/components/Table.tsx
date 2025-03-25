@@ -128,6 +128,7 @@ const Table = ({
   const [locationOptions, setLocationOptions] = useState([]);
   const [vacancyTypeOptions, setVacancyTypeOptions] = useState([]);
   const [expandedRowIndex, setExpandedRowIndex] = useState(null);
+  const [showExtra, setShowExtra] = useState(false);
 
   const handleRowHover = (index) => {
     console.log("hover", index);
@@ -183,13 +184,14 @@ const Table = ({
     getCoreRowModel: getCoreRowModel(),
   });
   const RowDetails = styled("tr", {
-    display: "none",
-    "& td": {
-      padding: "10px",
-      backgroundColor: "#f9f9f9",
-      borderTop: "1px solid #ddd",
-      fontSize: "14px",
-    },
+    display: "flex",
+    // display: "none",
+    // "& td": {
+    //   padding: "10px",
+    //   backgroundColor: "#f9f9f9",
+    //   borderTop: "1px solid #ddd",
+    //   fontSize: "14px",
+    // },
   });
   return (
     <>
@@ -212,6 +214,15 @@ const Table = ({
       >
         {enableEdit ? "Turn off edit" : "Turn on edit"}
       </Button>
+      <Button
+        color={showExtra ? "red" : "blue"}
+        onClick={() => {
+          setShowExtra(!showExtra);
+        }}
+      >
+        {showExtra ? "Turn off extra information" : "Turn on extra information"}
+      </Button>
+
       <TableWrapper>
         <TableElement>
           <thead>
@@ -411,7 +422,7 @@ const Table = ({
             <tbody>
               {table.getRowModel().rows.map((row, rowIndex) => (
                 <TableRow
-                  onMouseEnter={() => handleRowHover(rowIndex)}
+                  onMouseEnter={() => handleRowHover(rowIndex + 1)}
                   onMouseLeave={() => handleRowHover(null)}
                   key={row.id}
                 >
@@ -467,13 +478,19 @@ const Table = ({
                         ) : (
                           <></>
                         )}
-                        {/* <Tooltip>
-                          Additional info about {cell.column.id}
-                        </Tooltip> */}
+                        {showExtra && expandedRowIndex === rowIndex + 1 && (
+                          <RowDetails>
+                            <td>
+                              <div>
+                                <strong>Additional Information:</strong>
+                                {/* <p>{row.additionalInfo}</p> */}
+                              </div>
+                            </td>
+                          </RowDetails>
+                        )}
                       </TableCell>
                     );
                   })}
-
                   {actions && actions.length > 0 && (
                     <TableCell
                       style={{
@@ -498,17 +515,6 @@ const Table = ({
                         })}
                       </div>
                     </TableCell>
-                  )}
-                  {expandedRowIndex === rowIndex && (
-                    <RowDetails>
-                      <td colSpan={columns.length + 1}>
-                        {/* Replace with the additional information you want to display */}
-                        <div>
-                          <strong>Additional Information:</strong>
-                          <p>{row.additionalInfo}</p>
-                        </div>
-                      </td>
-                    </RowDetails>
                   )}
                 </TableRow>
               ))}
