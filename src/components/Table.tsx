@@ -54,24 +54,38 @@ const TableHeader = styled("th", {
   overflow: "hidden", // Hide overflow in headers
   textOverflow: "ellipsis", // Show ellipsis for overflowing header text
 });
-
+const Tooltip = styled("div", {
+  position: "absolute",
+  top: "80%",
+  backgroundColor: "rgba(28, 56, 151, 0.9)",
+  color: "#fff",
+  padding: "8px",
+  textTransform: "capitalize",
+  borderRadius: "4px",
+  visibility: "hidden",
+  opacity: 0,
+  transition: "opacity 0.2s ease, transform 0.2s ease",
+});
+const TooltipWrap = styled("div", {
+  position: "relative",
+  "&:hover": {
+    [`${Tooltip}`]: {
+      visibility: "visible",
+      opacity: 1,
+    },
+  },
+});
 const TableCell = styled("td", {
   padding: "6px",
   textAlign: "left",
   border: "1px solid #ddd",
-  "&:hover": {
-    // backgroundColor: "lightgrey",
-  },
+
   whiteSpace: "nowrap", // Prevent text wrapping in the cells
   overflow: "hidden", // Prevent text overflow if it's too long
   textOverflow: "ellipsis", // Add ellipsis for overflowing text
 });
 
-const TableRow = styled("tr", {
-  "&:hover": {
-    // backgroundColor: "#f5f5f5",
-  },
-});
+const TableRow = styled("tr", {});
 
 const StyledLink = styled(Link, {
   display: "block",
@@ -113,6 +127,13 @@ const Table = ({
   const [toastMessage, setToastMessage] = useState("");
   const [locationOptions, setLocationOptions] = useState([]);
   const [vacancyTypeOptions, setVacancyTypeOptions] = useState([]);
+  const [expandedRowIndex, setExpandedRowIndex] = useState(null);
+
+  const handleRowHover = (index) => {
+    console.log("hover", index);
+    setExpandedRowIndex(index);
+  };
+
   const copyToClipboard = (value) => {
     navigator.clipboard.writeText(String(value));
     setToastMessage("Copied to clipboard!");
@@ -161,7 +182,15 @@ const Table = ({
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
-
+  const RowDetails = styled("tr", {
+    display: "none",
+    "& td": {
+      padding: "10px",
+      backgroundColor: "#f9f9f9",
+      borderTop: "1px solid #ddd",
+      fontSize: "14px",
+    },
+  });
   return (
     <>
       <Toast
@@ -373,22 +402,19 @@ const Table = ({
                       </TableCell>
                     );
                   })}
-                  {/* Delete button */}
-                  <TableCell>
-                    <Button
-                      onClick={() => deleteRowInteral(row.index)}
-                      color="red"
-                    >
-                      🗑️
-                    </Button>
-                  </TableCell>
+                  {/* actions */}
+                  <TableCell>🚫</TableCell>
                 </TableRow>
               ))}
             </tbody>
           ) : (
             <tbody>
-              {table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id}>
+              {table.getRowModel().rows.map((row, rowIndex) => (
+                <TableRow
+                  onMouseEnter={() => handleRowHover(rowIndex)}
+                  onMouseLeave={() => handleRowHover(null)}
+                  key={row.id}
+                >
                   {row.getVisibleCells().map((cell) => {
                     const cellValue = cell.getValue();
                     return (
@@ -441,6 +467,9 @@ const Table = ({
                         ) : (
                           <></>
                         )}
+                        {/* <Tooltip>
+                          Additional info about {cell.column.id}
+                        </Tooltip> */}
                       </TableCell>
                     );
                   })}
@@ -451,28 +480,35 @@ const Table = ({
                         gap: "5px",
                         display: "flex",
                         justifyContent: "center",
+                        padding: "3px",
+                        overflow: "visible",
                       }}
                       key={"actions"}
                     >
                       <div style={{ gap: "5px", display: "flex" }}>
                         {actions.map((action) => {
                           return (
-                            <Button
-                              key={action.name}
-                              onClick={() => action.function()}
-                            >
-                              {action.icon ?? action.name}
-                            </Button>
+                            <TooltipWrap key={action.name}>
+                              <Button onClick={() => action.function()}>
+                                {action.icon ?? action.name}
+                              </Button>
+                              <Tooltip>{action.name}</Tooltip>
+                            </TooltipWrap>
                           );
                         })}
                       </div>
-                      {/* <Button
-                      onClick={() => deleteRowInteral(row.index)}
-                      color="red"
-                    >
-                      🗑️
-                    </Button> */}
                     </TableCell>
+                  )}
+                  {expandedRowIndex === rowIndex && (
+                    <RowDetails>
+                      <td colSpan={columns.length + 1}>
+                        {/* Replace with the additional information you want to display */}
+                        <div>
+                          <strong>Additional Information:</strong>
+                          <p>{row.additionalInfo}</p>
+                        </div>
+                      </td>
+                    </RowDetails>
                   )}
                 </TableRow>
               ))}
