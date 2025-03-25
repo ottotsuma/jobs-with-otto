@@ -396,10 +396,7 @@ const Table = ({
                       >
                         {cell.column.id === "user_id" ? (
                           <div>
-                            <StyledLink
-                              href={`/${currentLocale}/profile/${cellValue}`}
-                              passHref
-                            >
+                            <StyledLink href={`profile/${cellValue}`} passHref>
                               👁️{cellValue}
                             </StyledLink>
                           </div>

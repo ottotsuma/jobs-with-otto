@@ -210,7 +210,10 @@ const Navbar = () => {
                         <ListItem><StyledLink onClick={closeSidebar} href={`/${currentLocale}/companies/${user?.company_id}`}>My Company + Vacancies</StyledLink></ListItem>
                     </>)}
                     {user?.role === "manager" && !user.company_id && (
-                        <ListItem><StyledLink onClick={closeSidebar} href={`/${currentLocale}/companies/create`}>{t('companies.create')}</StyledLink></ListItem>
+                        <>
+                            <ListItem><StyledLink onClick={closeSidebar} href={`/${currentLocale}/companies/create`}>{t('companies.create')}</StyledLink></ListItem>
+                            <ListItem><StyledLink onClick={closeSidebar} href={`/${currentLocale}/companies`}>{t('companies.view_all')}</StyledLink></ListItem>
+                        </>
                     )}
                     {user?.role === "manager" && user?.company_id && (
                         <>

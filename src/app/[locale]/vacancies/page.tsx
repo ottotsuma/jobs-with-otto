@@ -62,10 +62,7 @@ export default function VacanciesPage() {
       <Title>Vacancies</Title>
       <Grid>
         {vacancies.map((vacancy) => (
-          <Card
-            key={vacancy.id}
-            href={`${currentLocale}/vacancies/${vacancy.id}`}
-          >
+          <Card key={vacancy.id} href={`vacancies/${vacancy.id}`}>
             <CardTitle>{vacancy.job_title}</CardTitle>
             <CardDetails>{vacancy.description}</CardDetails>
             <DetailRow>

@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { Company } from "@/types/company";
 import { Location } from "@/types/location";
 import {
+  None,
   Button,
   Container,
   Title,
@@ -219,7 +220,7 @@ export default function ProfilePage() {
                 .filter(([key]) => !blockedValues.includes(key))
                 .map(([key, value]) =>
                   key === "company_id" ? (
-                    <div key={key}>
+                    <None key={key}>
                       {/* <Label>Company</Label>
                       <Select name={key} value={value} onChange={() => {}}>
                         <option value="">Select Company</option>
@@ -229,29 +230,38 @@ export default function ProfilePage() {
                           </option>
                         ))}
                       </Select> */}
-                    </div>
+                    </None>
                   ) : key === "location_ids" ? (
                     <div key={key}>
-                      <Label>Locations</Label>
-                      <Select
-                        name={key}
-                        value={value || []}
-                        onChange={(e) => {
-                          const selectedOptions = Array.from(
-                            e.target.selectedOptions,
-                            (option) => option.value
-                          );
-                          setProfile({ ...profile, [key]: selectedOptions });
-                        }}
-                        multiple
-                      >
-                        <option value="">Select Location(s)</option>
-                        {locations.map((location) => (
-                          <option key={location.id} value={location.id}>
-                            {location.name}
-                          </option>
-                        ))}
-                      </Select>
+                      {user.company_id ? (
+                        <>
+                          <Label>Locations</Label>
+                          <Select
+                            name={key}
+                            value={value || []}
+                            onChange={(e) => {
+                              const selectedOptions = Array.from(
+                                e.target.selectedOptions,
+                                (option) => option.value
+                              );
+                              setProfile({
+                                ...profile,
+                                [key]: selectedOptions,
+                              });
+                            }}
+                            multiple
+                          >
+                            <option value="">Select Location(s)</option>
+                            {locations.map((location) => (
+                              <option key={location.id} value={location.id}>
+                                {location.name}
+                              </option>
+                            ))}
+                          </Select>
+                        </>
+                      ) : (
+                        <None></None>
+                      )}
                     </div>
                   ) : (
                     <div key={key}>

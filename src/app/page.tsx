@@ -35,7 +35,7 @@ export default function Home() {
 
   useEffect(() => {
     if (user) {
-      router.push(`/${currentLocale}/profile`);
+      router.push(`/${currentLocale || "en"}/profile`);
     }
   }, [user]);
 

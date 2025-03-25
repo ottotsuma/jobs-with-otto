@@ -1,14 +1,43 @@
 "use client"
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { supabase } from "superbase";
-
+import {
+    Button,
+    Container,
+    Title,
+    Form,
+    Input,
+    ZoneGreen,
+    ZoneRed,
+    ZoneYellow,
+    Label,
+    Select,
+} from "@/styles/basic";
+import { useUser } from "@/contexts/UserContext";
 export default function CompanyPage() {
-    const router = useRouter();
-    const { id } = router.query;
+    // const router = useRouter();
+    // const { id } = router.query;
+    const { user, setUser } = useUser();
+    const { id } = useParams();
     const [company, setCompany] = useState(null);
     const [vacancies, setVacancies] = useState([]);
+    async function applyAsCompanyManager(user, companyId) {
+        if (!user?.id || !companyId) {
+            console.error("Missing user ID or company ID.");
+            return;
+        }
 
+        const { error } = await supabase
+            .from("company_manager_applications")
+            .insert([{ user_id: user.id, company_id: companyId, status: "pending" }]);
+
+        if (error) {
+            console.error("Error inserting application:", error);
+        } else {
+            console.log("Application submitted successfully.");
+        }
+    }
     useEffect(() => {
         if (!id) return;
 
@@ -38,7 +67,7 @@ export default function CompanyPage() {
                 <ul>
                     {vacancies.map((vacancy) => (
                         <li key={vacancy.id} className="mb-2">
-                            <p className="font-semibold">{vacancy.title}</p>
+                            <p className="font-semibold">{vacancy.job_title}</p>
                             <p>{vacancy.description}</p>
                         </li>
                     ))}
@@ -46,6 +75,10 @@ export default function CompanyPage() {
             ) : (
                 <p>No vacancies available.</p>
             )}
+
+            {user?.role === "manager" && <Button onClick={() => {
+                applyAsCompanyManager(user, id);
+            }}>Apply to join company as manager</Button>}
         </div>
     );
 }

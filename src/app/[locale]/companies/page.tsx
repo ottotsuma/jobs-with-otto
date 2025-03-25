@@ -84,7 +84,7 @@ export default function CompaniesPage() {
           return (
             <Card
               key={company.id}
-              href={`${currentLocale}/companies/${company.id}`}
+              href={`companies/${company.id}`}
               style={{ backgroundColor, color: textColor }}
             >
               {company.company_logo_url && (

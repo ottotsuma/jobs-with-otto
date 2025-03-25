@@ -1,6 +1,8 @@
 
 import { styled } from '@stitches/react';
-
+export const None = styled('div', {
+    display: "none"
+});
 export const Container = styled('div', {
     margin: '1rem',
 });

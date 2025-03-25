@@ -12,13 +12,19 @@ export async function fetchProfile(
   }
 
   try {
-    console.log("getting role");
+    const timeout = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error("Supabase request timed out")), 5000)
+    );
+    console.log("getting role", user.id);
     // Step 1: Fetch the user's role
-    let { data: roleIDData, error: roleIDError } = await supabase
-      .from("user_roles")
-      .select("role_id")
-      .eq("user_id", user.id)
-      .single();
+    let { data: roleIDData, error: roleIDError } = await Promise.race([
+      supabase
+        .from("user_roles")
+        .select("role_id")
+        .eq("user_id", user.id)
+        .single(),
+      timeout,
+    ]);
     console.log(roleIDData, "got role");
     // If user has no role, assign role_id = 4
     if (roleIDError || !roleIDData?.role_id) {
