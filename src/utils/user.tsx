@@ -93,6 +93,7 @@ export async function fetchProfile(
     // Step 4: Merge and store user data
     const mergedProfile = {
       ...user,
+      company_id: profileData?.company_id,
       role: roleData.role_name,
       profile: profileData,
     };

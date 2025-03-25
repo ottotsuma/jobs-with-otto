@@ -85,19 +85,25 @@ const StyledLink = styled(Link, {
     boxShadow: "0px 6px 10px rgba(0, 0, 0, 0.15)",
   },
 });
-
+type Action = {
+  name: string;
+  function: () => void;
+  icon?: string;
+};
 const Table = ({
   columns,
   data,
   onDataChange,
   deleteRow,
   bannedEdit,
+  actions,
 }: {
   columns: ColumnDef<RowData>[];
   data: RowData[];
   onDataChange: (updatedData: RowData[]) => void;
   deleteRow?: (id: number) => void;
   bannedEdit?: string[];
+  actions?: Action[];
 }) => {
   const currentLocale = useLocale();
   const [enableEdit, SetEnableEdit] = useState(false);
@@ -190,7 +196,9 @@ const Table = ({
                     ) ?? <></>}
                   </TableHeader>
                 ))}
-                <TableHeader>Actions</TableHeader>
+                {actions && actions.length > 0 && (
+                  <TableHeader>Actions</TableHeader>
+                )}
               </TableRow>
             ))}
           </thead>
@@ -436,14 +444,36 @@ const Table = ({
                       </TableCell>
                     );
                   })}
-                  <TableCell>
-                    <Button
+
+                  {actions && actions.length > 0 && (
+                    <TableCell
+                      style={{
+                        gap: "5px",
+                        display: "flex",
+                        justifyContent: "center",
+                      }}
+                      key={"actions"}
+                    >
+                      <div style={{ gap: "5px", display: "flex" }}>
+                        {actions.map((action) => {
+                          return (
+                            <Button
+                              key={action.name}
+                              onClick={() => action.function()}
+                            >
+                              {action.icon ?? action.name}
+                            </Button>
+                          );
+                        })}
+                      </div>
+                      {/* <Button
                       onClick={() => deleteRowInteral(row.index)}
                       color="red"
                     >
                       🗑️
-                    </Button>
-                  </TableCell>
+                    </Button> */}
+                    </TableCell>
+                  )}
                 </TableRow>
               ))}
             </tbody>

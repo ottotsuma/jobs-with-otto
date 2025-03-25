@@ -34,6 +34,19 @@ export default function ProfilePage() {
   const [companyApplicants, setCompanyApplicants] = useState([]);
   const [loading, setLoading] = useState<boolean>(true);
   const { setTitle } = useTitle();
+  const [applications, setApplications] = useState([]);
+  async function fetchApplications(companyId: string) {
+    const { data, error } = await supabase
+      .from("company_manager_applications")
+      .select("*")
+      .eq("company_id", companyId);
+
+    if (error) {
+      console.error("Error fetching applications:", error);
+    } else {
+      setApplications(data);
+    }
+  }
 
   const blockedValues = ["id", "user_id", "created_at", "updated_at"];
   useEffect(() => {
@@ -66,7 +79,8 @@ export default function ProfilePage() {
     }
     fetchCompany(user?.company_id || localStorage.getItem("user")?.company_id);
     fetchCompanyManagers(user?.company_id);
-    fetchCompanyApplicants(user?.company_id);
+    // fetchCompanyApplicants(user?.company_id);
+    fetchApplications(user?.company_id);
   }, [user]);
   async function updateCompany(e) {
     e.preventDefault();
@@ -108,6 +122,12 @@ export default function ProfilePage() {
     : [];
   const ApplicantColumns: ColumnDef[] = companyApplicants.length
     ? Object.keys(companyApplicants[0]).map((key) => ({
+        accessorKey: key,
+        header: key.charAt(0).toUpperCase() + key.slice(1), // Capitalize the header
+      }))
+    : [];
+  const ApplicationsColumns: ColumnDef[] = applications.length
+    ? Object.keys(applications[0]).map((key) => ({
         accessorKey: key,
         header: key.charAt(0).toUpperCase() + key.slice(1), // Capitalize the header
       }))
@@ -206,7 +226,47 @@ export default function ProfilePage() {
               )}
             </ZoneGreen>
             {/* Yellow Zone - Change Password & Role Update Forms */}
-            <ZoneYellow>Permissions</ZoneYellow>
+            <ZoneYellow>
+              <p>Permissions</p>
+              {applications.length > 0 && (
+                <>
+                  <h3>Manager Applications</h3>
+                  <Table
+                    columns={ApplicationsColumns}
+                    data={applications}
+                    onDataChange={() => {}}
+                    deleteRow={() => {}}
+                    bannedEdit={[]}
+                    actions={[
+                      {
+                        name: "accept",
+                        function: () => {},
+                        icon: "✅",
+                      },
+                      {
+                        name: "reject",
+                        function: () => {},
+                        icon: "❌",
+                      },
+                    ]}
+                  />
+                </>
+              )}
+              {/* {worker_applications.length > 0 && (
+                <>
+                  <h3>Worker Applications</h3>
+                  <Table
+                    columns={ApplicationsColumns}
+                    data={applications}
+                    onDataChange={() => {}}
+                    deleteRow={() => {}}
+                    bannedEdit={[]}
+                  />
+                </>
+              )} */}
+              {/* <div>{applications}</div> */}
+            </ZoneYellow>
+            {/* applications */}
             {/* Red Zone - Delete Profile */}
             <ZoneRed>
               <Button onClick={deleteCompany} color="red">
