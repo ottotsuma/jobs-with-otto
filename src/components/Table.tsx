@@ -19,6 +19,7 @@ import {
   ZoneYellow,
   Label,
   Select,
+  None,
 } from "@/styles/basic";
 import { styled } from "@stitches/react";
 import { isValidDate, formatDate } from "@/utils/utils";
@@ -233,7 +234,7 @@ const Table = ({
                     {flexRender(
                       header.column.columnDef.header,
                       header.getContext()
-                    ) ?? <></>}
+                    ) ?? <None></None>}
                   </TableHeader>
                 ))}
                 {actions && actions.length > 0 && (
@@ -408,7 +409,7 @@ const Table = ({
                             🏃‍♂️ Run
                           </Button>
                         ) : (
-                          <></>
+                          <None></None>
                         )}
                       </TableCell>
                     );
@@ -452,7 +453,7 @@ const Table = ({
                               {cellValue.coordinates[1]}
                             </div>
                           ) : (
-                            <></>
+                            <None></None>
                           )
                         ) : isValidDate(cellValue) ? (
                           <div>{formatDate(cellValue)}</div>
@@ -476,7 +477,7 @@ const Table = ({
                             🏃‍♂️ Run
                           </Button>
                         ) : (
-                          <></>
+                          <None></None>
                         )}
                         {showExtra && expandedRowIndex === rowIndex + 1 && (
                           <RowDetails>
