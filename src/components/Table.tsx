@@ -277,7 +277,7 @@ const Table = ({
                         }}
                         key={cell.id}
                       >
-                        {/* Handle different data types */}
+                        {/* Lock credits */}
                         {bannedEdit &&
                         bannedEdit.length > 0 &&
                         bannedEdit.includes(cell.column.id) ? (
@@ -457,6 +457,7 @@ const Table = ({
                         }}
                         key={cell.id}
                       >
+                        {/* If location_qr is null, add button to add QR code */}
                         {cell.column.id === "user_id" ? (
                           <div>
                             <Button
