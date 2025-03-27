@@ -7,7 +7,7 @@
 3. Companies (done)
 4. Locations (done)
 5. Jobs (done)
-6. QR codes
+6. QR codes (testing)
 7. Smart contracts
 8. permissions
 9. Analytics (done)
@@ -15,15 +15,15 @@
 11. Feedback form
 12. Candidate Search
 13. CVs
-14. Translations
-15. Geolocking
+14. Translations (In progress...)
+15. Geolocking (testing)
 16. Tracking
 17. Reccomandations
 18. Weights
-19. Visa + Qulifications
-20. Tags to users, jobs, companies
+19. Visa + Qulifications (testing)
+20. Tags to users, jobs, companies (testing)
 21. SQL custom param search
-22. credits
+22. credits (testing)
 
 ### Vacancies new categories
 
