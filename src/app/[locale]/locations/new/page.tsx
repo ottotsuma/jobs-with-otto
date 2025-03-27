@@ -6,6 +6,7 @@ import { NewLocationType } from "@/types/location";
 import { useUser } from "@/contexts/UserContext";
 import { styled } from "@stitches/react";
 import { useLocale } from "@/app/[locale]/hooks/useLocal";
+import { addQRCodeToLocation } from "@/utils/QR/store";
 // Stitches styling
 const FormContainer = styled("div", {
   // maxWidth: "800px",
@@ -150,13 +151,19 @@ export default function NewLocation() {
       return;
     }
 
+    // Create location with QR code
     const { data, error } = await supabase.from("locations").insert([location]);
 
     if (error) {
       alert("Error creating location");
       console.error(error);
-    } else {
-      router.push(`/${currentLocale}/locations/manage`);
+    } else if (data) {
+      const locationQR = await addQRCodeToLocation(data.id);
+      if (locationQR?.type === "error") {
+        console.log(locationQR?.error, "location QR code error");
+      } else {
+        router.push(`/${currentLocale}/locations/manage`);
+      }
     }
   };
 
