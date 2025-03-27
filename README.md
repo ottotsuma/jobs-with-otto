@@ -6,11 +6,11 @@
 2. User types (done)
 3. Companies (done)
 4. Locations (done)
-5. Jobs
+5. Jobs (done)
 6. QR codes
 7. Smart contracts
 8. permissions
-9. Analytics
+9. Analytics (done)
 10. CSV
 11. Feedback form
 12. Candidate Search
@@ -23,6 +23,7 @@
 19. Visa + Qulifications
 20. Tags to users, jobs, companies
 21. SQL custom param search
+22. credits
 
 ### Vacancies new categories
 
