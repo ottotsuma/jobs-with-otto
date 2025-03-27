@@ -3,6 +3,7 @@ import { useEffect, useState, use } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "superbase";
 import { styled } from "@stitches/react";
+import Loading from "@/components/loading";
 import { useTheme } from "next-themes";
 import { useTitle } from "@/contexts/TitleContext";
 const ProfileContainer = styled("div", {
@@ -60,7 +61,7 @@ export default function ViewProfile({ user_id }) {
     fetchProfile();
   }, [user_id]);
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <Loading />;
   if (error) return <p>Error: {error}</p>;
   return (
     <ProfileContainer theme={theme === "dark" ? false : true}>

@@ -24,6 +24,12 @@
     "analytics": {
         "public": "Public Analytics"
     },
+    "about": {
+        "about": "about"
+    },
+    "contact": {
+        "contact": "contact"
+    },
     "welcome": "Welcome",
     "goodbye": "Goodbye"
 }

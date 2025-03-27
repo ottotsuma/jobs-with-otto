@@ -1,7 +1,7 @@
 "use client";
 import { styled, keyframes } from "@stitches/react";
 import { ReactNode } from "react";
-
+import { useTheme } from "next-themes";
 const slideIn = keyframes({
   from: { transform: "translateX(100%)" },
   to: { transform: "translateX(0)" },
@@ -38,6 +38,16 @@ const SidebarContainer = styled("div", {
         animation: `${slideOut} 0.3s ease forwards`,
       },
     },
+    theme: {
+      true: {
+        backgroundColor: "#fff",
+        color: "#333",
+      },
+      false: {
+        backgroundColor: "#1C1C1C",
+        color: "WhiteSmoke",
+      },
+    },
   },
 });
 
@@ -59,11 +69,16 @@ interface SidebarProps {
 }
 
 const Sidebar = ({ isOpen, onClose, children }: SidebarProps) => {
+  const { theme } = useTheme();
   if (!isOpen) return null;
 
   return (
     <Overlay onClick={onClose}>
-      <SidebarContainer hidden={!isOpen} onClick={(e) => e.stopPropagation()}>
+      <SidebarContainer
+        theme={theme === "dark" ? false : true}
+        hidden={!isOpen}
+        onClick={(e) => e.stopPropagation()}
+      >
         <CloseButton onClick={onClose}>&times;</CloseButton>
         {children}
       </SidebarContainer>

@@ -2,6 +2,7 @@
 import { useRouter, useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { supabase } from "superbase";
+import Loading from "@/components/loading";
 import {
     Button,
     Container,
@@ -55,7 +56,7 @@ export default function CompanyPage() {
         fetchVacancies();
     }, [id]);
 
-    if (!company) return <p>Loading...</p>;
+    if (!company) return <Loading />;
 
     return (
         <div className="p-6">
@@ -75,7 +76,7 @@ export default function CompanyPage() {
             ) : (
                 <p>No vacancies available.</p>
             )}
-
+            {/* Comments/rating */}
             {user?.role === "manager" && <Button onClick={() => {
                 applyAsCompanyManager(user, id);
             }}>Apply to join company as manager</Button>}

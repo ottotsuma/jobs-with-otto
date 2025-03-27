@@ -220,6 +220,7 @@ const Navbar = () => {
                             <ListItem><StyledLink onClick={closeSidebar} href={`/${currentLocale}/companies/manage`}>{t('companies.manage')}</StyledLink></ListItem>
                             <ListItem><StyledLink onClick={closeSidebar} href={`/${currentLocale}/locations/manage`}>{t('locations.manage')}</StyledLink></ListItem>
                             <ListItem><StyledLink onClick={closeSidebar} href={`/${currentLocale}/vacancies/manage`}>{t('vacancies.manage')}</StyledLink></ListItem>
+                            {/* View opt in users */}
                         </>
                     )}
                     {user?.role === "admin" && (
@@ -233,13 +234,13 @@ const Navbar = () => {
                         onClick={() => router.push(`/${currentLocale}/about`)}
                         color="blue"
                     >
-                        about
+                        {t('about.about')}
                     </Button>
                     <Button
                         onClick={() => router.push(`/${currentLocale}/contact`)}
                         color="blue"
                     >
-                        contact
+                        {t('contact.contact')}
                     </Button>
                 </List>
             </Nav >

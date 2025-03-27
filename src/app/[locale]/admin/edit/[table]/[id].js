@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "superbase";
 import { useLocale } from "@/app/[locale]/hooks/useLocal";
+import Loading from "@/components/loading";
 export default function EditEntry() {
     const router = useRouter();
     const currentLocale = useLocale();
@@ -36,7 +37,7 @@ export default function EditEntry() {
         <div className="max-w-2xl mx-auto p-6">
             <h1 className="text-2xl font-bold mb-4">Edit {table}</h1>
             {loading ? (
-                <p>Loading...</p>
+                <Loading />
             ) : (
                 <form onSubmit={updateEntry} className="space-y-4">
                     {Object.entries(formData).map(([key, value]) => (

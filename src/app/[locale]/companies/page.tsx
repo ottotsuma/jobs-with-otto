@@ -9,6 +9,8 @@ import { styled } from "@stitches/react";
 import { Container, Title } from "@/styles/basic";
 import { Company } from "@/types/company";
 import { useTitle } from "@/contexts/TitleContext";
+import SideBar from "@/components/Sidebar";
+import ViewCompany from "@/components/viewCompany";
 
 // Mapping of industries to card background colors and emoji's
 const industryStyles: Record<string, { color: string; emoji: string }> = {
@@ -38,7 +40,18 @@ const Card = styled(Link, {
     boxShadow: "0px 6px 10px rgba(0, 0, 0, 0.15)",
   },
 });
-
+const CardButton = styled("button", {
+  display: "block",
+  padding: "16px",
+  borderRadius: "12px",
+  textDecoration: "none",
+  boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
+  transition: "transform 0.2s ease, box-shadow 0.2s ease",
+  "&:hover": {
+    transform: "translateY(-5px)",
+    boxShadow: "0px 6px 10px rgba(0, 0, 0, 0.15)",
+  },
+});
 const CardTitle = styled("h2", {
   fontSize: "18px",
   fontWeight: "bold",
@@ -55,9 +68,18 @@ const DetailRow = styled("div", {
 });
 
 export default function CompaniesPage() {
-  const currentLocale = useLocale();
+  // const currentLocale = useLocale();
   const [companies, setCompanies] = useState<Company[]>([]);
   const { setTitle } = useTitle();
+
+  const [companyModalOpen, setCompanyModalOpen] = useState(false);
+  const [selectedCompany, setSelectedCompany] = useState("");
+  const handleCompanySelected = (company_id: string) => {
+    if (company_id) {
+      setSelectedCompany(company_id);
+      setCompanyModalOpen(true);
+    }
+  };
 
   useEffect(() => {
     setTitle("Companies");
@@ -70,6 +92,12 @@ export default function CompaniesPage() {
 
   return (
     <Container>
+      <SideBar
+        isOpen={companyModalOpen && !!selectedCompany}
+        onClose={() => setCompanyModalOpen(false)}
+      >
+        <ViewCompany company_id={selectedCompany} />
+      </SideBar>
       <Title>Companies</Title>
       <Grid>
         {companies.map((company) => {
@@ -82,9 +110,12 @@ export default function CompaniesPage() {
           const textColor = backgroundColor === "#ffffff" ? "black" : "white";
 
           return (
-            <Card
+            <CardButton
               key={company.id}
-              href={`companies/${company.id}`}
+              // href={`companies/${company.id}`}
+              onClick={() => {
+                handleCompanySelected(company.id);
+              }}
               style={{ backgroundColor, color: textColor }}
             >
               {company.company_logo_url && (
@@ -136,7 +167,7 @@ export default function CompaniesPage() {
                   ))}
                 </DetailRow>
               )}
-            </Card>
+            </CardButton>
           );
         })}
       </Grid>

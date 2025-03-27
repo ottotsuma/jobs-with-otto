@@ -5,6 +5,7 @@ import { supabase } from "superbase";
 import { styled } from "@stitches/react";
 import { useTheme } from "next-themes";
 import { useTitle } from "@/contexts/TitleContext";
+import Loading from "@/components/loading";
 const ProfileContainer = styled("div", {
     maxWidth: "600px",
     margin: "50px auto",
@@ -66,7 +67,7 @@ export default function ProfilePage({ params }) {
         fetchProfile();
     }, [id]);
 
-    if (loading) return <p>Loading...</p>;
+    if (loading) return <Loading />;
     if (error) return <p>Error: {error}</p>;
     return (
         <ProfileContainer theme={theme === "dark" ? false : true}>

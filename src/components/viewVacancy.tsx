@@ -6,25 +6,22 @@ import { useEffect, useState } from "react";
 import { supabase } from "superbase";
 import Loading from "@/components/loading";
 import Script from "next/script";
-export default function VacancyPage() {
+export default function VacancyPage({ vacancy_id }) {
   // const router = useRouter();
   // if(!router.isReady) {
   //     return <Loading />
   // }
-  const params = useParams();
-  const { id } = params;
-  // const { id } = router.query;
   const [vacancy, setVacancy] = useState(null);
   const [company, setCompany] = useState(null);
 
   useEffect(() => {
-    if (!id) return;
+    if (!vacancy_id) return;
 
     async function fetchVacancy() {
       const { data, error } = await supabase
         .from("vacancies")
         .select("*")
-        .eq("id", id)
+        .eq("id", vacancy_id)
         .single();
       if (!error) {
         setVacancy(data);
@@ -42,7 +39,7 @@ export default function VacancyPage() {
     }
 
     fetchVacancy();
-  }, [id]);
+  }, [vacancy_id]);
 
   if (!vacancy) return <Loading />;
 
