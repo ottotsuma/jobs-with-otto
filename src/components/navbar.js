@@ -242,6 +242,7 @@ const Navbar = () => {
                     >
                         {t('contact.contact')}
                     </Button>
+                    {/* Page to list all page options? */}
                 </List>
             </Nav >
         </>
