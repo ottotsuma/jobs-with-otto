@@ -17,7 +17,7 @@ async function generateQRCode(data: string) {
 async function uploadQRCode(locationId: string, qrCodeImage: string) {
   // Create a file path for the QR code in Supabase storage
   const filePath = `qr-codes/location_${locationId}.png`;
-
+  console.log(qrCodeImage, "qr");
   // Upload the QR code image to Supabase Storage
   const { data, error } = await supabase.storage
     .from("qr-codes") // The bucket name
@@ -32,6 +32,8 @@ async function uploadQRCode(locationId: string, qrCodeImage: string) {
   const publicUrl = supabase.storage
     .from("qr-codes")
     .getPublicUrl(filePath).publicUrl;
+  console.log("QR Code uploaded to:", publicUrl);
+
   return publicUrl;
 }
 
@@ -52,7 +54,8 @@ export async function getQRCode(locationId: string) {
 }
 
 export async function addQRCodeToLocation(locationId: string) {
-  const locationData = `https://yourdomain.com/clock-in?location=${locationId}`;
+  const locationData = `http://localhost:3000/clock-in?location=${locationId}`;
+
   // Generate the QR code
   const qrCodeImage = await generateQRCode(locationData);
   if (!qrCodeImage) return;
