@@ -8,6 +8,9 @@ import {
 } from "@tanstack/react-table";
 import Toast from "@/components/toast";
 import DateTimePicker from "@/components/picker";
+import Modal from "@/components/modal";
+import SideBar from "@/components/Sidebar";
+
 import {
   Button,
   Container,
@@ -25,6 +28,7 @@ import { styled } from "@stitches/react";
 import { isValidDate, formatDate } from "@/utils/utils";
 import { useLocale } from "@/app/[locale]/hooks/useLocal";
 import Link from "next/link";
+import ViewProfile from "./viewProfile";
 export type RowData = {
   id: number;
   [key: string]: any;
@@ -130,7 +134,14 @@ const Table = ({
   const [vacancyTypeOptions, setVacancyTypeOptions] = useState([]);
   const [expandedRowIndex, setExpandedRowIndex] = useState(null);
   const [showExtra, setShowExtra] = useState(false);
-
+  const [userProfileModalOpen, setUserProfileModalOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState("");
+  const handleUserSelected = (user_id: string) => {
+    if (user_id) {
+      setSelectedUser(user_id);
+      setUserProfileModalOpen(true);
+    }
+  };
   const handleRowHover = (index) => {
     console.log("hover", index);
     setExpandedRowIndex(index);
@@ -201,6 +212,12 @@ const Table = ({
         show={showToast}
         onClose={() => setShowToast(false)}
       />
+      <SideBar
+        isOpen={userProfileModalOpen && !!selectedUser}
+        onClose={() => setUserProfileModalOpen(false)}
+      >
+        <ViewProfile user_id={selectedUser} />
+      </SideBar>
       <Button
         color={enableCopy ? "red" : "blue"}
         onClick={() => SetEnableCopy(!enableCopy)}
@@ -442,9 +459,16 @@ const Table = ({
                       >
                         {cell.column.id === "user_id" ? (
                           <div>
-                            <StyledLink href={`profile/${cellValue}`} passHref>
+                            <Button
+                              onClick={() => {
+                                handleUserSelected(cellValue);
+                              }}
+                            >
                               👁️{cellValue}
-                            </StyledLink>
+                            </Button>
+                            {/* <StyledLink href={`profile/${cellValue}`} passHref>
+                              👁️{cellValue}
+                            </StyledLink> */}
                           </div>
                         ) : cell.column.id === "geolocation" ? (
                           cellValue?.coordinates ? (
