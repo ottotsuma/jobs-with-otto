@@ -1,6 +1,20 @@
 {
+    "generic": {
+        "select_template": "Select Template",
+        "close": "Close",
+        "save_template": "Save Template",
+        "template_name": "Template Name"
+    },
     "profile": {
-        "my_profile": "My Profile"
+        "my_profile": "My Profile",
+        "update": "Update Profile",
+        "change_password": "Change Password",
+        "new_password": "New Password",
+        "role": "Role",
+        "manager": "Manager",
+        "applicant": "Applicant",
+        "delete": "Delete Profile",
+        "assign_new_role": "Assign new role"
     },
     "auth": {
         "loginSignup": "Login/Sign Up",
@@ -11,15 +25,39 @@
     },
     "vacancies": {
         "view_all": "View All Vacancies",
-        "manage": "Manage Vacancies"
+        "manage": "Manage Vacancies",
+        "new": "New Vacancy",
+        "create": "Create Vacancy",
+        "type": "Vacancy Type",
+        "select_type": "Select vacancy type",
+        "title": "Vacancy Title",
+        "description": "Vacancy description",
+        "job_level": "Vacancy level",
+        "status": "Vacancy status",
+        "country": "Vacancy country",
+        "currency": "Vacancy currency",
+        "special_instructions": "Special instructions",
+        "hourly_rate": "hourly rate",
+        "day_salary": "day salary",
+        "month_salary": "month salary",
+        "yearly_salary": "yearly salary",
+        "employee_places": "employee places"
     },
     "companies": {
         "view_all": "View All Companies",
         "create": "Create Company",
-        "manage": "Manage Company"
+        "manage": "Manage Company",
+        "private": "Private",
+        "public": "Public",
+        "non_profit": "Non-Profit"
     },
     "locations": {
-        "manage": "Manage Locations"
+        "locations": "Locations",
+        "location": "Location",
+        "select": "Select Location(s)",
+        "select_location": "Select Location",
+        "manage": "Manage Locations",
+        "all": "All locations"
     },
     "analytics": {
         "public": "Public Analytics"

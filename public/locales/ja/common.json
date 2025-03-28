@@ -1,28 +1,72 @@
 {
+    "generic": {
+        "select_template": "テンプレートを選択",
+        "close": "閉じる",
+        "save_template": "テンプレートを保存",
+        "template_name": "テンプレート名"
+    },
     "profile": {
-        "my_profile": "マイプロフィール"
+        "my_profile": "マイプロフィール",
+        "update": "プロフィールを更新",
+        "change_password": "パスワードを変更",
+        "new_password": "新しいパスワード",
+        "role": "役割",
+        "manager": "マネージャー",
+        "applicant": "応募者",
+        "delete": "プロフィールを削除",
+        "assign_new_role": "新しい役割を割り当てる"
     },
     "auth": {
-        "loginSignup": "ログイン/新規登録",
-        "signout": "サインアウト"
+        "loginSignup": "ログイン / 新規登録",
+        "signout": "ログアウト"
     },
     "admin": {
         "dashboard": "管理者ダッシュボード"
     },
     "vacancies": {
         "view_all": "すべての求人を見る",
-        "manage": "求人を管理する"
+        "manage": "求人を管理",
+        "new": "新しい求人",
+        "create": "求人を作成",
+        "type": "求人の種類",
+        "select_type": "求人の種類を選択",
+        "title": "求人タイトル",
+        "description": "求人の説明",
+        "job_level": "求人レベル",
+        "status": "求人ステータス",
+        "country": "求人の国",
+        "currency": "通貨",
+        "special_instructions": "特別な指示",
+        "hourly_rate": "時給",
+        "day_salary": "日給",
+        "month_salary": "月給",
+        "yearly_salary": "年収",
+        "employee_places": "従業員数"
     },
     "companies": {
         "view_all": "すべての企業を見る",
-        "create": "企業を作成する",
-        "manage": "企業を管理する"
+        "create": "企業を作成",
+        "manage": "企業を管理",
+        "private": "非公開",
+        "public": "公開",
+        "non_profit": "非営利団体"
     },
     "locations": {
-        "manage": "勤務地を管理する"
+        "locations": "所在地",
+        "location": "所在地",
+        "select": "所在地を選択",
+        "select_location": "所在地を選択",
+        "manage": "所在地を管理",
+        "all": "すべての所在地"
     },
     "analytics": {
         "public": "公開分析"
+    },
+    "about": {
+        "about": "概要"
+    },
+    "contact": {
+        "contact": "お問い合わせ"
     },
     "welcome": "ようこそ",
     "goodbye": "さようなら"

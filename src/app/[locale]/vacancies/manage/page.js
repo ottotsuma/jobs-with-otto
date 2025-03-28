@@ -9,7 +9,9 @@ import { vacancy_bannedEdit } from '@/types/vacancies'
 import Loading from "@/components/loading";
 import { useTitle } from "@/contexts/TitleContext";
 import { useLocale } from "@/app/[locale]/hooks/useLocal";
+import { useTranslation } from 'next-i18next';
 export default function ManageVacancies() {
+    const { t, i18n } = useTranslation('common');
     const router = useRouter();
     const { setTitle } = useTitle();
     const currentLocale = useLocale();
@@ -96,12 +98,12 @@ export default function ManageVacancies() {
         <div>
             {loading ? <Loading /> :
                 <>
-                    <h1>Manage Vacancies</h1>
+                    <h1>{t('vacancies.manage')}</h1>
                     {/* Create new - src\app\vacancies\new\page.tsx */}
                     <Button
                         onClick={() => router.push(`/${currentLocale}/vacancies/new`)}
                     >
-                        New Vacancy
+                        {t('vacancies.new')}
                     </Button>
                     <select
                         value={selectedLocation}
@@ -110,7 +112,7 @@ export default function ManageVacancies() {
                         }}
                         className="w-full p-2 border rounded mb-4"
                     >
-                        <option value="">All Locations</option>
+                        <option value="">{t('locations.all')}</option>
                         {locations.map((location) => (
                             <option key={location.id} value={location.id}>
                                 {location.name}

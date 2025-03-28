@@ -7,6 +7,7 @@ import { Location as LocationType } from "@/types/location";
 import { useUser } from "@/contexts/UserContext";
 import { styled } from "@stitches/react";
 import { useLocale } from "@/app/[locale]/hooks/useLocal";
+import { useTranslation } from "next-i18next";
 import {
   Button,
   Title,
@@ -70,6 +71,7 @@ const ModalContent = styled("div", {
   maxWidth: "90%",
 });
 export default function NewVacancy() {
+  const { t } = useTranslation("common");
   const router = useRouter();
   const { user } = useUser();
   const [vacancyData, setVacancyData] = useState<NewVacancyType>({
@@ -227,11 +229,11 @@ export default function NewVacancy() {
 
   return (
     <FormWrapper>
-      <Title>Create New Vacancy</Title>
+      <Title>{t("vacancies.new")}</Title>
       {/* Template Selection Dropdown */}
       {templates.length > 0 && (
         <ZoneGreen>
-          <Label>Select Template</Label>
+          <Label>{t("generic.select_template")}</Label>
           <Select
             name="template"
             onChange={(e) => {
@@ -243,7 +245,7 @@ export default function NewVacancy() {
               }
             }}
           >
-            <option value="">Select Template</option>
+            <option value="">{t("generic.select_template")}</option>
             {templates.map((template) => (
               <option key={template.id} value={template.id}>
                 {template.name}
@@ -273,14 +275,14 @@ export default function NewVacancy() {
             }
             return (
               <div key={key}>
-                <Label>Job Type</Label>
+                <Label>{t("vacancies.type")}</Label>
                 {isRequired && <RequiredStar>*</RequiredStar>}
                 <Select
                   name="type_id"
                   value={vacancyData.type_id}
                   onChange={handleChange}
                 >
-                  <option value="">Select Job Type</option>
+                  <option value="">{t("vacancies.select_type")}</option>
                   {jobTypes.map((type) => (
                     <option key={type.id} value={type.id}>
                       {type.name}
@@ -295,14 +297,14 @@ export default function NewVacancy() {
             }
             return (
               <div key={key}>
-                <Label>Location</Label>
+                <Label>{t("locations.location")}</Label>
                 {isRequired && <RequiredStar>*</RequiredStar>}
                 <Select
                   name="location_id"
                   value={vacancyData.location_id}
                   onChange={handleChange}
                 >
-                  <option value="">Select Location</option>
+                  <option value="">{t("locations.select_location")}</option>
                   {locations.map((location) => (
                     <option key={location.id} value={location.id}>
                       {location.name}
@@ -317,7 +319,7 @@ export default function NewVacancy() {
             }
             return (
               <div key={key}>
-                <Label>Job Title</Label>
+                <Label>{t("vacancies.title")}</Label>
                 {isRequired && <RequiredStar>*</RequiredStar>}
                 <Input
                   type="text"
@@ -333,7 +335,7 @@ export default function NewVacancy() {
             }
             return (
               <div key={key}>
-                <Label>Description</Label>
+                <Label>{t("vacancies.description")}</Label>
                 {isRequired && <RequiredStar>*</RequiredStar>}
                 <TextArea
                   name="description"
@@ -346,7 +348,7 @@ export default function NewVacancy() {
           } else if (key === "job_level") {
             return (
               <div key={key}>
-                <Label>Job Level</Label>
+                <Label>{t("vacancies.job_level")}</Label>
                 {isRequired && <RequiredStar>*</RequiredStar>}
                 <Select
                   name="job_level"
@@ -368,7 +370,7 @@ export default function NewVacancy() {
             }
             return (
               <div key={key}>
-                <Label>Status</Label>
+                <Label>{t("vacancies.status")}</Label>
                 {isRequired && <RequiredStar>*</RequiredStar>}
                 <Select
                   name="status"
@@ -387,7 +389,7 @@ export default function NewVacancy() {
             return (
               <InputWrapper key={key}>
                 <Label>
-                  Country
+                  {t("vacancies.country")}
                   {isRequired && <RequiredStar>*</RequiredStar>}
                 </Label>
                 <Select
@@ -409,7 +411,7 @@ export default function NewVacancy() {
             return (
               <InputWrapper key={key}>
                 <Label>
-                  Currency
+                  {t("vacancies.currency")}
                   {isRequired && <RequiredStar>*</RequiredStar>}
                 </Label>
                 <Select
@@ -431,7 +433,9 @@ export default function NewVacancy() {
             return (
               <InputWrapper key={key}>
                 <Label>
-                  {key.replace("_", " ")}
+                  {t(`vacancies.${key}`, {
+                    defaultValue: key.replace("_", " "),
+                  })}
                   {isRequired && <RequiredStar>*</RequiredStar>}
                 </Label>
                 <Input
@@ -448,7 +452,9 @@ export default function NewVacancy() {
             return (
               <InputWrapper key={key}>
                 <Label>
-                  {key.replace("_", " ")}
+                  {t(`vacancies.${key}`, {
+                    defaultValue: key.replace("_", " "),
+                  })}
                   {isRequired && <RequiredStar>*</RequiredStar>}
                 </Label>
                 <Input
@@ -465,7 +471,9 @@ export default function NewVacancy() {
             return (
               <InputWrapper key={key}>
                 <Label>
-                  {key.replace("_", " ")}
+                  {t(`vacancies.${key}`, {
+                    defaultValue: key.replace("_", " "),
+                  })}
                   {isRequired && <RequiredStar>*</RequiredStar>}
                 </Label>
                 <Checkbox
@@ -480,20 +488,19 @@ export default function NewVacancy() {
           }
           return null;
         })}
-        {/* Save as Template Button */}
         <Button color="blue" type="button" onClick={() => setShowModal(true)}>
-          Save as Template
+          {t("generic.save_template")}
         </Button>
         <Button type="submit" disabled={!isFormValid}>
-          Create Vacancy
+          {t("vacancies.create")}
         </Button>
       </Form>
       {/* Modal to save template */}
       {showModal && (
         <ModalOverlay>
           <ModalContent>
-            <h3>Save as Template</h3>
-            <Label>Template Name</Label>
+            <h3>{t("generic.save_template")}</h3>
+            <Label>{t("generic.template_name")}</Label>
             <Input
               type="text"
               value={templateName}
@@ -502,9 +509,11 @@ export default function NewVacancy() {
             />
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <Button color="red" onClick={() => setShowModal(false)}>
-                Close
+                {t("generic.close")}
               </Button>
-              <Button onClick={handleSaveTemplate}>Save Template</Button>
+              <Button onClick={handleSaveTemplate}>
+                {t("generic.save_template")}
+              </Button>
             </div>
           </ModalContent>
         </ModalOverlay>

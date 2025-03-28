@@ -21,8 +21,6 @@ export default function Home() {
   const { user, setUser } = useUser();
   const [localizationVariables, setAuthLang] = useState(en);
   useEffect(() => {
-    console.log("Current Locale:", currentLocale);
-    console.log("Localization Variables:", localizationVariables);
     setAuthLang(currentLocale === "ja" ? ja : en);
   }, [currentLocale]);
   useEffect(() => {
@@ -32,7 +30,6 @@ export default function Home() {
     } = supabase.auth.onAuthStateChange((event, session) => {
       if (session?.user) {
         checkFirstLogin(session?.user);
-        console.log("getting profile");
         fetchProfile(session?.user, setUser);
       }
     });
@@ -43,7 +40,6 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    console.log(user, "user set?");
     if (user) {
       router.push(`/${currentLocale}/profile`);
     }

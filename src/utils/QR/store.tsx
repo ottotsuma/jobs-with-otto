@@ -54,7 +54,7 @@ export async function getQRCode(locationId: string) {
 }
 
 export async function addQRCodeToLocation(locationId: string) {
-  const locationData = `http://localhost:3000/clock-in?location=${locationId}`;
+  const locationData = `http://localhost:3000/vacancies/clock?location=${locationId}`;
 
   // Generate the QR code
   const qrCodeImage = await generateQRCode(locationData);

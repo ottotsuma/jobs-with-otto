@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import {
   useReactTable,
   getCoreRowModel,
@@ -10,7 +10,6 @@ import Toast from "@/components/toast";
 import DateTimePicker from "@/components/picker";
 import Modal from "@/components/modal";
 import SideBar from "@/components/Sidebar";
-
 import {
   Button,
   Container,
@@ -28,7 +27,9 @@ import { styled } from "@stitches/react";
 import { isValidDate, formatDate } from "@/utils/utils";
 import { useLocale } from "@/app/[locale]/hooks/useLocal";
 import Link from "next/link";
-import ViewProfile from "./viewProfile";
+// import ViewProfile from "./viewProfile";
+import Loading from "./loading";
+const ViewProfile = lazy(() => import("./viewProfile"));
 export type RowData = {
   id: number;
   [key: string]: any;
@@ -216,7 +217,9 @@ const Table = ({
         isOpen={userProfileModalOpen && !!selectedUser}
         onClose={() => setUserProfileModalOpen(false)}
       >
-        <ViewProfile user_id={selectedUser} />
+        <Suspense fallback={<Loading />}>
+          <ViewProfile user_id={selectedUser} />
+        </Suspense>
       </SideBar>
       <Button
         color={enableCopy ? "red" : "blue"}
@@ -553,3 +556,9 @@ const Table = ({
 };
 
 export default Table;
+
+// Memoization: Memoization is a technique where you store the results of expensive function calls so that you don't have to repeat them. You can use memoization libraries like react-use or use-memo to cache the results of function calls.
+// Lazy Loading: If you have a lot of data that you don't need to display immediately, consider using lazy loading to load it only when it's needed.
+// Caching: If you have data that doesn't change frequently, consider caching it so that you don't have to fetch it from the server every time.
+// Avoid Unnecessary Re-renders: Make sure that you're not re-rendering components unnecessarily. You can use React.memo or useCallback to memoize functions and prevent unnecessary re-renders.
+// 6. Code Organization

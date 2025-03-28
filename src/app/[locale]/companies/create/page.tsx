@@ -5,6 +5,7 @@ import { supabase } from "superbase";
 import { newCompany } from "@/types/company";
 import { updateRole } from "@/utils/user";
 import { useUser } from "@/contexts/UserContext";
+import { useTranslation } from "next-i18next";
 import {
   Button,
   Container,
@@ -16,6 +17,7 @@ import {
 } from "@/styles/basic";
 import { useLocale } from "@/app/[locale]/hooks/useLocal";
 const CreateCompanyPage: React.FC = () => {
+  const { t, i18n } = useTranslation("common");
   const { user, setUser } = useUser();
   const currentLocale = useLocale();
   const [company, setCompany] = useState<newCompany>({
@@ -100,7 +102,7 @@ const CreateCompanyPage: React.FC = () => {
 
   return (
     <Container>
-      <Title>Create Company</Title>
+      <Title>{t("companies.create")}</Title>
       <Form onSubmit={handleSubmit}>
         {(Object.keys(company) as (keyof newCompany)[]).map((key) => {
           const value = company[key];
@@ -137,9 +139,11 @@ const CreateCompanyPage: React.FC = () => {
                   value={value}
                   onChange={handleChange}
                 >
-                  <option value="Private">Private</option>
-                  <option value="Public">Public</option>
-                  <option value="Non-Profit">Non-Profit</option>
+                  <option value="Private">{t("companies.private")}</option>
+                  <option value="Public">{t("companies.public")}</option>
+                  <option value="Non-Profit">
+                    {t("companies.non_profit")}
+                  </option>
                 </Select>
               ) : typeof value === "boolean" ? (
                 <Input
@@ -169,7 +173,7 @@ const CreateCompanyPage: React.FC = () => {
             </div>
           );
         })}
-        <Button type="submit">Create Company</Button>
+        <Button type="submit">{t("companies.create")}</Button>
       </Form>
     </Container>
   );

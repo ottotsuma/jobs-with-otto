@@ -7,6 +7,7 @@ import { Button, Container, FocusContainer } from '@/styles/basic';
 import { createStitches } from "@stitches/react";
 import Toast from '@/components/toast'
 import { useLocale } from "@/app/[locale]/hooks/useLocal";
+import { useTranslation } from 'next-i18next';
 const { styled } = createStitches({
     theme: {
         colors: {
@@ -44,6 +45,7 @@ const Tab = styled("button", {
 
 
 export default function AdminDashboard() {
+    const { t } = useTranslation('common');
     const currentLocale = useLocale();
     const [showToast, setShowToast] = useState(false);
     const [toastMessage, setToastMessage] = useState("");
@@ -95,7 +97,7 @@ export default function AdminDashboard() {
         <ProtectedRoute allowedRoles={['admin']}>
             <Toast message={toastMessage} show={showToast} onClose={() => setShowToast(false)} />
             <div className="max-w-6xl mx-auto p-6">
-                <h1 className="text-3xl font-bold mb-4">Admin Dashboard</h1>
+                <h1 className="text-3xl font-bold mb-4">{t('admin.dashboard')}</h1>
 
                 {/* Navigation Tabs */}
                 <div className="flex gap-4 mb-4">

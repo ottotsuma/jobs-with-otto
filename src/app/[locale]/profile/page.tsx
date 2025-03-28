@@ -23,8 +23,10 @@ import {
 import ProtectedRoute from "@/contexts/ProtectedRoute.js";
 import { useTitle } from "@/contexts/TitleContext";
 import { useLocale } from "@/app/[locale]/hooks/useLocal";
+import { useTranslation } from "next-i18next";
 export default function ProfilePage() {
   const { setTitle } = useTitle();
+  const { t } = useTranslation("common");
   const router = useRouter();
   const { user, setUser } = useUser();
   const [profile, setProfile] = useState<
@@ -209,7 +211,7 @@ export default function ProfilePage() {
   return (
     // <ProtectedRoute allowedRoles={["admin", "manager", "applicant", "anon"]}>
     <Container>
-      <Title>My Profile</Title>
+      <Title>{t("profile.my_profile")}</Title>
       {user?.role ? (
         <>
           <p>{profile?.id}</p>
@@ -235,7 +237,7 @@ export default function ProfilePage() {
                     <div key={key}>
                       {user.company_id ? (
                         <>
-                          <Label>Locations</Label>
+                          <Label>{t("locations.locations")}</Label>
                           <Select
                             name={key}
                             value={value || []}
@@ -251,7 +253,7 @@ export default function ProfilePage() {
                             }}
                             multiple
                           >
-                            <option value="">Select Location(s)</option>
+                            <option value="">{t("locations.select")}</option>
                             {locations.map((location) => (
                               <option key={location.id} value={location.id}>
                                 {location.name}
@@ -277,17 +279,17 @@ export default function ProfilePage() {
                   )
                 )}
               <Button type="submit" color="green">
-                Update Profile
+                {t("profile.update")}
               </Button>
             </Form>
           </ZoneGreen>
 
           {/* Yellow Zone - Change Password & Role Update Forms */}
           <ZoneYellow>
-            <h2>Change Password</h2>
+            <h2>{t("profile.change_password")}</h2>
             <Form onSubmit={updatePassword}>
               <div>
-                <Label>New Password</Label>
+                <Label>{t("profile.new_password")}</Label>
                 <Input
                   type="password"
                   value={password}
@@ -295,21 +297,21 @@ export default function ProfilePage() {
                 />
               </div>
               <Button type="submit" color="blue">
-                Update Password
+                {t("profile.change_password")}
               </Button>
             </Form>
 
             <Form onSubmit={updateRole}>
               <div>
                 {/* Need to be able to make a company, locations and then allocate users as managers, apply to companies, as manager or applicant */}
-                <Label>Role</Label>
+                <Label>{t("profile.role")}</Label>
                 <Select
                   name="role"
                   value={user?.role}
                   onChange={(e) => updateRole(e.target.value)}
                 >
-                  <option value="manager">Manager</option>
-                  <option value="applicant">Applicant</option>
+                  <option value="manager">{t("profile.manager")}</option>
+                  <option value="applicant">{t("profile.applicant")}</option>
                   {/* Uncomment if needed:
                                     <option value="admin">Admin</option>
                                     */}
@@ -321,34 +323,34 @@ export default function ProfilePage() {
           {/* Red Zone - Delete Profile */}
           <ZoneRed>
             <Button onClick={deleteProfile} color="red">
-              Delete Profile (needs warning popup)
+              {t("profile.delete")}
             </Button>
           </ZoneRed>
         </>
       ) : (
         <>
-          <p>Assign new role</p>
+          <p>{t("profile.assign_new_role")}</p>
           <ZoneGreen>
             <Form onSubmit={updateRole}>
               <div>
-                <Label>Role</Label>
+                <Label>{t("profile.role")}</Label>
                 <Select
                   name="role"
                   value={user?.role}
                   onChange={(e) => updateRole(e.target.value)}
                 >
-                  <option value="manager">Manager</option>
-                  <option value="applicant">Applicant</option>
+                  <option value="manager">{t("profile.manager")}</option>
+                  <option value="applicant">{t("profile.applicant")}</option>
                 </Select>
               </div>
             </Form>
           </ZoneGreen>
           {/* Yellow Zone - Change Password & Role Update Forms */}
           <ZoneYellow>
-            <h2>Change Password</h2>
+            <h2>{t("profile.change_password")}</h2>
             <Form onSubmit={updatePassword}>
               <div>
-                <Label>New Password</Label>
+                <Label>{t("profile.new_password")}</Label>
                 <Input
                   type="password"
                   value={password}
@@ -356,7 +358,7 @@ export default function ProfilePage() {
                 />
               </div>
               <Button type="submit" color="blue">
-                Update Password
+                {t("profile.change_password")}
               </Button>
             </Form>
           </ZoneYellow>
@@ -364,7 +366,7 @@ export default function ProfilePage() {
           {/* Red Zone - Delete Profile */}
           <ZoneRed>
             <Button onClick={deleteProfile} color="red">
-              Delete Profile (needs warning popup)
+              {t("profile.delete")}
             </Button>
           </ZoneRed>
         </>

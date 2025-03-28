@@ -5,7 +5,7 @@ import { useUser } from '@/contexts/UserContext';
 import { supabase } from 'superbase';
 import ThemeToggle from "@/components/ThemeToggle";
 import { styled } from '@stitches/react';
-import { useState, useEffect, useLayoutEffect } from 'react';
+import { useState, useEffect, useLayoutEffect, Suspense, lazy } from 'react';
 import { Button } from '@/styles/basic';
 import Logo from '@/components/logo'
 import { useTheme } from 'next-themes';
@@ -127,7 +127,7 @@ const useScreenSize = () => {
 
 const Navbar = () => {
     const screenSize = useScreenSize();
-    const { t, i18n } = useTranslation('common');
+    const { t } = useTranslation('common');
     const { theme } = useTheme();
     const { user, setUser } = useUser();
     const { navOpen, setNavOpen } = useNav()
@@ -135,13 +135,7 @@ const Navbar = () => {
     const currentLocale = useLocale();
     const handleSignOut = async () => {
         try {
-            console.log('signing out')
-            console.log('Supabase instance:', supabase);
-            console.log('Auth state:', supabase.auth);
-            const user = await supabase.auth.getUser();
-            console.log('Current user:', user);
             const { error } = await supabase.auth.signOut();
-            console.log('signing out 2')
             if (!error) {
                 localStorage.setItem('user', JSON.stringify(null));
                 setUser(null);
