@@ -101,3 +101,21 @@ export const formatDate = (value) => {
   }
   return value; // Return original value if not a valid date
 };
+
+export function hexToAscii(hex: string) {
+  // Check for and remove the prefix "\x" if present
+  if (hex.startsWith("\\x")) {
+    hex = hex.slice(2); // Remove "\x"
+  }
+
+  // Return an empty string if the remaining hex is empty
+  if (hex.length === 0 || hex.length % 2 !== 0) {
+    return "";
+  }
+
+  let str = "";
+  for (let i = 0; i < hex.length; i += 2) {
+    str += String.fromCharCode(parseInt(hex.slice(i, i + 2), 16));
+  }
+  return str;
+}

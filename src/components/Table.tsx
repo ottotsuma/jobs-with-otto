@@ -6,6 +6,7 @@ import {
   flexRender,
   ColumnDef,
 } from "@tanstack/react-table";
+import { addQRCodeToLocation } from "@/utils/QR/store";
 import Toast from "@/components/toast";
 import DateTimePicker from "@/components/picker";
 import Modal from "@/components/modal";
@@ -24,7 +25,7 @@ import {
   None,
 } from "@/styles/basic";
 import { styled } from "@stitches/react";
-import { isValidDate, formatDate } from "@/utils/utils";
+import { isValidDate, formatDate, hexToAscii } from "@/utils/utils";
 import { useLocale } from "@/app/[locale]/hooks/useLocal";
 import Link from "next/link";
 // import ViewProfile from "./viewProfile";
@@ -190,7 +191,9 @@ const Table = ({
   const deleteRowInteral = (rowIndex: number) => {
     if (deleteRow) deleteRow(rowIndex);
   };
-
+  async function generateQRCodeForLocation(location_id: string) {
+    await addQRCodeToLocation(location_id);
+  }
   const table = useReactTable({
     data,
     columns,
@@ -281,9 +284,11 @@ const Table = ({
                         key={cell.id}
                       >
                         {/* Lock credits */}
-                        {bannedEdit &&
-                        bannedEdit.length > 0 &&
-                        bannedEdit.includes(cell.column.id) ? (
+                        {cell.column.id === "location_qr" ? (
+                          <div>🚫</div>
+                        ) : bannedEdit &&
+                          bannedEdit.length > 0 &&
+                          bannedEdit.includes(cell.column.id) ? (
                           <div>
                             🚫
                             {isValidDate(cellValue)
@@ -443,8 +448,8 @@ const Table = ({
             <tbody>
               {table.getRowModel().rows.map((row, rowIndex) => (
                 <TableRow
-                  onMouseEnter={() => handleRowHover(rowIndex + 1)}
-                  onMouseLeave={() => handleRowHover(null)}
+                  // onMouseEnter={() => handleRowHover(rowIndex + 1)}
+                  // onMouseLeave={() => handleRowHover(null)}
                   key={row.id}
                 >
                   {row.getVisibleCells().map((cell) => {
@@ -460,8 +465,22 @@ const Table = ({
                         }}
                         key={cell.id}
                       >
-                        {/* If location_qr is null, add button to add QR code */}
-                        {cell.column.id === "user_id" ? (
+                        {cell.column.id === "location_qr" &&
+                        data[row.id] &&
+                        data[row.id].id &&
+                        !hexToAscii(cellValue) ? (
+                          <div>
+                            <Button
+                              onClick={() => {
+                                generateQRCodeForLocation(data[row.id].id);
+                              }}
+                            >
+                              Generate QR
+                            </Button>
+                          </div>
+                        ) : cell.column.id === "location_qr" ? (
+                          <div>{hexToAscii(cellValue)}</div>
+                        ) : cell.column.id === "user_id" ? (
                           <div>
                             <Button
                               onClick={() => {

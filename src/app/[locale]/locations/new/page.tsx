@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "superbase";
 import { NewLocationType } from "@/types/location";
@@ -152,18 +152,21 @@ export default function NewLocation() {
     }
 
     // Create location with QR code
-    const { data, error } = await supabase.from("locations").insert([location]);
+    if (!location.company_id) location.company_id = user?.company_id;
+    const { data, error } = await supabase
+      .from("locations")
+      .insert([location])
+      .select("*");
 
     if (error) {
       alert("Error creating location");
       console.error(error);
-    } else if (data) {
-      const locationQR = await addQRCodeToLocation(data.id);
+    } else if (data && data[0]?.id) {
+      const locationQR = await addQRCodeToLocation(data[0].id + "");
       if (locationQR?.type === "error") {
         console.log(locationQR?.error, "location QR code error");
-      } else {
-        router.push(`/${currentLocale}/locations/manage`);
       }
+      router.push(`/${currentLocale}/locations/manage`);
     }
   };
 

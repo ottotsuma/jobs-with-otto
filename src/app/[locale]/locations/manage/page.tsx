@@ -5,6 +5,7 @@ import { useUser } from "@/contexts/UserContext";
 import { useRouter } from "next/navigation";
 import { Company } from "@/types/company";
 import { Location, location_bannedEdit } from "@/types/location";
+
 import {
   Button,
   Container,
@@ -36,6 +37,8 @@ export default function ProfilePage() {
         header: key.charAt(0).toUpperCase() + key.slice(1), // Capitalize the header
       }))
     : [];
+
+  // const locationQR =
 
   const handleDataChange = (updatedData: RowData[]) => {
     setLocations(updatedData);
