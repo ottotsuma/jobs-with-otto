@@ -128,7 +128,7 @@ const Table = ({
   deleteRow?: (id: number) => void;
   bannedEdit?: string[];
   actions?: Action[];
-  expand?: string | null;
+  expand?: Set<string> | null;
   expandedData?: RowData[];
 }) => {
   const [sorting, setSorting] = useState<SortingState>([]);
