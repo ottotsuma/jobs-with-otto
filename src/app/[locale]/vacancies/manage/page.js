@@ -23,10 +23,28 @@ export default function ManageVacancies() {
     const [locations, setLocations] = useState([]);
     const [selectedLocation, setSelectedLocation] = useState("");
 
+    // const columns = vacancies.length
+    //     ? Object.keys(vacancies[0]).map((key) => ({
+    //         accessorKey: key,
+    //         header: key.charAt(0).toUpperCase() + key.slice(1), // Capitalize the header
+    //     }))
+    //     : [];
+
     const columns = vacancies.length
         ? Object.keys(vacancies[0]).map((key) => ({
             accessorKey: key,
-            header: key.charAt(0).toUpperCase() + key.slice(1), // Capitalize the header
+            header: ({ column }) => (
+                <div>
+                    {key.charAt(0).toUpperCase() + key.slice(1)}
+                    <input
+                        type="text"
+                        value={column.getFilterValue() || ''}
+                        onChange={(e) => column.setFilterValue(e.target.value)}
+                        placeholder={`Filter ${key}`}
+                    />
+                </div>
+            ),
+            enableSorting: true,
         }))
         : [];
 
@@ -121,7 +139,7 @@ export default function ManageVacancies() {
                     </select>
                     <Table
                         columns={columns}
-                        data={locations}
+                        data={vacancies}
                         onDataChange={updateVacancies}
                         deleteRow={deleteVacancy}
                         bannedEdit={vacancy_bannedEdit}

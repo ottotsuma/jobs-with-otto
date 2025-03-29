@@ -3,8 +3,11 @@ import { useState, useEffect, lazy, Suspense } from "react";
 import {
   useReactTable,
   getCoreRowModel,
+  getFilteredRowModel,
   flexRender,
   ColumnDef,
+  SortingState,
+  getSortedRowModel,
 } from "@tanstack/react-table";
 import { addQRCodeToLocation } from "@/utils/QR/store";
 import Toast from "@/components/toast";
@@ -126,6 +129,8 @@ const Table = ({
   bannedEdit?: string[];
   actions?: Action[];
 }) => {
+  const [sorting, setSorting] = useState<SortingState>([]);
+
   const currentLocale = useLocale();
   const [enableEdit, SetEnableEdit] = useState(false);
   // Copy to clipboard
@@ -197,7 +202,14 @@ const Table = ({
   const table = useReactTable({
     data,
     columns,
+    state: {
+      sorting,
+    },
+    onSortingChange: setSorting,
+    getSortedRowModel: getSortedRowModel(),
     getCoreRowModel: getCoreRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    filterFromLeafRows: true,
   });
   const RowDetails = styled("tr", {
     display: "flex",
@@ -258,6 +270,15 @@ const Table = ({
                       header.column.columnDef.header,
                       header.getContext()
                     ) ?? <None></None>}
+                    <button onClick={() => header.column.toggleSorting(true)}>
+                      Ascending
+                    </button>
+                    <button onClick={() => header.column.toggleSorting(false)}>
+                      Descending
+                    </button>
+                    <button onClick={() => header.column.clearSorting()}>
+                      Unordered
+                    </button>
                   </TableHeader>
                 ))}
                 {actions && actions.length > 0 && (
@@ -268,7 +289,7 @@ const Table = ({
           </thead>
           {enableEdit ? (
             <tbody>
-              {table.getRowModel().rows.map((row) => (
+              {table.getSortedRowModel().rows.map((row) => (
                 <TableRow key={row.id}>
                   {row.getVisibleCells().map((cell) => {
                     const cellValue = cell.getValue();

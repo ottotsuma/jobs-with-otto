@@ -10,10 +10,11 @@ function ClockInOutPage() {
     const router = useRouter();
     const [vacancies, setVacancies] = useState([]);
     const [shifts, setShifts] = useState([]);
-    const [selectedShift, setSelectedShift] = useState(null);
+    const [selectedShift, setSelectedShift] = useState([]);
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(true);
     const [location, setLocation] = useState("");
+    const [selectedVacancy, setSelectedVacancy] = useState(null);
 
     const { user } = useUser();
 
@@ -70,7 +71,8 @@ function ClockInOutPage() {
     };
 
     const handleVacancySelect = (vacancyId) => {
-        setSelectedShift(null); // Reset shift selection when a new vacancy is selected
+        setSelectedVacancy(vacancyId);
+        setSelectedShift([]); // Reset shift selection when a new vacancy is selected
         fetchShiftsForVacancy(vacancyId); // Fetch shifts for the selected vacancy
     };
 
@@ -146,13 +148,13 @@ function ClockInOutPage() {
             const searchParams = new URLSearchParams(window.location.search);
 
             // Get the value of the 'location' parameter
-            const locationValue = searchParams.get('location'); // This will return '2' if present
+            const locationValue = searchParams.get('location');
 
             // Set the location in state
             setLocation(locationValue);
-            sessionStorage.removeItem('redirectURL'); // Clean up after redirect
+            sessionStorage.removeItem('redirectURL');
         } else {
-            router.push('/default-path'); // Fallback if no redirect URL exists
+            router.push('/en/vacancies/clock?location=1'); // Fallback if no redirect URL exists
         }
     };
 
@@ -190,7 +192,7 @@ function ClockInOutPage() {
             {loading ? (
                 <Loading />
             ) : (
-                <div>
+                <Container>
                     {vacancies.length === 0 ? (
                         <p>No vacancies available for this location.</p>
                     ) : (
@@ -208,9 +210,9 @@ function ClockInOutPage() {
                         </div>
                     )}
 
-                    {shifts.length === 0 ? (
+                    {selectedVacancy && shifts.length === 0 ? (
                         <p>No shifts available for today.</p>
-                    ) : (
+                    ) : selectedVacancy ? (
                         <div>
                             <h2>Select a Shift</h2>
                             {shifts.map((shift) => (
@@ -224,8 +226,11 @@ function ClockInOutPage() {
                                 </div>
                             ))}
                         </div>
-                    )}
-                </div>
+                    ) :
+                        (
+                            <></>
+                        )}
+                </Container>
             )}
         </div>
     );

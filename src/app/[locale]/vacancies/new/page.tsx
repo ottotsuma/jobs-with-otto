@@ -107,7 +107,15 @@ export default function NewVacancy() {
     // work_address: "",
   });
   const currentLocale = useLocale();
-  const requiredFields = ["job_title", "description"];
+  const requiredFields = [
+    "job_title",
+    "description",
+    "type_id",
+    // "location_id",
+    "job_level",
+    "status",
+    "employee_places",
+  ];
   const [templates, setTemplates] = useState<any[]>([]); // Store templates
   const [showModal, setShowModal] = useState(false); // Control Modal visibility
   const [templateName, setTemplateName] = useState(""); // Template Name
@@ -222,6 +230,9 @@ export default function NewVacancy() {
     if (error) {
       alert("Error creating vacancy");
       console.error(error);
+    } else if (vacancyData.type_id === 4) {
+      // Gig Work
+      router.push(`/${currentLocale}/vacancies/shifts/new`);
     } else {
       router.push(`/${currentLocale}/vacancies/manage`);
     }
