@@ -145,6 +145,8 @@ const Table = ({
   const [showExtra, setShowExtra] = useState(false);
   const [userProfileModalOpen, setUserProfileModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState("");
+  const [enableFilter, setEnableFilter] = useState(false);
+  const [enableSort, setEnableSort] = useState(false);
   const handleUserSelected = (user_id: string) => {
     if (user_id) {
       setSelectedUser(user_id);
@@ -155,7 +157,6 @@ const Table = ({
     console.log("hover", index);
     setExpandedRowIndex(index);
   };
-
   const copyToClipboard = (value) => {
     navigator.clipboard.writeText(String(value).replace(/^"|"$/g, ""));
     setToastMessage("Copied to clipboard!");
@@ -168,7 +169,6 @@ const Table = ({
     );
     onDataChange(newData); // Update parent state
   };
-
   const updateCoordinates = (
     rowIndex: number,
     columnId: string,
@@ -193,7 +193,6 @@ const Table = ({
 
     onDataChange(newData); // Update parent state
   };
-
   // Function to delete a row
   const deleteRowInteral = (rowIndex: number) => {
     if (deleteRow) deleteRow(rowIndex);
@@ -207,12 +206,14 @@ const Table = ({
         header: ({ column }) => (
           <div>
             {key.charAt(0).toUpperCase() + key.slice(1)}
-            <input
-              type="text"
-              value={column.getFilterValue() || ""}
-              onChange={(e) => column.setFilterValue(e.target.value)}
-              placeholder={`Filter ${key}`}
-            />
+            {enableFilter && (
+              <input
+                type="text"
+                value={column.getFilterValue() || ""}
+                onChange={(e) => column.setFilterValue(e.target.value)}
+                placeholder={`Filter ${key}`}
+              />
+            )}
           </div>
         ),
         enableSorting: true,
@@ -232,13 +233,6 @@ const Table = ({
   });
   const RowDetails = styled("tr", {
     display: "flex",
-    // display: "none",
-    // "& td": {
-    //   padding: "10px",
-    //   backgroundColor: "#f9f9f9",
-    //   borderTop: "1px solid #ddd",
-    //   fontSize: "14px",
-    // },
   });
   return (
     <>
@@ -259,7 +253,7 @@ const Table = ({
         color={enableCopy ? "red" : "blue"}
         onClick={() => SetEnableCopy(!enableCopy)}
       >
-        {enableCopy ? "Turn off copy" : "Turn on copy"}
+        {enableCopy ? "Turn off copy" : "Copy"}
       </Button>
       <Button
         color={enableEdit ? "red" : "blue"}
@@ -267,7 +261,7 @@ const Table = ({
           SetEnableEdit(!enableEdit);
         }}
       >
-        {enableEdit ? "Turn off edit" : "Turn on edit"}
+        {enableEdit ? "Turn off edit" : "Edit"}
       </Button>
       <Button
         color={showExtra ? "red" : "blue"}
@@ -275,9 +269,24 @@ const Table = ({
           setShowExtra(!showExtra);
         }}
       >
-        {showExtra ? "Turn off extra information" : "Turn on extra information"}
+        {showExtra ? "Turn off extra information" : "Extra information"}
       </Button>
-
+      <Button
+        color={enableFilter ? "red" : "blue"}
+        onClick={() => {
+          setEnableFilter(!enableFilter);
+        }}
+      >
+        {enableFilter ? "Turn off filters" : "Filter"}
+      </Button>
+      <Button
+        color={enableSort ? "red" : "blue"}
+        onClick={() => {
+          setEnableSort(!enableSort);
+        }}
+      >
+        {enableSort ? "Turn off sort" : "Sort"}
+      </Button>
       <TableWrapper>
         <TableElement>
           <thead>
@@ -288,16 +297,41 @@ const Table = ({
                     {flexRender(
                       header.column.columnDef.header,
                       header.getContext()
-                    ) ?? <None></None>}
-                    <button onClick={() => header.column.toggleSorting(true)}>
-                      Ascending
-                    </button>
-                    <button onClick={() => header.column.toggleSorting(false)}>
-                      Descending
-                    </button>
-                    <button onClick={() => header.column.clearSorting()}>
-                      Unordered
-                    </button>
+                    ) ?? <None />}
+                    {enableSort && (
+                      <div>
+                        <Button
+                          style={{
+                            padding: "0",
+                            background: "transparent",
+                            margin: "0px 5px",
+                          }}
+                          onClick={() => header.column.toggleSorting(true)}
+                        >
+                          ↑
+                        </Button>
+                        <Button
+                          style={{
+                            padding: "0",
+                            background: "transparent",
+                            margin: "0px 5px",
+                          }}
+                          onClick={() => header.column.toggleSorting(false)}
+                        >
+                          ↓
+                        </Button>
+                        <Button
+                          style={{
+                            padding: "0",
+                            background: "transparent",
+                            margin: "0px 5px",
+                          }}
+                          onClick={() => header.column.clearSorting()}
+                        >
+                          ◦
+                        </Button>
+                      </div>
+                    )}
                   </TableHeader>
                 ))}
                 {actions && actions.length > 0 && (

@@ -21,33 +21,30 @@ export default function ManageVacancies() {
     const [vacanciesLoading, setVacanciesLoading] = useState(false);
     const [vacancies, setVacancies] = useState([]);
     const [locations, setLocations] = useState([]);
-    const [shifts, setshifts] = useState([]);
+    const [shifts, setShifts] = useState([]);
     const [showShifts, setShowShifts] = useState(new Set());
 
 
     const [selectedLocation, setSelectedLocation] = useState("");
-    function handleShowShifts(id) {
-        console.log('id', id);
+    function handleShowShifts(row_id) {
+        console.log('row_id', row_id);
         const newSet = new Set(showShifts); // Create a copy of the current set
-        if (newSet.has(id)) {
+        if (newSet.has(row_id)) {
             // If the ID is already in the set, delete it
-            newSet.delete(id);
+            newSet.delete(row_id);
         } else {
             // Otherwise, add the ID to the set
-            newSet.add(id);
+            newSet.add(row_id);
         }
+        // fetchShifts(vacancy_id)
         setShowShifts(newSet); // Update state with the modified set
     }
-
-
     useEffect(() => {
         setTitle("Manage Vacancies");
     }, [])
-
     useEffect(() => {
         setLoading(vacanciesLoading && locationsLoading && userLoading)
     }, [vacanciesLoading, locationsLoading, userLoading]);
-
     useEffect(() => {
         if (!userLoading) {
             setLocationsLoading(true)
@@ -55,14 +52,12 @@ export default function ManageVacancies() {
         }
 
     }, [userLoading]);
-
     useEffect(() => {
         if (!userLoading) {
             setVacanciesLoading(true)
             fetchVacancies(user?.company_id)
         }
     }, [selectedLocation, user?.company_id, userLoading]);
-
     async function fetchVacancies(companyId) {
         let query = supabase
             .from("vacancies")
@@ -81,14 +76,12 @@ export default function ManageVacancies() {
         else setVacancies(data);
         setVacanciesLoading(false)
     }
-
     async function fetchLocations(companyId) {
         const { data, error } = await supabase.from("locations").select("*").eq("company_id", companyId);;
         if (error) console.error("Error fetching locations:", error);
         else setLocations(data);
         setLocationsLoading(false)
     }
-
     async function deleteVacancy(vacancyId) {
         return true;
         const { error } = await supabase.from("vacancies").delete().eq("id", vacancyId);
@@ -99,11 +92,20 @@ export default function ManageVacancies() {
             fetchVacancies(companyId);
         }
     }
-
     const updateVacancies = (updatedData) => {
         setVacancies(updatedData);
     };
+    async function fetchShifts(vacancy_id) {
+        let query = supabase
+            .from("shifts")
+            .select("*")
+            .eq("vacancy_id", vacancy_id);
 
+        const { data, error } = await query;
+        if (error) console.error("Error fetching vacancies:", error);
+        else setShifts((prevShifts) => [...prevShifts, ...data]);
+        console.log(data, 'shift data', vacancy_id)
+    }
     return (
         <div>
             {loading ? <Loading /> :
@@ -130,13 +132,12 @@ export default function ManageVacancies() {
                         ))}
                     </select>
                     <Table
-                        // columns={columns}
                         actions={[{
                             name: "Show Shifts",
-                            function: (id) => { handleShowShifts(id) },
+                            function: (row_id) => { handleShowShifts(row_id) },
                             icon: "✅",
                         }]}
-                        expandedData={locations}
+                        expandedData={shifts}
                         expand={showShifts}
                         data={vacancies}
                         onDataChange={updateVacancies}
