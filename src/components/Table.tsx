@@ -89,7 +89,6 @@ const TableCell = styled("td", {
   padding: "6px",
   textAlign: "left",
   border: "1px solid #ddd",
-
   whiteSpace: "nowrap", // Prevent text wrapping in the cells
   overflow: "hidden", // Prevent text overflow if it's too long
   textOverflow: "ellipsis", // Add ellipsis for overflowing text
@@ -111,23 +110,26 @@ const StyledLink = styled(Link, {
 });
 type Action = {
   name: string;
-  function: () => void;
+  function: (id: string) => void;
   icon?: string;
 };
 const Table = ({
-  columns,
   data,
   onDataChange,
   deleteRow,
   bannedEdit,
   actions,
+  expand,
+  expandedData,
 }: {
-  columns: ColumnDef<RowData>[];
+  // columns: ColumnDef<RowData>[];
   data: RowData[];
   onDataChange: (updatedData: RowData[]) => void;
   deleteRow?: (id: number) => void;
   bannedEdit?: string[];
   actions?: Action[];
+  expand?: string | null;
+  expandedData?: RowData[];
 }) => {
   const [sorting, setSorting] = useState<SortingState>([]);
 
@@ -155,7 +157,7 @@ const Table = ({
   };
 
   const copyToClipboard = (value) => {
-    navigator.clipboard.writeText(String(value));
+    navigator.clipboard.writeText(String(value).replace(/^"|"$/g, ""));
     setToastMessage("Copied to clipboard!");
     setShowToast(true);
   };
@@ -199,6 +201,23 @@ const Table = ({
   async function generateQRCodeForLocation(location_id: string) {
     await addQRCodeToLocation(location_id);
   }
+  const columns = data.length
+    ? Object.keys(data[0]).map((key) => ({
+        accessorKey: key,
+        header: ({ column }) => (
+          <div>
+            {key.charAt(0).toUpperCase() + key.slice(1)}
+            <input
+              type="text"
+              value={column.getFilterValue() || ""}
+              onChange={(e) => column.setFilterValue(e.target.value)}
+              placeholder={`Filter ${key}`}
+            />
+          </div>
+        ),
+        enableSorting: true,
+      }))
+    : [];
   const table = useReactTable({
     data,
     columns,
@@ -468,124 +487,139 @@ const Table = ({
           ) : (
             <tbody>
               {table.getRowModel().rows.map((row, rowIndex) => (
-                <TableRow
-                  // onMouseEnter={() => handleRowHover(rowIndex + 1)}
-                  // onMouseLeave={() => handleRowHover(null)}
-                  key={row.id}
-                >
-                  {row.getVisibleCells().map((cell) => {
-                    const cellValue = cell.getValue();
-                    return (
-                      <TableCell
-                        onClick={() => {
-                          if (enableCopy) {
-                            copyToClipboard(
-                              JSON.stringify(cellValue) as string
-                            );
-                          }
-                        }}
-                        key={cell.id}
-                      >
-                        {cell.column.id === "location_qr" &&
-                        data[row.id] &&
-                        data[row.id].id &&
-                        !hexToAscii(cellValue) ? (
-                          <div>
-                            <Button
-                              onClick={() => {
-                                generateQRCodeForLocation(data[row.id].id);
-                              }}
-                            >
-                              Generate QR
-                            </Button>
-                          </div>
-                        ) : cell.column.id === "location_qr" ? (
-                          <div>{hexToAscii(cellValue)}</div>
-                        ) : cell.column.id === "user_id" ? (
-                          <div>
-                            <Button
-                              onClick={() => {
-                                handleUserSelected(cellValue);
-                              }}
-                            >
-                              👁️{cellValue}
-                            </Button>
-                            {/* <StyledLink href={`profile/${cellValue}`} passHref>
+                <>
+                  <TableRow
+                    onMouseEnter={() => handleRowHover(rowIndex + 1)}
+                    onMouseLeave={() => handleRowHover(null)}
+                    key={row.id}
+                  >
+                    <>
+                      {row.getVisibleCells().map((cell) => {
+                        const cellValue = cell.getValue();
+                        return (
+                          <TableCell
+                            onClick={() => {
+                              if (enableCopy) {
+                                copyToClipboard(
+                                  JSON.stringify(cellValue) as string
+                                );
+                              }
+                            }}
+                            key={cell.id}
+                          >
+                            {cell.column.id === "location_qr" &&
+                            data[row.id] &&
+                            data[row.id].id &&
+                            !hexToAscii(cellValue) ? (
+                              <div>
+                                <Button
+                                  onClick={() => {
+                                    generateQRCodeForLocation(data[row.id].id);
+                                  }}
+                                >
+                                  Generate QR
+                                </Button>
+                              </div>
+                            ) : cell.column.id === "location_qr" ? (
+                              <div>{hexToAscii(cellValue)}</div>
+                            ) : cell.column.id === "user_id" ? (
+                              <div>
+                                <Button
+                                  onClick={() => {
+                                    handleUserSelected(cellValue);
+                                  }}
+                                >
+                                  👁️{cellValue}
+                                </Button>
+                                {/* <StyledLink href={`profile/${cellValue}`} passHref>
                               👁️{cellValue}
                             </StyledLink> */}
-                          </div>
-                        ) : cell.column.id === "geolocation" ? (
-                          cellValue?.coordinates ? (
-                            <div>
-                              {cellValue.coordinates[0]},{" "}
-                              {cellValue.coordinates[1]}
-                            </div>
-                          ) : (
-                            <None></None>
-                          )
-                        ) : isValidDate(cellValue) ? (
-                          <div>{formatDate(cellValue)}</div>
-                        ) : cell.column.id === "status" ? (
-                          <div>{cellValue}</div>
-                        ) : typeof cellValue === "string" ||
-                          typeof cellValue === "number" ? (
-                          <div>{cellValue}</div>
-                        ) : Array.isArray(cellValue) ? (
-                          <span>{cellValue.join(", ")}</span>
-                        ) : typeof cellValue === "object" ? (
-                          <span>{JSON.stringify(cellValue)}</span>
-                        ) : typeof cellValue === "boolean" ? (
-                          <input
-                            type="checkbox"
-                            readOnly
-                            checked={cellValue as boolean}
-                          />
-                        ) : typeof cellValue === "function" ? (
-                          <Button onClick={() => cellValue(row.original)}>
-                            🏃‍♂️ Run
-                          </Button>
-                        ) : (
-                          <None></None>
-                        )}
-                        {showExtra && expandedRowIndex === rowIndex + 1 && (
-                          <RowDetails>
-                            <td>
-                              <div>
-                                <strong>Additional Information:</strong>
-                                {/* <p>{row.additionalInfo}</p> */}
                               </div>
-                            </td>
-                          </RowDetails>
-                        )}
-                      </TableCell>
-                    );
-                  })}
-                  {actions && actions.length > 0 && (
-                    <TableCell
-                      style={{
-                        gap: "5px",
-                        display: "flex",
-                        justifyContent: "center",
-                        padding: "3px",
-                        overflow: "visible",
-                      }}
-                      key={"actions"}
-                    >
-                      <div style={{ gap: "5px", display: "flex" }}>
-                        {actions.map((action) => {
-                          return (
-                            <TooltipWrap key={action.name}>
-                              <Button onClick={() => action.function()}>
-                                {action.icon ?? action.name}
+                            ) : cell.column.id === "geolocation" ? (
+                              cellValue?.coordinates ? (
+                                <div>
+                                  {cellValue.coordinates[0]},{" "}
+                                  {cellValue.coordinates[1]}
+                                </div>
+                              ) : (
+                                <None></None>
+                              )
+                            ) : isValidDate(cellValue) ? (
+                              <div>{formatDate(cellValue)}</div>
+                            ) : cell.column.id === "status" ? (
+                              <div>{cellValue}</div>
+                            ) : typeof cellValue === "string" ||
+                              typeof cellValue === "number" ? (
+                              <div>{cellValue}</div>
+                            ) : Array.isArray(cellValue) ? (
+                              <span>{cellValue.join(", ")}</span>
+                            ) : typeof cellValue === "object" ? (
+                              <span>{JSON.stringify(cellValue)}</span>
+                            ) : typeof cellValue === "boolean" ? (
+                              <input
+                                type="checkbox"
+                                readOnly
+                                checked={cellValue as boolean}
+                              />
+                            ) : typeof cellValue === "function" ? (
+                              <Button onClick={() => cellValue(row.original)}>
+                                🏃‍♂️ Run
                               </Button>
-                              <Tooltip>{action.name}</Tooltip>
-                            </TooltipWrap>
-                          );
-                        })}
+                            ) : (
+                              <None></None>
+                            )}
+                            {showExtra && expandedRowIndex === rowIndex + 1 && (
+                              <RowDetails>
+                                <TableCell>
+                                  <div>
+                                    <strong>Additional Information:</strong>
+                                    {/* <p>{row.additionalInfo}</p> */}
+                                  </div>
+                                </TableCell>
+                              </RowDetails>
+                            )}
+                          </TableCell>
+                        );
+                      })}
+                      {actions && actions.length > 0 && (
+                        <TableCell
+                          style={{
+                            gap: "5px",
+                            display: "flex",
+                            justifyContent: "center",
+                            padding: "3px",
+                            overflow: "visible",
+                          }}
+                          key={"actions"}
+                        >
+                          <div style={{ gap: "5px", display: "flex" }}>
+                            {actions.map((action) => {
+                              return (
+                                <TooltipWrap key={action.name}>
+                                  <Button
+                                    onClick={() => action.function(row.id)}
+                                  >
+                                    {action.icon ?? action.name}
+                                  </Button>
+                                  <Tooltip>{action.name}</Tooltip>
+                                </TooltipWrap>
+                              );
+                            })}
+                          </div>
+                        </TableCell>
+                      )}
+                    </>
+                  </TableRow>
+                  {expand &&
+                    expand.has(row.id) &&
+                    expandedData &&
+                    expandedData.length > 0 && (
+                      <div>
+                        <strong>Additional Information:</strong>
+                        <Table data={expandedData} />
                       </div>
-                    </TableCell>
-                  )}
-                </TableRow>
+                    )}
+                </>
               ))}
             </tbody>
           )}

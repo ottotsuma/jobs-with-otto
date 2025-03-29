@@ -21,32 +21,24 @@ export default function ManageVacancies() {
     const [vacanciesLoading, setVacanciesLoading] = useState(false);
     const [vacancies, setVacancies] = useState([]);
     const [locations, setLocations] = useState([]);
+    const [shifts, setshifts] = useState([]);
+    const [showShifts, setShowShifts] = useState(new Set());
+
+
     const [selectedLocation, setSelectedLocation] = useState("");
+    function handleShowShifts(id) {
+        console.log('id', id);
+        const newSet = new Set(showShifts); // Create a copy of the current set
+        if (newSet.has(id)) {
+            // If the ID is already in the set, delete it
+            newSet.delete(id);
+        } else {
+            // Otherwise, add the ID to the set
+            newSet.add(id);
+        }
+        setShowShifts(newSet); // Update state with the modified set
+    }
 
-    // const columns = vacancies.length
-    //     ? Object.keys(vacancies[0]).map((key) => ({
-    //         accessorKey: key,
-    //         header: key.charAt(0).toUpperCase() + key.slice(1), // Capitalize the header
-    //     }))
-    //     : [];
-
-    const columns = vacancies.length
-        ? Object.keys(vacancies[0]).map((key) => ({
-            accessorKey: key,
-            header: ({ column }) => (
-                <div>
-                    {key.charAt(0).toUpperCase() + key.slice(1)}
-                    <input
-                        type="text"
-                        value={column.getFilterValue() || ''}
-                        onChange={(e) => column.setFilterValue(e.target.value)}
-                        placeholder={`Filter ${key}`}
-                    />
-                </div>
-            ),
-            enableSorting: true,
-        }))
-        : [];
 
     useEffect(() => {
         setTitle("Manage Vacancies");
@@ -138,7 +130,14 @@ export default function ManageVacancies() {
                         ))}
                     </select>
                     <Table
-                        columns={columns}
+                        // columns={columns}
+                        actions={[{
+                            name: "Show Shifts",
+                            function: (id) => { handleShowShifts(id) },
+                            icon: "✅",
+                        }]}
+                        expandedData={locations}
+                        expand={showShifts}
                         data={vacancies}
                         onDataChange={updateVacancies}
                         deleteRow={deleteVacancy}
@@ -159,3 +158,20 @@ export default function ManageVacancies() {
         </div>
     );
 }
+
+// ### 1. **Expandable Row Design**  
+// - Add a small icon (like a caret or "+" symbol) at the start or end of each vacancy row. Clicking it expands the row to display shift details.  
+// - Use a nested table or card-like layout within the expanded area to show all shifts linked to the vacancy.
+
+// ### 2. **Shift Table Inside Expanded Row**  
+// Include these features in the shift section:  
+// - **Columns:** Shift ID, Date/Time, Status, Assigned Staff (if applicable), and Actions (e.g., Edit/Delete).  
+// - **Edit Mode:** Inline editing for quick updates, or an "Edit" button that opens a small form in-place.  
+// - **Add Shift:** Provide an "Add Shift" button at the top or bottom of the nested table for adding new shifts.
+
+// ### 3. **Actions & Visuals**  
+// - Include a dropdown menu or buttons for "Delete All," "Duplicate Shifts," or bulk actions.
+// - Add color-coded tags or icons to represent shift statuses (e.g., pending, completed, canceled).
+
+// ### 4. **Responsive Design**  
+// Ensure the expanded rows adapt well to different screen sizes. On smaller screens, the shifts could be shown in a scrollable list or stacked vertically.
