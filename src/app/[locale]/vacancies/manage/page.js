@@ -21,13 +21,12 @@ export default function ManageVacancies() {
     const [vacanciesLoading, setVacanciesLoading] = useState(false);
     const [vacancies, setVacancies] = useState([]);
     const [locations, setLocations] = useState([]);
-    const [shifts, setShifts] = useState([]);
+    const [shifts, setShifts] = useState({});
     const [showShifts, setShowShifts] = useState(new Set());
 
 
     const [selectedLocation, setSelectedLocation] = useState("");
     function handleShowShifts(row_id) {
-        console.log('row_id', row_id);
         const newSet = new Set(showShifts); // Create a copy of the current set
         if (newSet.has(row_id)) {
             // If the ID is already in the set, delete it
@@ -36,8 +35,8 @@ export default function ManageVacancies() {
             // Otherwise, add the ID to the set
             newSet.add(row_id);
         }
-        // fetchShifts(vacancy_id)
-        setShowShifts(newSet); // Update state with the modified set
+        const vacancy = vacancies[row_id];
+        if (vacancy) fetchShifts(vacancy.id, newSet, row_id)
     }
     useEffect(() => {
         setTitle("Manage Vacancies");
@@ -95,7 +94,7 @@ export default function ManageVacancies() {
     const updateVacancies = (updatedData) => {
         setVacancies(updatedData);
     };
-    async function fetchShifts(vacancy_id) {
+    async function fetchShifts(vacancy_id, newSet, row_id) {
         let query = supabase
             .from("shifts")
             .select("*")
@@ -103,8 +102,18 @@ export default function ManageVacancies() {
 
         const { data, error } = await query;
         if (error) console.error("Error fetching vacancies:", error);
-        else setShifts((prevShifts) => [...prevShifts, ...data]);
-        console.log(data, 'shift data', vacancy_id)
+        else {
+            const data = [
+                { shift_id: 1, start_time: "08:00", end_time: "16:00" },
+                { shift_id: 2, start_time: "16:00", end_time: "00:00" }
+            ];
+            // console.log(data, 'shift data', vacancy_id, shifts)
+            setShifts(prevShifts => ({
+                ...prevShifts,
+                [row_id]: data // Store shifts under the row_id key
+            }));
+            setShowShifts(newSet);
+        }
     }
     return (
         <div>
@@ -139,6 +148,7 @@ export default function ManageVacancies() {
                         }]}
                         expandedData={shifts}
                         expand={showShifts}
+                        expadedTitle={"Shifts:"}
                         data={vacancies}
                         onDataChange={updateVacancies}
                         deleteRow={deleteVacancy}

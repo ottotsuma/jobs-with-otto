@@ -113,6 +113,9 @@ type Action = {
   function: (id: string) => void;
   icon?: string;
 };
+type Entity<T> = {
+  [key: string]: T[]; // The key is some identifier (e.g., vacancy_id), and the value is an array of T objects
+};
 const Table = ({
   data,
   onDataChange,
@@ -121,6 +124,7 @@ const Table = ({
   actions,
   expand,
   expandedData,
+  expadedTitle,
 }: {
   // columns: ColumnDef<RowData>[];
   data: RowData[];
@@ -129,7 +133,8 @@ const Table = ({
   bannedEdit?: string[];
   actions?: Action[];
   expand?: Set<string> | null;
-  expandedData?: RowData[];
+  expandedData?: Entity<any>;
+  expadedTitle?: string;
 }) => {
   const [sorting, setSorting] = useState<SortingState>([]);
 
@@ -616,17 +621,14 @@ const Table = ({
                         );
                       })}
                       {actions && actions.length > 0 && (
-                        <TableCell
-                          style={{
-                            gap: "5px",
-                            display: "flex",
-                            justifyContent: "center",
-                            padding: "3px",
-                            overflow: "visible",
-                          }}
-                          key={"actions"}
-                        >
-                          <div style={{ gap: "5px", display: "flex" }}>
+                        <TableCell key={"actions"}>
+                          <div
+                            style={{
+                              gap: "5px",
+                              display: "flex",
+                              justifyContent: "center",
+                            }}
+                          >
                             {actions.map((action) => {
                               return (
                                 <TooltipWrap key={action.name}>
@@ -644,15 +646,21 @@ const Table = ({
                       )}
                     </>
                   </TableRow>
-                  {expand &&
-                    expand.has(row.id) &&
-                    expandedData &&
-                    expandedData.length > 0 && (
-                      <div>
-                        <strong>Additional Information:</strong>
-                        <Table data={expandedData} />
-                      </div>
-                    )}
+                  {expand && expand.has(row.id) && expandedData && (
+                    // expandedData.length > 0 &&
+                    <TableRow colSpan="100%" style={{ width: "100%" }}>
+                      <td
+                        colSpan="100%"
+                        style={{ padding: "20px 0px", width: "100%" }}
+                      >
+                        <Table
+                          data={expandedData[row.id]}
+                          style={{ width: "100%" }}
+                        />
+                      </td>
+                    </TableRow>
+                    // {expadedTitle ?? "Additional Information:"}
+                  )}
                 </>
               ))}
             </tbody>
