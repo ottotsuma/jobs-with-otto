@@ -13,6 +13,7 @@ import { useTranslation } from 'next-i18next';
 import SideBar from "@/components/Sidebar";
 const ViewVacancy = lazy(() => import("./../../../../components/viewVacancy"));
 const NewVacancy = lazy(() => import("./../../../../components/newVacancy"));
+const NewShift = lazy(() => import("./../../../../components/newShift"));
 export default function ManageVacancies() {
     const { t, i18n } = useTranslation('common');
     const router = useRouter();
@@ -28,6 +29,8 @@ export default function ManageVacancies() {
     const [showShifts, setShowShifts] = useState(new Set());
     const [selectedLocation, setSelectedLocation] = useState("");
     const [NewVacancyOpen, setNewVacancyOpen] = useState(false);
+    const [NewShiftOpen, setNewShiftOpen] = useState(0);
+
     function handleShowShifts(row_id) {
         const newSet = new Set(showShifts); // Create a copy of the current set
         if (newSet.has(row_id)) {
@@ -39,6 +42,10 @@ export default function ManageVacancies() {
         }
         const vacancy = vacancies[row_id];
         if (vacancy) fetchShifts(vacancy.id, newSet, row_id)
+    }
+    function handleNewShifts(row_id) {
+        const vacancy = vacancies[row_id];
+        setNewShiftOpen(vacancy.id)
     }
     useEffect(() => {
         setTitle("Manage Vacancies");
@@ -137,6 +144,14 @@ export default function ManageVacancies() {
                             <NewVacancy />
                         </Suspense>
                     </SideBar>
+                    <SideBar
+                        isOpen={NewShiftOpen}
+                        onClose={() => setNewShiftOpen(false)}
+                    >
+                        <Suspense fallback={<Loading />}>
+                            <NewShift all_vacancies={vacancies} vacancy_id={NewShiftOpen} />
+                        </Suspense>
+                    </SideBar>
                     <>
                         <h1>{t('vacancies.manage')}</h1>
                         {/* Create new - src\app\vacancies\new\page.tsx */}
@@ -168,6 +183,11 @@ export default function ManageVacancies() {
                             actions={[{
                                 name: "Show Shifts",
                                 function: (row_id) => { handleShowShifts(row_id) },
+                                icon: "✅",
+                            },
+                            {
+                                name: "New Shifts",
+                                function: (row_id) => { handleNewShifts(row_id) },
                                 icon: "✅",
                             }]}
                             expandedData={shifts}

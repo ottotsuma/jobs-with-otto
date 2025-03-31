@@ -66,7 +66,7 @@ const TableHeader = styled("th", {
 });
 const Tooltip = styled("div", {
   position: "absolute",
-  top: "80%",
+  zIndex: 100,
   backgroundColor: "rgba(28, 56, 151, 0.9)",
   color: "#fff",
   padding: "8px",
@@ -77,7 +77,6 @@ const Tooltip = styled("div", {
   transition: "opacity 0.2s ease, transform 0.2s ease",
 });
 const TooltipWrap = styled("div", {
-  position: "relative",
   "&:hover": {
     [`${Tooltip}`]: {
       visibility: "visible",
@@ -94,7 +93,9 @@ const TableCell = styled("td", {
   textOverflow: "ellipsis", // Add ellipsis for overflowing text
 });
 
-const TableRow = styled("tr", {});
+const TableRow = styled("tr", {
+  position: "relative",
+});
 
 const StyledLink = styled(Link, {
   display: "block",
@@ -406,7 +407,7 @@ const Table = ({
                           </div>
                         ) : isValidDate(cellValue) ? (
                           <DateTimePicker
-                            value={cellValue}
+                            value={cellValue as Date}
                             onChange={(newValue) =>
                               updateData(row.index, cell.column.id, newValue)
                             }
