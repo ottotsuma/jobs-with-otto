@@ -32,7 +32,7 @@ const roadmapItems = [
     { title: "Clock In / Out", status: "testing" },
     { title: "CSV Export for Worker Hours", status: "pending" },
     { title: "Apply to Join Company as Manager", status: "done" },
-    { title: "Apply to Join Company as Worker", status: "pending" },
+    { title: "Apply to Join Company as Worker", status: "testing" },
     { title: "Assign Workers to Shifts", status: "pending" },
     { title: "Assign External Workers to Shifts", status: "pending" }
 ];

@@ -32,6 +32,7 @@ const SidebarContainer = styled("div", {
   background: "white",
   boxShadow: "-5px 0px 10px rgba(0, 0, 0, 0.2)",
   animation: `${slideIn} 0.3s ease forwards`,
+  overflow: "auto",
   variants: {
     hidden: {
       true: {
@@ -59,7 +60,16 @@ const CloseButton = styled("button", {
   border: "none",
   fontSize: "20px",
   cursor: "pointer",
-  color: "black",
+  variants: {
+    theme: {
+      true: {
+        color: "#333",
+      },
+      false: {
+        color: "WhiteSmoke",
+      },
+    },
+  },
 });
 
 interface SidebarProps {
@@ -79,7 +89,9 @@ const Sidebar = ({ isOpen, onClose, children }: SidebarProps) => {
         hidden={!isOpen}
         onClick={(e) => e.stopPropagation()}
       >
-        <CloseButton onClick={onClose}>&times;</CloseButton>
+        <CloseButton theme={theme === "dark" ? false : true} onClick={onClose}>
+          &times;
+        </CloseButton>
         {children}
       </SidebarContainer>
     </Overlay>

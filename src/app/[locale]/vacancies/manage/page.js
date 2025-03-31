@@ -1,8 +1,8 @@
 'use client';
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense, lazy } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "superbase";
-import { Button } from '@/styles/basic';
+import { Button, Container } from '@/styles/basic';
 import Table from "@/components/Table";
 import { useUser } from "@/contexts/UserContext";
 import { vacancy_bannedEdit } from '@/types/vacancies'
@@ -10,6 +10,9 @@ import Loading from "@/components/loading";
 import { useTitle } from "@/contexts/TitleContext";
 import { useLocale } from "@/app/[locale]/hooks/useLocal";
 import { useTranslation } from 'next-i18next';
+import SideBar from "@/components/Sidebar";
+const ViewVacancy = lazy(() => import("./../../../../components/viewVacancy"));
+const NewVacancy = lazy(() => import("./../../../../components/newVacancy"));
 export default function ManageVacancies() {
     const { t, i18n } = useTranslation('common');
     const router = useRouter();
@@ -23,9 +26,8 @@ export default function ManageVacancies() {
     const [locations, setLocations] = useState([]);
     const [shifts, setShifts] = useState({});
     const [showShifts, setShowShifts] = useState(new Set());
-
-
     const [selectedLocation, setSelectedLocation] = useState("");
+    const [NewVacancyOpen, setNewVacancyOpen] = useState(false);
     function handleShowShifts(row_id) {
         const newSet = new Set(showShifts); // Create a copy of the current set
         if (newSet.has(row_id)) {
@@ -118,53 +120,104 @@ export default function ManageVacancies() {
     return (
         <div>
             {loading ? <Loading /> :
-                <>
-                    <h1>{t('vacancies.manage')}</h1>
-                    {/* Create new - src\app\vacancies\new\page.tsx */}
-                    <Button
-                        onClick={() => router.push(`/${currentLocale}/vacancies/new`)}
+                <Container>
+                    {/* <SideBar
+                        isOpen={userProfileModalOpen && !!selectedUser}
+                        onClose={() => setUserProfileModalOpen(false)}
                     >
-                        {t('vacancies.new')}
-                    </Button>
-                    <select
-                        value={selectedLocation}
-                        onChange={(e) => {
-                            setSelectedLocation(e.target.value);
-                        }}
-                        className="w-full p-2 border rounded mb-4"
+                        <Suspense fallback={<Loading />}>
+                            <NewVacancy vacancy_id={} />
+                        </Suspense>
+                    </SideBar> */}
+                    <SideBar
+                        isOpen={NewVacancyOpen}
+                        onClose={() => setNewVacancyOpen(false)}
                     >
-                        <option value="">{t('locations.all')}</option>
-                        {locations.map((location) => (
-                            <option key={location.id} value={location.id}>
-                                {location.name}
-                            </option>
-                        ))}
-                    </select>
-                    <Table
-                        actions={[{
-                            name: "Show Shifts",
-                            function: (row_id) => { handleShowShifts(row_id) },
-                            icon: "✅",
-                        }]}
-                        expandedData={shifts}
-                        expand={showShifts}
-                        expadedTitle={"Shifts:"}
-                        data={vacancies}
-                        onDataChange={updateVacancies}
-                        deleteRow={deleteVacancy}
-                        bannedEdit={vacancy_bannedEdit}
-                    />
-                    {/* options */}
-                    {/* Filter by Location */}
+                        <Suspense fallback={<Loading />}>
+                            <NewVacancy />
+                        </Suspense>
+                    </SideBar>
+                    <>
+                        <h1>{t('vacancies.manage')}</h1>
+                        {/* Create new - src\app\vacancies\new\page.tsx */}
+                        <Button
+                            onClick={() => setNewVacancyOpen(true)}
+                        >
+                            {t('vacancies.new')}
+                        </Button>
+                        {/* <Button
+                            onClick={() => router.push(`/${currentLocale}/vacancies/new`)}
+                        >
+                            {t('vacancies.new')}
+                        </Button> */}
+                        <select
+                            value={selectedLocation}
+                            onChange={(e) => {
+                                setSelectedLocation(e.target.value);
+                            }}
+                            className="w-full p-2 border rounded mb-4"
+                        >
+                            <option value="">{t('locations.all')}</option>
+                            {locations.map((location) => (
+                                <option key={location.id} value={location.id}>
+                                    {location.name}
+                                </option>
+                            ))}
+                        </select>
+                        <Table
+                            actions={[{
+                                name: "Show Shifts",
+                                function: (row_id) => { handleShowShifts(row_id) },
+                                icon: "✅",
+                            }]}
+                            expandedData={shifts}
+                            expand={showShifts}
+                            expadedTitle={"Shifts:"}
+                            data={vacancies}
+                            onDataChange={updateVacancies}
+                            deleteRow={deleteVacancy}
+                            bannedEdit={vacancy_bannedEdit}
+                        />
+                        {/* options */}
+                        {/* Filter by Location */}
 
 
-                    {/* Job Listings - Table*/}
-                    {/* Jobs by Date */}
-                    {/* Applications */}
-                    {/* Assigned - Status - Could be hundreds*/}
-                    {/* Job Details */}
-                    {/* Templates - delete, update */}
-                </>
+                        {/* Job Listings - Table*/}
+                        {/* Jobs by Date */}
+                        {/* Applications */}
+                        {/* Assigned - Status - Could be hundreds*/}
+                        {/* Job Details */}
+                        {/* Templates - delete, update */}
+                    </>
+                    <>
+                        <h1>{t('shifts.manage')}</h1>
+                        <select
+                            value={selectedLocation}
+                            onChange={(e) => {
+                                setSelectedLocation(e.target.value);
+                            }}
+                            className="w-full p-2 border rounded mb-4"
+                        >
+                            <option value="">{t('locations.all')}</option>
+                            {locations.map((location) => (
+                                <option key={location.id} value={location.id}>
+                                    {location.name}
+                                </option>
+                            ))}
+                        </select>
+                        <Table
+                            actions={[{
+                                name: t('vacancies.new'),
+                                function: (row_id) => { newShift(row_id) },
+                                icon: "✅",
+                            }]}
+                            data={[shifts]}
+                            // onDataChange={updateShifts}
+                            // deleteRow={deleteShift}
+                            bannedEdit={vacancy_bannedEdit}
+                        />
+                    </>
+                </Container>
             }
         </div>
     );

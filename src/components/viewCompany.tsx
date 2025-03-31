@@ -19,6 +19,22 @@ export default function ViewCompany({ company_id }) {
   const { user, setUser } = useUser();
   const [company, setCompany] = useState(null);
   const [vacancies, setVacancies] = useState([]);
+  async function applyAsCompanyApplicant(user, companyId) {
+    if (!user?.id || !companyId) {
+      console.error("Missing user ID or company ID.");
+      return;
+    }
+
+    const { error } = await supabase
+      .from("company_applicant_applications")
+      .insert([{ user_id: user.id, company_id: companyId, status: "pending" }]);
+
+    if (error) {
+      console.error("Error inserting application:", error);
+    } else {
+      console.log("Application submitted successfully.");
+    }
+  }
   async function applyAsCompanyManager(user, companyId) {
     if (!user?.id || !companyId) {
       console.error("Missing user ID or company ID.");
@@ -87,6 +103,15 @@ export default function ViewCompany({ company_id }) {
           }}
         >
           Apply to join company as manager
+        </Button>
+      )}
+      {user?.role === "applicant" && (
+        <Button
+          onClick={() => {
+            applyAsCompanyApplicant(user, company_id);
+          }}
+        >
+          Apply to join company as worker
         </Button>
       )}
     </Container>

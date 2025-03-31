@@ -528,8 +528,10 @@ const Table = ({
               {table.getRowModel().rows.map((row, rowIndex) => (
                 <>
                   <TableRow
-                    onMouseEnter={() => handleRowHover(rowIndex + 1)}
-                    onMouseLeave={() => handleRowHover(null)}
+                    onMouseEnter={() =>
+                      showExtra && handleRowHover(rowIndex + 1)
+                    }
+                    onMouseLeave={() => showExtra && handleRowHover(null)}
                     key={row.id}
                   >
                     <>
@@ -647,16 +649,17 @@ const Table = ({
                     </>
                   </TableRow>
                   {expand && expand.has(row.id) && expandedData && (
-                    // expandedData.length > 0 &&
                     <TableRow colSpan="100%" style={{ width: "100%" }}>
                       <td
                         colSpan="100%"
                         style={{ padding: "20px 0px", width: "100%" }}
                       >
-                        <Table
-                          data={expandedData[row.id]}
-                          style={{ width: "100%" }}
-                        />
+                        {expandedData[row.id] && (
+                          <Table
+                            data={expandedData[row.id]}
+                            style={{ width: "100%" }}
+                          />
+                        )}
                       </td>
                     </TableRow>
                     // {expadedTitle ?? "Additional Information:"}

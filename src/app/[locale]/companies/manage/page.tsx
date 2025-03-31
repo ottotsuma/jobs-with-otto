@@ -35,6 +35,8 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState<boolean>(true);
   const { setTitle } = useTitle();
   const [applications, setApplications] = useState([]);
+  const [worker_applications, setWorkerApplications] = useState([]);
+
   async function fetchApplications(companyId: string) {
     const { data, error } = await supabase
       .from("company_manager_applications")
@@ -47,7 +49,18 @@ export default function ProfilePage() {
       setApplications(data);
     }
   }
+  async function fetchWorkerApplications(companyId: string) {
+    const { data, error } = await supabase
+      .from("company_applicant_applications")
+      .select("*")
+      .eq("company_id", companyId);
 
+    if (error) {
+      console.error("Error fetching applications:", error);
+    } else {
+      setWorkerApplications(data);
+    }
+  }
   const blockedValues = ["id", "user_id", "created_at", "updated_at"];
   useEffect(() => {
     setTitle("Manage Company");
@@ -79,8 +92,8 @@ export default function ProfilePage() {
     }
     fetchCompany(user?.company_id || localStorage.getItem("user")?.company_id);
     fetchCompanyManagers(user?.company_id);
-    // fetchCompanyApplicants(user?.company_id);
     fetchApplications(user?.company_id);
+    fetchWorkerApplications(user?.company_id);
   }, [user]);
   async function updateCompany(e) {
     e.preventDefault();
@@ -114,24 +127,6 @@ export default function ProfilePage() {
     }
   }
   const statusOptions = ["Active", "Inactive"];
-  const ManagerColumns: ColumnDef[] = companyManagers.length
-    ? Object.keys(companyManagers[0]).map((key) => ({
-        accessorKey: key,
-        header: key.charAt(0).toUpperCase() + key.slice(1), // Capitalize the header
-      }))
-    : [];
-  const ApplicantColumns: ColumnDef[] = companyApplicants.length
-    ? Object.keys(companyApplicants[0]).map((key) => ({
-        accessorKey: key,
-        header: key.charAt(0).toUpperCase() + key.slice(1), // Capitalize the header
-      }))
-    : [];
-  const ApplicationsColumns: ColumnDef[] = applications.length
-    ? Object.keys(applications[0]).map((key) => ({
-        accessorKey: key,
-        header: key.charAt(0).toUpperCase() + key.slice(1), // Capitalize the header
-      }))
-    : [];
   function handleManagersChange() {}
   function removeManager() {}
   function handleApplicantsChange() {}
@@ -203,7 +198,6 @@ export default function ProfilePage() {
               <h1>Company Managers:</h1>
               {companyManagers.length > 0 ? (
                 <Table
-                  columns={ManagerColumns}
                   data={companyManagers}
                   onDataChange={handleManagersChange}
                   deleteRow={removeManager}
@@ -215,7 +209,6 @@ export default function ProfilePage() {
               <h1 style={{ marginTop: "15px" }}>Company Applicants:</h1>
               {companyApplicants.length > 0 ? (
                 <Table
-                  columns={ApplicantColumns}
                   data={companyApplicants}
                   onDataChange={handleApplicantsChange}
                   deleteRow={removeApplicant}
@@ -232,7 +225,6 @@ export default function ProfilePage() {
                 <>
                   <h3>Manager Applications</h3>
                   <Table
-                    columns={ApplicationsColumns}
                     data={applications}
                     onDataChange={() => {}}
                     deleteRow={() => {}}
@@ -252,18 +244,17 @@ export default function ProfilePage() {
                   />
                 </>
               )}
-              {/* {worker_applications.length > 0 && (
+              {worker_applications.length > 0 && (
                 <>
                   <h3>Worker Applications</h3>
                   <Table
-                    columns={ApplicationsColumns}
                     data={applications}
                     onDataChange={() => {}}
                     deleteRow={() => {}}
                     bannedEdit={[]}
                   />
                 </>
-              )} */}
+              )}
               {/* <div>{applications}</div> */}
             </ZoneYellow>
             {/* applications */}
