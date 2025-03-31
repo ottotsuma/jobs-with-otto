@@ -214,7 +214,9 @@ const Navbar = () => {
                             <ListItem><StyledLink onClick={closeSidebar} href={`/${currentLocale}/companies/manage`}>{t('companies.manage')}</StyledLink></ListItem>
                             <ListItem><StyledLink onClick={closeSidebar} href={`/${currentLocale}/locations/manage`}>{t('locations.manage')}</StyledLink></ListItem>
                             <ListItem><StyledLink onClick={closeSidebar} href={`/${currentLocale}/vacancies/manage`}>{t('vacancies.manage')}</StyledLink></ListItem>
-                            {/* View opt in users */}
+
+                            <ListItem><StyledLink onClick={closeSidebar} href={`/${currentLocale}/profile/search`}>{t('profile.search')}</StyledLink></ListItem>
+
                         </>
                     )}
                     {user?.role === "admin" && (
@@ -235,6 +237,12 @@ const Navbar = () => {
                         color="blue"
                     >
                         {t('contact.contact')}
+                    </Button>
+                    <Button
+                        onClick={() => router.push(`/${currentLocale}/roadmap`)}
+                        color="blue"
+                    >
+                        {t('roadmap')}
                     </Button>
                     {/* Page to list all page options? */}
                 </List>

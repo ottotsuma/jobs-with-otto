@@ -103,10 +103,10 @@ export default function ManageVacancies() {
         const { data, error } = await query;
         if (error) console.error("Error fetching vacancies:", error);
         else {
-            const data = [
-                { shift_id: 1, start_time: "08:00", end_time: "16:00" },
-                { shift_id: 2, start_time: "16:00", end_time: "00:00" }
-            ];
+            // const data = [
+            //     { shift_id: 1, start_time: "08:00", end_time: "16:00" },
+            //     { shift_id: 2, start_time: "16:00", end_time: "00:00" }
+            // ];
             // console.log(data, 'shift data', vacancy_id, shifts)
             setShifts(prevShifts => ({
                 ...prevShifts,

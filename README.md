@@ -1,39 +1,5 @@
 # Jobs with Otto
 
-- Roadmap
-
-1. users (done)
-2. User types (done)
-3. Companies (done)
-4. Locations (done)
-5. Jobs (done)
-6. QR codes (testing)
-7. Smart contracts
-8. permissions
-9. Analytics (done)
-10. CSV
-11. Feedback form
-12. Candidate Search
-13. CVs
-14. Translations (In progress...)
-15. Geolocking (testing)
-16. Tracking [location]
-17. Reccomandations
-18. Weights
-19. Visa + Qulifications (testing)
-20. Tags to users, jobs, companies (testing)
-21. SQL custom param search
-22. credits (testing)
-23. Company Search (Done)
-24. Guide/Assistant
-25. Job search, filter, split
-26. Sign in / out
-27. Print out CSV of users clock in and out times, hours worked etc.
-28. apply to join a company as a manager (Done)
-29. Apply to join company as a worker
-30. Assign workers to shifts
-31. Assign external workers to shifts
-
 ### Vacancies new categories
 
 - job type
