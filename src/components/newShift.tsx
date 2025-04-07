@@ -9,6 +9,7 @@ import { useUser } from "@/contexts/UserContext";
 import { styled } from "@stitches/react";
 import { useLocale } from "@/app/[locale]/hooks/useLocal";
 import { useTranslation } from "next-i18next";
+import ApplicantSelector from "@/components/applicantSelector";
 import {
   Button,
   Title,
@@ -112,7 +113,7 @@ export default function NewShift({ vacancy_id, all_vacancies }) {
       if (templatesError) console.error(templatesError);
       setTemplates(templatesData || []);
     }
-    fetchData();
+    // fetchData();
   }, [user]);
   const handleChange = (
     e: React.ChangeEvent<
@@ -150,21 +151,19 @@ export default function NewShift({ vacancy_id, all_vacancies }) {
   };
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    shiftData.company_id = user?.company_id || "";
+    if (shiftData.company_id) delete shiftData.company_id;
     // Ensure all required fields are populated
     if (
       !user ||
-      !shiftData.company_id ||
-      !shiftData.job_title ||
-      !shiftData.description
+      !shiftData.vacancy_id ||
+      !shiftData.start_time ||
+      !shiftData.end_time
     ) {
       alert("Missing required fields");
       return;
     }
 
-    const { data, error } = await supabase
-      .from("vacancies")
-      .insert([shiftData]);
+    const { data, error } = await supabase.from("shifts").insert(shiftData);
 
     if (error) {
       alert("Error creating shift");
@@ -176,11 +175,20 @@ export default function NewShift({ vacancy_id, all_vacancies }) {
       router.push(`/${currentLocale}/vacancies/manage`);
     }
   };
+  const handleApplicantSelect = (id: string) => {
+    // Update the applicant_id in the state
+    setShiftData((prevData) => ({
+      ...prevData,
+      applicant_id: id,
+    }));
+    console.log(id); // Optionally log the ID
+  };
   return (
     <FormWrapper>
       {/* Modal for picking applicants. Location/Company/Applied/Open(invite) */}
       <Title>{t("vacancies.new")}</Title>
       {/* Template Selection Dropdown */}
+      Shift Templates
       {templates.length > 0 && (
         <ZoneGreen>
           <Label>{t("generic.select_template")}</Label>
@@ -225,6 +233,17 @@ export default function NewShift({ vacancy_id, all_vacancies }) {
                 value={fieldValue}
                 onChange={(newValue) => updateData(key, newValue)}
               />
+            );
+          } else if (key === "applicant_id") {
+            return (
+              <div key={key}>
+                <ApplicantSelector
+                  onSelectApplicant={handleApplicantSelect}
+                  vacancy_id={vacancy_id}
+                  selectedApplicant={shiftData.applicant_id || ""}
+                  all_vacancies={all_vacancies}
+                />
+              </div>
             );
           } else if (typeof fieldValue === "string") {
             return (

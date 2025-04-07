@@ -154,6 +154,9 @@ export default function ManageVacancies() {
                     </SideBar>
                     <>
                         <h1>{t('vacancies.manage')}</h1>
+                        <p>Delete vacancy, tree deletes shifts.</p>
+                        <p>delete shifts</p>
+                        <p>Display shifts on their own</p>
                         {/* Create new - src\app\vacancies\new\page.tsx */}
                         <Button
                             onClick={() => setNewVacancyOpen(true)}
@@ -228,7 +231,7 @@ export default function ManageVacancies() {
                         <Table
                             actions={[{
                                 name: t('vacancies.new'),
-                                function: (row_id) => { newShift(row_id) },
+                                function: (row_id) => { handleNewShifts(row_id) },
                                 icon: "✅",
                             }]}
                             data={[shifts]}

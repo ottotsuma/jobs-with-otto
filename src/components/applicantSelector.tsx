@@ -86,10 +86,11 @@ const EmptyStateMessage = styled("p", {
   marginTop: "2rem",
 });
 
-export default function NewShift({
+export default function ApplicantSelector({
   vacancy_id,
   all_vacancies,
   onSelectApplicant,
+  selectedApplicant,
 }) {
   const { t } = useTranslation("common");
   const router = useRouter();
@@ -106,77 +107,122 @@ export default function NewShift({
     setSelectedTab(tabId);
   };
   useEffect(() => {
-    async function fetchApplicants(vacancyLocationId, vacancyCompanyId) {
+    async function fetchApplicants(
+      vacancy_id: string | null,
+      vacancyLocationId: string | null,
+      vacancyCompanyId: string | null
+    ) {
       try {
+        if (!vacancy_id) throw new Error("vacancy_id is required");
+
+        // Step 1: Get IDs of applied users
         const { data: vacancyApplicants, error: vacancyError } = await supabase
           .from("vacancy_applicants")
-          .select("user_id, application_status")
+          .select("user_id")
           .eq("vacancy_id", vacancy_id);
 
         if (vacancyError) throw vacancyError;
+        const appliedUserIds = vacancyApplicants.map((a) => a.user_id);
 
-        // Extract user_ids from the fetched vacancy applicants
-        const userIds = vacancyApplicants.map((applicant) => applicant.user_id);
+        // Step 2: Fetch applicants matching location or company
+        const orMatchFilters = [];
+        let matchedApplicants = [];
+        // Only add filters if either vacancyLocationId or vacancyCompanyId is provided
+        if (vacancyLocationId) {
+          orMatchFilters.push(`location_id.eq.${vacancyLocationId}`);
+        }
+        if (vacancyCompanyId) {
+          orMatchFilters.push(`company_id.eq.${vacancyCompanyId}`);
+        }
 
-        // Fetch applicants who match company, location, or have open_view = true
-        const { data: companyLocationOpenApplicants, error: profileError } =
-          await supabase
+        // Only make the API call if there is at least one filter
+        if (orMatchFilters.length > 0) {
+          const { data: matchedApplicantsData, error: matchError } =
+            await supabase
+              .from("applicant_profiles")
+              .select("*")
+              .or(orMatchFilters.join(","));
+
+          if (matchError) throw matchError;
+          matchedApplicants = matchedApplicantsData || [];
+          // Handle matched applicants here (process data as needed)
+        } else {
+          // Handle case where no location or company ID is provided
+          console.log("No location or company ID provided, skipping API call.");
+        }
+
+        // Step 3: Fetch open-view applicants who do NOT match location/company
+        // Prepare filters based on the provided location and company IDs
+        const locationFilter = vacancyLocationId
+          ? `location_id.neq.${vacancyLocationId}`
+          : "";
+        const companyFilter = vacancyCompanyId
+          ? `company_id.neq.${vacancyCompanyId}`
+          : "";
+
+        // Build the filter string dynamically
+        const filters = [locationFilter, companyFilter, "open_view.eq.true"]
+          .filter(Boolean)
+          .join(",");
+
+        const { data: openViewApplicants, error: openViewError } =
+          await supabase.from("applicant_profiles").select("*").or(filters);
+
+        if (openViewError) throw openViewError;
+
+        // Step 4: Fetch applied applicants (if any)
+        let appliedApplicants: any[] = [];
+        if (appliedUserIds.length > 0) {
+          const { data: appliedData, error: appliedError } = await supabase
             .from("applicant_profiles")
             .select("*")
-            .or(
-              `company_id.eq.${vacancyCompanyId},location_id.eq.${vacancyLocationId},open_view.eq.true`
-            );
+            .in("id", appliedUserIds);
 
-        // Fetch applicants based on user_ids from the vacancy_applicants table (might overlap with the previous group)
-        const { data: appliedApplicants, error: appliedError } = await supabase
-          .from("applicant_profiles")
-          .select("*")
-          .in("id", userIds);
+          if (appliedError) throw appliedError;
+          appliedApplicants = appliedData || [];
+        }
 
-        if (profileError || appliedError) throw profileError || appliedError;
+        // Step 5: Bucket applicants
+        const locationApplicants = matchedApplicants.filter(
+          (a) =>
+            a.location_id === vacancyLocationId &&
+            !appliedUserIds.includes(a.id)
+        );
 
-        // Combine the two groups, ensuring no duplicates
-        const allApplicants = [
-          ...companyLocationOpenApplicants,
-          ...appliedApplicants.filter(
-            (applicant) =>
-              !companyLocationOpenApplicants.some(
-                (existingApplicant) => existingApplicant.id === applicant.id
-              )
-          ),
-        ];
+        const companyApplicants = matchedApplicants.filter(
+          (a) =>
+            a.company_id === vacancyCompanyId &&
+            a.location_id !== vacancyLocationId &&
+            !appliedUserIds.includes(a.id)
+        );
 
+        // Step 6: Set state
         setCompanyApplicants({
-          companyApplicants: companyLocationOpenApplicants.filter(
-            (applicant) => applicant.company_id === vacancyCompanyId
-          ),
-          locationApplicants: companyLocationOpenApplicants.filter(
-            (applicant) => applicant.location_id === vacancyLocationId
-          ),
-          openViewApplicants: companyLocationOpenApplicants.filter(
-            (applicant) => applicant.open_view === true
-          ),
-          appliedApplicants: allApplicants,
+          locationApplicants,
+          companyApplicants,
+          appliedApplicants,
+          openViewApplicants,
         });
       } catch (err) {
         console.error("Error fetching applicants:", err);
         setCompanyApplicants({
-          companyApplicants: [],
           locationApplicants: [],
-          openViewApplicants: [],
+          companyApplicants: [],
           appliedApplicants: [],
+          openViewApplicants: [],
         });
       }
     }
+
     // Find the matching vacancy based on vacancy_id
     const vacancy = all_vacancies.find((vacancy) => vacancy.id === vacancy_id);
 
     if (vacancy) {
-      const vacancyLocationId = vacancy.location_id;
-      const vacancyCompanyId = vacancy.company_id;
+      const vacancyLocationId = vacancy.location_id || null;
+      const vacancyCompanyId = vacancy.company_id || null;
 
       // Fetch only the applicants who meet the criteria from the database
-      fetchApplicants(vacancyLocationId, vacancyCompanyId);
+      fetchApplicants(vacancy_id, vacancyLocationId, vacancyCompanyId);
     }
   }, [vacancy_id, all_vacancies]); // Re-run effect if vacancy_id or all_vacancies changes
 
@@ -185,9 +231,15 @@ export default function NewShift({
     <ApplicantCard
       key={applicant.id}
       className="applicant-card"
-      onClick={() => handleApplicantSelect(applicant)}
+      onClick={() => onSelectApplicant(applicant.user_id)}
+      style={
+        selectedApplicant === applicant.user_id
+          ? { backgroundColor: "pink" }
+          : {}
+      }
     >
       <h3>{applicant.full_name}</h3>
+      <p>{applicant.user_id}</p>
       {/* Add more details you want to display about the applicant */}
       <p>{applicant.email}</p>
       {/* Add other details as necessary */}
@@ -197,23 +249,60 @@ export default function NewShift({
   return (
     <FormWrapper>
       <Title>Applicant Selection</Title>
-
+      <p>Display "users"</p>
+      <p>Display images</p>
       {/* Tabs for different applicant groups */}
-      <Tabs selectedTab={selectedTab} onTabChange={handleTabChange}>
+      <Tabs>
         <TabList>
-          <Tab id="location">Location</Tab>
-          <Tab id="company">Company</Tab>
-          <Tab id="applied">Applied</Tab>
-          <Tab id="openView">Open View</Tab>
+          <Tab
+            type="button"
+            id="location"
+            onClick={() => handleTabChange("location")}
+            aria-selected={selectedTab === "location"}
+          >
+            Location
+          </Tab>
+          <Tab
+            type="button"
+            id="company"
+            onClick={() => handleTabChange("company")}
+            aria-selected={selectedTab === "company"}
+          >
+            Company
+          </Tab>
+          <Tab
+            type="button"
+            id="applied"
+            onClick={() => handleTabChange("applied")}
+            aria-selected={selectedTab === "applied"}
+          >
+            Applied
+          </Tab>
+          <Tab
+            type="button"
+            id="openView"
+            onClick={() => handleTabChange("openView")}
+            aria-selected={selectedTab === "openView"}
+          >
+            Open View
+          </Tab>
         </TabList>
 
         {/* Tab Panels */}
         <TabPanel id="location" aria-hidden={selectedTab !== "location"}>
-          {companyApplicants.locationApplicants.map(renderApplicantCard)}
+          {companyApplicants.locationApplicants.length === 0 ? (
+            <EmptyStateMessage>This location has no workers</EmptyStateMessage>
+          ) : (
+            companyApplicants.locationApplicants.map(renderApplicantCard)
+          )}
         </TabPanel>
 
         <TabPanel id="company" aria-hidden={selectedTab !== "company"}>
-          {companyApplicants.companyApplicants.map(renderApplicantCard)}
+          {companyApplicants.companyApplicants.length === 0 ? (
+            <EmptyStateMessage>This company has no workers</EmptyStateMessage>
+          ) : (
+            companyApplicants.companyApplicants.map(renderApplicantCard)
+          )}
         </TabPanel>
 
         <TabPanel id="applied" aria-hidden={selectedTab !== "applied"}>
