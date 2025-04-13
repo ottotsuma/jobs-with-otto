@@ -33,8 +33,8 @@ const roadmapItems = [
     { title: "CSV Export for Worker Hours", status: "pending" },
     { title: "Apply to Join Company as Manager", status: "done" },
     { title: "Apply to Join Company as Worker", status: "testing" },
-    { title: "Assign Workers to Shifts", status: "pending" },
-    { title: "Assign External Workers to Shifts", status: "pending" }
+    { title: "Assign Workers to Shifts", status: "testing" },
+    { title: "Assign External Workers to Shifts", status: "testing" }
 ];
 
 const StatusIndicator = styled("div", {
