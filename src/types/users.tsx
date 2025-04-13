@@ -14,6 +14,8 @@ export type ApplicantProfile = Omit<User, ""> & {
   resume_url?: string;
   skills: string[]; // Array of skill names
   experience: Record<string, unknown>; // Experience details as JSON
+  user_id?: string;
+  location?: string;
 };
 export type ManagerProfile = Omit<ApplicantProfile, ""> & {
   company_id: string;

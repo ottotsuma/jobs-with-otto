@@ -7,6 +7,7 @@ import { styled } from "@stitches/react";
 import { useLocale } from "@/app/[locale]/hooks/useLocal";
 import { useTranslation } from "next-i18next";
 import { Title } from "@/styles/basic";
+import { ApplicantProfile } from "@/types/users";
 
 const FormWrapper = styled("div", {
   margin: "0 auto",
@@ -227,7 +228,7 @@ export default function ApplicantSelector({
   }, [vacancy_id, all_vacancies]); // Re-run effect if vacancy_id or all_vacancies changes
 
   // Render applicant card
-  const renderApplicantCard = (applicant) => (
+  const renderApplicantCard = (applicant: ApplicantProfile) => (
     <ApplicantCard
       key={applicant.id}
       className="applicant-card"
@@ -240,12 +241,18 @@ export default function ApplicantSelector({
     >
       <h3>{applicant.full_name}</h3>
       <p>{applicant.user_id}</p>
-      {/* Add more details you want to display about the applicant */}
-      <p>{applicant.email}</p>
-      {/* Add other details as necessary */}
+
+      <p>{applicant.resume_url}</p>
+      <p>{applicant.location}</p>
+      <p>{applicant.skills}</p>
     </ApplicantCard>
   );
-
+  // {
+  //   "bio": null,
+  //   "contact_number": null,
+  //   "skills": null,
+  //   "experience": null,
+  // }
   return (
     <FormWrapper>
       <Title>Applicant Selection</Title>

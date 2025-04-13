@@ -182,7 +182,6 @@ export default function ManageVacancies() {
                         <h1>{t('vacancies.manage')}</h1>
                         <p>Delete vacancy, tree deletes shifts.</p>
                         <p>delete shifts</p>
-                        <p>Display shifts on their own</p>
                         {/* Create new - src\app\vacancies\new\page.tsx */}
                         <Button
                             onClick={() => setNewVacancyOpen(true)}

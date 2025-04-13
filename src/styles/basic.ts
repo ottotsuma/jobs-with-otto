@@ -40,6 +40,16 @@ export const Button = styled('button', {
     cursor: 'pointer',
     border: 'none',
     variants: {
+        disabled: {
+            true: {
+                cursor: 'not-allowed',
+                backgroundColor: '#ccc',
+                color: '#666',
+            },
+            false: {
+                cursor: 'pointer',
+            },
+        },
         color: {
             green: { backgroundColor: '#28a745', color: 'white' },
             blue: { backgroundColor: '#007bff', color: 'white' },
