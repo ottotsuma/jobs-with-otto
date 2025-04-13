@@ -117,7 +117,7 @@ export default function NewShift({
       if (templatesError) console.error(templatesError);
       setTemplates(templatesData || []);
     }
-    // fetchData();
+    fetchData();
   }, [user]);
   const handleChange = (
     e: React.ChangeEvent<

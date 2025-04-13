@@ -104,7 +104,7 @@ export default function ApplicantSelector({
   });
   const [selectedTab, setSelectedTab] = useState("location");
 
-  const handleTabChange = (tabId) => {
+  const handleTabChange = (tabId: string) => {
     setSelectedTab(tabId);
   };
   useEffect(() => {
