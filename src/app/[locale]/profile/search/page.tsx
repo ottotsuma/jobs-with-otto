@@ -65,7 +65,7 @@ export default function CandidatesPage() {
       <Title>Candidates</Title>
       <Grid>
         {candidates.map((candidate) => (
-          <Card key={candidate.user_id} href={`profile/${candidate.user_id}`}>
+          <Card key={candidate.user_id} href={`${candidate.user_id}`}>
             <CardTitle>
               <strong>Name:</strong> {candidate.full_name}
             </CardTitle>
