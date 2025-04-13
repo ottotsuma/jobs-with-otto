@@ -73,7 +73,11 @@ const ModalContent = styled("div", {
   maxWidth: "90%",
 });
 
-export default function NewShift({ vacancy_id, all_vacancies }) {
+export default function NewShift({
+  vacancy_id,
+  all_vacancies,
+  finishAddingShift,
+}) {
   const { t } = useTranslation("common");
   const router = useRouter();
   const { user } = useUser();
@@ -164,7 +168,7 @@ export default function NewShift({ vacancy_id, all_vacancies }) {
     }
 
     const { data, error } = await supabase.from("shifts").insert(shiftData);
-
+    finishAddingShift(data);
     if (error) {
       alert("Error creating shift");
       console.error(error);

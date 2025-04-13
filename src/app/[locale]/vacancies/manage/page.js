@@ -31,6 +31,7 @@ export default function ManageVacancies() {
     const [NewVacancyOpen, setNewVacancyOpen] = useState(false);
     const [NewShiftOpen, setNewShiftOpen] = useState(0);
 
+    const [tableShifts, setTableShifts] = useState([]);
     function handleShowShifts(row_id) {
         const newSet = new Set(showShifts); // Create a copy of the current set
         if (newSet.has(row_id)) {
@@ -47,6 +48,16 @@ export default function ManageVacancies() {
         const vacancy = vacancies[row_id];
         setNewShiftOpen(vacancy.id)
     }
+    async function fetchAllShifts() {
+        // filter shifts by company_id
+        // Shifts dont have company_id so you need to check vacancies first.
+
+        // vacancies -> get Id's and then get shifts
+        const { data, error } = await supabase.from("shifts").select("*");
+
+        if (error) console.error("Error fetching shifts:", error);
+        setTableShifts(data);
+    }
     useEffect(() => {
         setTitle("Manage Vacancies");
     }, [])
@@ -58,7 +69,6 @@ export default function ManageVacancies() {
             setLocationsLoading(true)
             fetchLocations(user?.company_id)
         }
-
     }, [userLoading]);
     useEffect(() => {
         if (!userLoading) {
@@ -122,7 +132,23 @@ export default function ManageVacancies() {
                 [row_id]: data // Store shifts under the row_id key
             }));
             setShowShifts(newSet);
+            setTableShifts(tableShifts => {
+                const map = new Map();
+
+                // Add existing shifts to the map
+                tableShifts.forEach(shift => map.set(shift.id, shift));
+
+                // Add new shifts, replacing any with the same id
+                data.forEach(shift => map.set(shift.id, shift));
+
+                // Convert the map back to an array
+                return Array.from(map.values());
+            });
         }
+    }
+    function finishAddingShift(newShift) {
+        setNewShiftOpen(0);
+        fetchVacancies(user?.company_id);
     }
     return (
         <div>
@@ -149,7 +175,7 @@ export default function ManageVacancies() {
                         onClose={() => setNewShiftOpen(false)}
                     >
                         <Suspense fallback={<Loading />}>
-                            <NewShift all_vacancies={vacancies} vacancy_id={NewShiftOpen} />
+                            <NewShift finishAddingShift={finishAddingShift} all_vacancies={vacancies} vacancy_id={NewShiftOpen} />
                         </Suspense>
                     </SideBar>
                     <>
@@ -203,8 +229,6 @@ export default function ManageVacancies() {
                         />
                         {/* options */}
                         {/* Filter by Location */}
-
-
                         {/* Job Listings - Table*/}
                         {/* Jobs by Date */}
                         {/* Applications */}
@@ -228,13 +252,9 @@ export default function ManageVacancies() {
                                 </option>
                             ))}
                         </select>
+                        <Button onClick={() => fetchAllShifts()} disabled={true}>Fetch All Shifts</Button>
                         <Table
-                            actions={[{
-                                name: t('vacancies.new'),
-                                function: (row_id) => { handleNewShifts(row_id) },
-                                icon: "✅",
-                            }]}
-                            data={[shifts]}
+                            data={tableShifts}
                             // onDataChange={updateShifts}
                             // deleteRow={deleteShift}
                             bannedEdit={vacancy_bannedEdit}
