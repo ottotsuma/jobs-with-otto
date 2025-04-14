@@ -99,10 +99,10 @@ export default function NewVacancy() {
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
     // vacancy_applicants: [],
-    // vacancy_skills: [],
-    // vacancy_languages: [],
-    // vacancy_certifications: [],
-    // vacancy_managers: [],
+    vacancy_skills: [],
+    vacancy_languages: [],
+    vacancy_certifications: [],
+    vacancy_managers: [],
     country_id: null,
     // work_address: "",
   });
@@ -278,7 +278,10 @@ export default function NewVacancy() {
             ].includes(key)
           )
             return null; // Skip these fields
-
+          // vacancy_skills: [],
+          // vacancy_languages: [],
+          // vacancy_certifications: [],
+          // vacancy_managers: [],
           const isRequired = requiredFields.includes(key);
           if (key === "type_id") {
             {
