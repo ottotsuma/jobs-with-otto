@@ -192,7 +192,7 @@ export default function NewShift({
       {/* Modal for picking applicants. Location/Company/Applied/Open(invite) */}
       <Title>{t("vacancies.new")}</Title>
       {/* Template Selection Dropdown */}
-      Shift Templates
+      {t("generic.select_template")}
       {templates.length > 0 && (
         <ZoneGreen>
           <Label>{t("generic.select_template")}</Label>

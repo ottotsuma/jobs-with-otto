@@ -267,7 +267,7 @@ export default function ApplicantSelector({
             onClick={() => handleTabChange("location")}
             aria-selected={selectedTab === "location"}
           >
-            Location
+            {t("locations.location")}
           </Tab>
           <Tab
             type="button"
@@ -275,7 +275,7 @@ export default function ApplicantSelector({
             onClick={() => handleTabChange("company")}
             aria-selected={selectedTab === "company"}
           >
-            Company
+            {t("companies.company")}
           </Tab>
           <Tab
             type="button"
@@ -283,7 +283,7 @@ export default function ApplicantSelector({
             onClick={() => handleTabChange("applied")}
             aria-selected={selectedTab === "applied"}
           >
-            Applied
+            {t("vacancies.applied")}
           </Tab>
           <Tab
             type="button"
@@ -291,14 +291,14 @@ export default function ApplicantSelector({
             onClick={() => handleTabChange("openView")}
             aria-selected={selectedTab === "openView"}
           >
-            Open View
+            {t("vacancies.public")}
           </Tab>
         </TabList>
 
         {/* Tab Panels */}
         <TabPanel id="location" aria-hidden={selectedTab !== "location"}>
           {companyApplicants.locationApplicants.length === 0 ? (
-            <EmptyStateMessage>This location has no workers</EmptyStateMessage>
+            <EmptyStateMessage>{t("locations.no_workers")}</EmptyStateMessage>
           ) : (
             companyApplicants.locationApplicants.map(renderApplicantCard)
           )}
@@ -306,7 +306,7 @@ export default function ApplicantSelector({
 
         <TabPanel id="company" aria-hidden={selectedTab !== "company"}>
           {companyApplicants.companyApplicants.length === 0 ? (
-            <EmptyStateMessage>This company has no workers</EmptyStateMessage>
+            <EmptyStateMessage>{t("company.no_workers")}</EmptyStateMessage>
           ) : (
             companyApplicants.companyApplicants.map(renderApplicantCard)
           )}
@@ -314,7 +314,7 @@ export default function ApplicantSelector({
 
         <TabPanel id="applied" aria-hidden={selectedTab !== "applied"}>
           {companyApplicants.appliedApplicants.length === 0 ? (
-            <EmptyStateMessage>No applicants applied yet.</EmptyStateMessage>
+            <EmptyStateMessage>{t("vacancies.no_workers")}</EmptyStateMessage>
           ) : (
             companyApplicants.appliedApplicants.map(renderApplicantCard)
           )}

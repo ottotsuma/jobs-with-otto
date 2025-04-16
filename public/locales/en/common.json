@@ -24,6 +24,8 @@
         "dashboard": "Admin Dashboard"
     },
     "vacancies": {
+        "applied": "Applied",
+        "public": "Public",
         "view_all": "View All Vacancies",
         "manage": "Manage Vacancies",
         "new": "New Vacancy",
@@ -41,7 +43,8 @@
         "day_salary": "day salary",
         "month_salary": "month salary",
         "yearly_salary": "yearly salary",
-        "employee_places": "employee places"
+        "employee_places": "employee places",
+        "no_workers": "No applicants applied yet."
     },
     "companies": {
         "view_all": "View All Companies",
@@ -49,7 +52,9 @@
         "manage": "Manage Company",
         "private": "Private",
         "public": "Public",
-        "non_profit": "Non-Profit"
+        "non_profit": "Non-Profit",
+        "company": "Company",
+        "no_workers": "This company has no workers"
     },
     "locations": {
         "locations": "Locations",
@@ -57,7 +62,8 @@
         "select": "Select Location(s)",
         "select_location": "Select Location",
         "manage": "Manage Locations",
-        "all": "All locations"
+        "all": "All locations",
+        "no_workers": "This location has no workers"
     },
     "analytics": {
         "public": "Public Analytics"
