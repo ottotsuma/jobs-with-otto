@@ -117,6 +117,12 @@ type Action = {
 type Entity<T> = {
   [key: string]: T[]; // The key is some identifier (e.g., vacancy_id), and the value is an array of T objects
 };
+
+const formatHeader = (label: string) =>
+  label
+    .replace(/_/g, " ") // replace _ with space
+    .replace(/\b\w/g, (l) => l.toUpperCase()); // capitalize each word
+
 const Table = ({
   data,
   onDataChange,
@@ -300,10 +306,11 @@ const Table = ({
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
                   <TableHeader key={header.id}>
-                    {flexRender(
+                    {formatHeader(header.id)}
+                    {/* {flexRender(
                       header.column.columnDef.header,
                       header.getContext()
-                    ) ?? <None />}
+                    ) ?? <None />} */}
                     {enableSort && (
                       <div>
                         <Button
@@ -364,6 +371,10 @@ const Table = ({
                         key={cell.id}
                       >
                         {/* Lock credits */}
+                        {/* Start Date, End Date */}
+                        {/* Approved Datetime */}
+                        {/* Approved by */}
+                        {/* Currency ID, Country ID */}
                         {cell.column.id === "location_qr" ? (
                           <div>🚫</div>
                         ) : bannedEdit &&
@@ -480,8 +491,19 @@ const Table = ({
                               </option>
                             ))}
                           </select>
-                        ) : typeof cellValue === "string" ||
-                          typeof cellValue === "number" ? (
+                        ) : typeof cellValue === "number" ? (
+                          <input
+                            type="number"
+                            value={cellValue}
+                            onChange={(e) =>
+                              updateData(
+                                row.index,
+                                cell.column.id,
+                                e.target.value
+                              )
+                            }
+                          />
+                        ) : typeof cellValue === "string" ? (
                           <input
                             type="text"
                             value={cellValue}
@@ -495,6 +517,18 @@ const Table = ({
                           />
                         ) : Array.isArray(cellValue) ? (
                           <span>{cellValue.join(", ")}</span>
+                        ) : cellValue === null ? (
+                          <input
+                            type="text"
+                            value={cellValue}
+                            onChange={(e) =>
+                              updateData(
+                                row.index,
+                                cell.column.id,
+                                e.target.value
+                              )
+                            }
+                          />
                         ) : typeof cellValue === "object" ? (
                           <span>{JSON.stringify(cellValue)}</span>
                         ) : typeof cellValue === "boolean" ? (
@@ -562,8 +596,26 @@ const Table = ({
                                   Generate QR
                                 </Button>
                               </div>
+                            ) : cell.column.id === "credits" ? (
+                              <span>
+                                {JSON.stringify(cellValue) === "null"
+                                  ? "0"
+                                  : JSON.stringify(cellValue)}
+                              </span>
                             ) : cell.column.id === "location_qr" ? (
-                              <div>{hexToAscii(cellValue)}</div>
+                              <div>
+                                {/* {hexToAscii(cellValue)} */}
+                                {cellValue ? (
+                                  <img
+                                    src={`${hexToAscii(cellValue)}`}
+                                    alt="decoded"
+                                    width={100}
+                                    height={100}
+                                  />
+                                ) : (
+                                  <span>QR failed to load</span>
+                                )}
+                              </div>
                             ) : cell.column.id === "user_id" ? (
                               <div>
                                 <Button
@@ -596,7 +648,11 @@ const Table = ({
                             ) : Array.isArray(cellValue) ? (
                               <span>{cellValue.join(", ")}</span>
                             ) : typeof cellValue === "object" ? (
-                              <span>{JSON.stringify(cellValue)}</span>
+                              <span>
+                                {JSON.stringify(cellValue) === "null"
+                                  ? ""
+                                  : JSON.stringify(cellValue)}
+                              </span>
                             ) : typeof cellValue === "boolean" ? (
                               <input
                                 type="checkbox"

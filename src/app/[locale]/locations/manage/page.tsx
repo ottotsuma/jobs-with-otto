@@ -24,6 +24,7 @@ export default function ProfilePage() {
   const { setTitle } = useTitle();
   const currentLocale = useLocale();
   const [loading, setLoading] = useState<boolean>(false);
+  const [showClocks, setShowClocks] = useState(new Set());
   const [error, setError] = useState<string | null>(null);
   const { user } = useUser();
   const [company, setCompany] = useState<Company>({});
@@ -31,6 +32,7 @@ export default function ProfilePage() {
   const [selectedLocation, SetSelectedLocation] = useState<Location | null>(
     null
   );
+  const [clocks, setClocks] = useState({});
   const columns: ColumnDef<Location>[] = locations.length
     ? Object.keys(locations[0]).map((key) => ({
         accessorKey: key,
@@ -39,10 +41,55 @@ export default function ProfilePage() {
     : [];
 
   // const locationQR =
+  function handleShowClocks(row_id) {
+    const newSet = new Set(showClocks); // Create a copy of the current set
+    if (newSet.has(row_id)) {
+      // If the ID is already in the set, delete it
+      newSet.delete(row_id);
+    } else {
+      // Otherwise, add the ID to the set
+      newSet.add(row_id);
+    }
+    const location = locations[row_id];
+    if (location) fetchClocks(location.id, newSet, row_id);
+  }
+  async function fetchClocks(location_id, newSet, row_id) {
+    const vacancies = supabase
+      .from("vacancies")
+      .select("*")
+      .eq("location_id", location_id);
 
-  const handleDataChange = (updatedData: RowData[]) => {
+    const { data: vacanciesData, error: vacanciesError } = await vacancies;
+    if (vacanciesError) {
+      console.error("Error fetching vacancies:", vacanciesError);
+      return;
+    }
+    if (!vacanciesData || vacanciesData.length === 0) {
+      console.error("No vacancies found for this location.");
+      return;
+    }
+
+    const vacancy_id = vacanciesData[0].id; // replcace with loop
+
+    const shifts = supabase
+      .from("shifts")
+      .select("*")
+      .eq("vacancy_id", vacancy_id);
+
+    const { data, error } = await shifts;
+    if (error) console.error("Error fetching vacancies:", error);
+    else {
+      setClocks((prevShifts) => ({
+        ...prevShifts,
+        [row_id]: data,
+      }));
+      setShowClocks(newSet);
+    }
+  }
+  async function updateLocation(updatedData: RowData[]) {
     setLocations(updatedData);
-  };
+  }
+
   useEffect(() => {
     setTitle("Manage Locations");
   }, []);
@@ -71,9 +118,7 @@ export default function ProfilePage() {
       fetchLocations();
     }
   }, [user]); // Re-fetch when the user changes
-  async function updateLocation(e) {
-    e.preventDefault();
-  }
+
   async function deleteLocation(e: number) {
     const newLocations = locations.filter((_, index) => index !== e);
     setLocations(newLocations);
@@ -94,34 +139,35 @@ export default function ProfilePage() {
           New Location
         </Button>
         <Table
+          actions={[
+            {
+              name: "Show Pending clock in / out",
+              function: (row_id) => {
+                handleShowClocks(row_id);
+              },
+              icon: "✅",
+            },
+          ]}
+          expandedData={clocks}
+          expand={showClocks}
+          expadedTitle={"Clock:"}
           columns={columns}
           data={locations}
-          onDataChange={handleDataChange}
+          onDataChange={updateLocation}
           deleteRow={deleteLocation}
           bannedEdit={location_bannedEdit}
         />
+        Applicants pending clock in / out at each location? (mass)
         <>
-          {/* Location QR code */}
-          {/* CSV */}
-          {/* Applicants pending clock in / out at each location? (mass) */}
-          {/* Green Zone - Update Profile Form */}
-          <ZoneGreen>
+          <ZoneGreen>CSV Download</ZoneGreen>
+          <ZoneYellow>CSV upload</ZoneYellow>
+          <ZoneRed>
             <a
               href="https://www.youtube.com/watch?v=CjqG277Hmgg"
               target="_blank"
             >
               https://www.youtube.com/watch?v=CjqG277Hmgg
             </a>
-          </ZoneGreen>
-
-          {/* Yellow Zone - Change Password & Role Update Forms */}
-          <ZoneYellow>Settings</ZoneYellow>
-
-          {/* Red Zone - Delete Profile */}
-          <ZoneRed>
-            {/* <Button onClick={deleteLocation} color="red">
-              Delete Location (needs warning popup)
-            </Button> */}
           </ZoneRed>
         </>
       </Container>

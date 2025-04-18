@@ -14,7 +14,8 @@
         "manager": "Manager",
         "applicant": "Applicant",
         "delete": "Delete Profile",
-        "assign_new_role": "Assign new role"
+        "assign_new_role": "Assign new role",
+        "search": "Search Candidates"
     },
     "auth": {
         "loginSignup": "Login/Sign Up",
@@ -45,6 +46,23 @@
         "yearly_salary": "yearly salary",
         "employee_places": "employee places",
         "no_workers": "No applicants applied yet."
+    },
+    "shifts": {
+        "shifts": "Shifts",
+        "shift": "Shift",
+        "view_all": "View All Shifts",
+        "manage": "Manage Shifts",
+        "create": "Create Shift",
+        "select_shift": "Select Shift",
+        "select_shifts": "Select Shifts",
+        "start_time": "Start Time",
+        "end_time": "End Time",
+        "break_time": "Break Time",
+        "breaks": {
+            "breaks": "Breaks",
+            "break": "Break"
+        },
+        "no_workers": "This shift has no workers"
     },
     "companies": {
         "view_all": "View All Companies",

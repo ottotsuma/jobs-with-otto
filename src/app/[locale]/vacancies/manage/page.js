@@ -193,7 +193,7 @@ export default function ManageVacancies() {
                         >
                             {t('vacancies.new')}
                         </Button> */}
-                        <select
+                        {vacancies.length > 0 && <select
                             value={selectedLocation}
                             onChange={(e) => {
                                 setSelectedLocation(e.target.value);
@@ -206,8 +206,8 @@ export default function ManageVacancies() {
                                     {location.name}
                                 </option>
                             ))}
-                        </select>
-                        <Table
+                        </select>}
+                        {vacancies.length > 0 && <Table
                             actions={[{
                                 name: "Show Shifts",
                                 function: (row_id) => { handleShowShifts(row_id) },
@@ -225,7 +225,7 @@ export default function ManageVacancies() {
                             onDataChange={updateVacancies}
                             deleteRow={deleteVacancy}
                             bannedEdit={vacancy_bannedEdit}
-                        />
+                        />}
                         {/* options */}
                         {/* Filter by Location */}
                         {/* Job Listings - Table*/}
@@ -237,7 +237,8 @@ export default function ManageVacancies() {
                     </>
                     <>
                         <h1>{t('shifts.manage')}</h1>
-                        <select
+                        <Button onClick={() => fetchAllShifts()} disabled={true}>Fetch All Shifts</Button>
+                        {tableShifts.length > 0 && <select
                             value={selectedLocation}
                             onChange={(e) => {
                                 setSelectedLocation(e.target.value);
@@ -250,14 +251,13 @@ export default function ManageVacancies() {
                                     {location.name}
                                 </option>
                             ))}
-                        </select>
-                        <Button onClick={() => fetchAllShifts()} disabled={true}>Fetch All Shifts</Button>
-                        <Table
+                        </select>}
+                        {tableShifts.length > 0 && <Table
                             data={tableShifts}
                             // onDataChange={updateShifts}
                             // deleteRow={deleteShift}
                             bannedEdit={vacancy_bannedEdit}
-                        />
+                        />}
                     </>
                 </Container>
             }
